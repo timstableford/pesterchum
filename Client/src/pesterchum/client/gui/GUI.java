@@ -15,10 +15,11 @@ public class GUI extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	public GUI(){
+		JPanel top;
 		JMenuBar menu;
 		JMenu client, profile, help;
 		JMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
-		importThings, reconnect, exit;
+		importThings, reconnect, exit, helpMe, about, reportBug;
 		
 		// menu at top
 		// logo
@@ -49,13 +50,24 @@ public class GUI extends JFrame{
 		client.add(userList); client.add(idle); client.add(addGroup); client.add(importThings);
 		client.add(reconnect); client.add(exit);
 		
+		//set up the Help menu
+		helpMe = new JMenuItem("help"); about = new JMenuItem("about"); reportBug = new JMenuItem("report a bug");
 		
-		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
-		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.SOUTH);
+		help.add(helpMe); help.add(about); help.add(reportBug);
 		
+		//add the whole thing
 		this.add(menu, BorderLayout.NORTH);
+		
+		top = new JPanel();
+		//logo time!
+		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
+		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.CENTER);
+		
+		
+		
 		this.setVisible(true);
 	}
+	
 	private ImageIcon getIcon(Resource res){
 		if(res instanceof Img){
 			Img img = (Img)res;
@@ -64,8 +76,13 @@ public class GUI extends JFrame{
 		}
 		return null;
 	}
+	
 	public void incomingMessage(Message message){
 
+	}
+	
+	public void loginResponse(boolean success) {
+		
 	}
 
 }
