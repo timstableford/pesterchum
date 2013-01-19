@@ -16,7 +16,9 @@ public class GUI extends JFrame{
 	public GUI(){
 		JMenuBar menu;
 		JMenu client, profile, help;
-		JMenuItem options;
+		JMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
+		importThings, reconnect, exit;
+		
 		// menu at top
 		// logo
 		//list of chums
@@ -29,12 +31,23 @@ public class GUI extends JFrame{
 		smilies.load("/smilies/smilies.xml");
 		this.setSize(new Dimension(200, 400));
 		this.getContentPane().setBackground(Color.ORANGE);
+		
 		//create menu bar + menus
 		menu= new JMenuBar();
 		client = new JMenu("client"); profile = new JMenu("profile"); help = new JMenu("help");
 		menu.add(client); menu.add(profile); menu.add(help);
 		
-		options = new JMenuItem("options");
+		//set up the Client menu
+		options = new JMenuItem("options"); memos = new JMenuItem("memos");
+		pesterLog = new JMenuItem("pesterlog"); randomEcounter = new JMenuItem("random ecounter"); 
+		userList = new JMenuItem("user list"); idle = new JMenuItem("idle"); 
+		addGroup = new JMenuItem("add group"); importThings = new JMenuItem("import"); 
+		reconnect = new JMenuItem("reconnect"); exit = new JMenuItem("exit");
+		
+		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEcounter);
+		client.add(userList); client.add(idle); client.add(addGroup); client.add(importThings);
+		client.add(reconnect); client.add(exit);
+		
 		
 		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
 		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.SOUTH);
