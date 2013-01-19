@@ -1,4 +1,4 @@
-package pesterchemum.client;
+package pesterchum.client;
 
 public class Launch {
 
