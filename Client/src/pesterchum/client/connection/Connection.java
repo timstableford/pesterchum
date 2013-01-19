@@ -19,6 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import pesterchum.client.gui.GUI;
@@ -78,7 +79,12 @@ public class Connection implements Runnable{
 		return true;
 	}
 	public boolean login(String username, String password){
-
+		Document doc = builder.newDocument();
+		Element root = doc.createElement("login");
+		doc.appendChild(root);
+		Element un = doc.createElement("username");
+		un.appendChild(doc.createTextNode(username));
+		
 		return true;
 	}
 	private synchronized void sendData(byte[] data){
