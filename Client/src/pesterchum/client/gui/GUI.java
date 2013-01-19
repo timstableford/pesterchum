@@ -38,6 +38,8 @@ public class GUI extends JFrame{
 		
 		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
 		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.SOUTH);
+		
+		this.add(menu, BorderLayout.NORTH);
 		this.setVisible(true);
 	}
 	private ImageIcon getIcon(Resource res){
