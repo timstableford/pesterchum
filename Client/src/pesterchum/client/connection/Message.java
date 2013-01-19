@@ -9,6 +9,9 @@ public class Message {
 		this.message = message;
 		this.time = System.currentTimeMillis();
 	}
+	public Message(String incoming){
+		//TODO convert xml to message
+	}
 	public String getXML(){
 		//TODO implement this shit
 		return null;

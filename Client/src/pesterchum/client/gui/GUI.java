@@ -6,6 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.*;
 
+import pesterchum.client.connection.Message;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
@@ -49,6 +50,9 @@ public class GUI extends JFrame{
 			return i;
 		}
 		return null;
+	}
+	public void incomingMessage(Message message){
+		
 	}
 
 }
