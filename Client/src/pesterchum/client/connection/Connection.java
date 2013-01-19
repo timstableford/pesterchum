@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.util.LinkedList;
@@ -27,6 +25,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import pesterchum.client.gui.GUI;
@@ -39,7 +39,9 @@ public class Connection implements Runnable{
 	private boolean run;
 	private DocumentBuilder builder;
 	private GUI gui;
+	private String username;
 	public Connection(GUI gui){
+		this.username = null;
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		try {
 			builder = dbFactory.newDocumentBuilder();
@@ -122,15 +124,41 @@ public class Connection implements Runnable{
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		String name = doc.getDocumentElement().getNodeName();
-		switch(name){
-		case "message":
-			Message m = new Message(data);
-			gui.incomingMessage(m);
-			break;
-		default:
-			System.err.println("Incoming data unknown");
-			break;
+		if(this.username!=null){
+			switch(name){
+			case "message":
+				Message m = new Message(data);
+				gui.incomingMessage(m);
+				break;
+			default:
+				System.err.println("Incoming data unknown");
+				break;
+			}
+		}else if(name=="login"){
+			processLogin(data);
 		}
+	}
+	private boolean processLogin(String data){
+		Document doc = null;
+		boolean suc = false;
+		try {
+			doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
+		} catch (SAXException | IOException e) {}
+		if(doc!=null){
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("login");
+			Node nNode = nList.item(0);
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nNode;
+				String un = getTagValue("username", eElement);
+				suc = Boolean.parseBoolean(getTagValue("success", eElement));
+				if(suc){
+					this.username = un;
+				}
+			}
+		}
+		gui.loginResponse(suc);
+		return suc;
 	}
 	@Override
 	public void run(){
@@ -155,5 +183,10 @@ public class Connection implements Runnable{
 		} catch (InterruptedException e) {
 			//It doesn't really matter if we ignore this
 		}
+	}
+	private String getTagValue(String sTag, Element eElement) {
+		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
+		Node nValue = (Node) nlList.item(0);
+		return nValue.getNodeValue();
 	}
 }
