@@ -1,5 +1,6 @@
 package pesterchum.client.connection;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
@@ -8,7 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -33,14 +36,15 @@ import pesterchum.client.gui.GUI;
 
 public class Connection implements Runnable{
 	private BufferedReader in;
-	private OutputStream out;
+	private BufferedOutputStream out;
 	private Socket socket;
-	private LinkedList<byte[]> writeBuffer;
+	private List<byte[]> writeBuffer;
 	private boolean run;
 	private DocumentBuilder builder;
 	private GUI gui;
 	private String username;
 	public Connection(GUI gui){
+		System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
 		this.username = null;
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		try {
@@ -78,11 +82,12 @@ public class Connection implements Runnable{
 		}
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = socket.getOutputStream();
+			out = new BufferedOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			return false;
 		}
 		writeBuffer = new LinkedList<byte[]>();
+		writeBuffer = Collections.synchronizedList(writeBuffer);
 		run = true;
 		(new Thread(this)).start();
 		return true;
@@ -136,6 +141,8 @@ public class Connection implements Runnable{
 			}
 		}else if(name=="login"){
 			processLogin(data);
+		}else{
+			System.err.println("Unexpected data "+data);
 		}
 	}
 	private boolean processLogin(String data){
@@ -165,7 +172,8 @@ public class Connection implements Runnable{
 		while(run){
 			if(writeBuffer.size()>0){
 				try {
-					out.write(writeBuffer.remove());
+					out.write(writeBuffer.get(0));
+					writeBuffer.remove(0);
 				} catch (IOException e) {
 					System.err.println("Error writing to server");
 				}
@@ -177,11 +185,11 @@ public class Connection implements Runnable{
 			} catch (IOException | SAXException e) {
 				System.err.println("Error reading from server");
 			}
-		}
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			//It doesn't really matter if we ignore this
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				//It doesn't really matter if we ignore this
+			}
 		}
 	}
 	private String getTagValue(String sTag, Element eElement) {
