@@ -2,10 +2,12 @@ package pesterchum.client.connection;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.util.LinkedList;
@@ -17,6 +19,11 @@ import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -79,12 +86,30 @@ public class Connection implements Runnable{
 		return true;
 	}
 	public boolean login(String username, String password){
+		//Create the document
 		Document doc = builder.newDocument();
 		Element root = doc.createElement("login");
 		doc.appendChild(root);
+		//Add the username element
 		Element un = doc.createElement("username");
 		un.appendChild(doc.createTextNode(username));
-		
+		root.appendChild(un);
+		//Add the password element
+		Element pw = doc.createElement("password");
+		pw.appendChild(doc.createTextNode(password));
+		root.appendChild(pw);
+		//Magical code to turn it into a string and send it
+		try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			CharArrayWriter writer = new CharArrayWriter();
+			StreamResult result = new StreamResult(writer);
+			transformer.transform(source, result);
+			sendData((writer.toString()+"\n").getBytes());
+		} catch (TransformerException e) {
+			return false;
+		}
 		return true;
 	}
 	private synchronized void sendData(byte[] data){
