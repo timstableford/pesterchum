@@ -1,6 +1,7 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
@@ -15,10 +16,13 @@ public class GUI extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	public GUI(){
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		smilies = new ResourceLoader();
 		smilies.load("/smilies/smilies.xml");
 		this.setSize(new Dimension(200, 400));
+		this.getContentPane().setBackground(Color.ORANGE);
 		this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
+		this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.SOUTH);
 		this.setVisible(true);
 	}
 	private ImageIcon getIcon(Resource res){
