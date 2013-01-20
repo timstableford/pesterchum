@@ -4,19 +4,39 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,9 +56,8 @@ import pesterchum.client.gui.GUI;
 
 public class Connection implements Runnable{
 	private BufferedReader in;
-	private BufferedOutputStream out;
+	private OutputStream out;
 	private Socket socket;
-	private List<byte[]> writeBuffer;
 	private boolean run;
 	private DocumentBuilder builder;
 	private GUI gui;
@@ -54,27 +73,7 @@ public class Connection implements Runnable{
 		}
 	}
 	public boolean connect(String host, int port){
-		TrustManager[] trustAllCerts = new TrustManager[] { 
-				new X509TrustManager() {     
-					public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
-						return null;
-					} 
-					public void checkClientTrusted( 
-							java.security.cert.X509Certificate[] certs, String authType) {
-					} 
-					public void checkServerTrusted( 
-							java.security.cert.X509Certificate[] certs, String authType) {
-					}
-				} 
-		}; 
-		SocketFactory sf = null;
-		try {
-			SSLContext sc = SSLContext.getInstance("SSL"); 
-			sc.init(null, trustAllCerts, new java.security.SecureRandom()); 
-			sf = sc.getSocketFactory();	
-		} catch (GeneralSecurityException e) {
-			return false;
-		} 
+		SocketFactory sf = getSocketFactory("plain");
 		try {
 			socket = sf.createSocket(host, port);	
 		} catch (IOException e) {
@@ -82,12 +81,10 @@ public class Connection implements Runnable{
 		}
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new BufferedOutputStream(socket.getOutputStream());
+			out = socket.getOutputStream();
 		} catch (IOException e) {
 			return false;
 		}
-		writeBuffer = new LinkedList<byte[]>();
-		writeBuffer = Collections.synchronizedList(writeBuffer);
 		run = true;
 		(new Thread(this)).start();
 		return true;
@@ -113,17 +110,22 @@ public class Connection implements Runnable{
 			CharArrayWriter writer = new CharArrayWriter();
 			StreamResult result = new StreamResult(writer);
 			transformer.transform(source, result);
-			sendData((writer.toString()+"\n").getBytes());
+			sendData(writer.toString());
 		} catch (TransformerException e) {
 			return false;
 		}
 		return true;
 	}
-	private synchronized void sendData(byte[] data){
-		writeBuffer.add(data);
+	private synchronized void sendData(String data){
+		byte[] toWrite = (data+"\n").getBytes();
+		try {
+			out.write(toWrite);
+		} catch (IOException e) {
+			System.err.println("Error writing to server");
+		}
 	}
 	public void sendMessage(Message message){
-		sendData((message.getXML()+"\n").getBytes());
+		sendData(message.getXML());
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
@@ -170,17 +172,10 @@ public class Connection implements Runnable{
 	@Override
 	public void run(){
 		while(run){
-			if(writeBuffer.size()>0){
-				try {
-					out.write(writeBuffer.get(0));
-					writeBuffer.remove(0);
-				} catch (IOException e) {
-					System.err.println("Error writing to server");
-				}
-			}
 			try {
 				if(in.ready()){
 					processIncoming(in.readLine());
+
 				}
 			} catch (IOException | SAXException e) {
 				System.err.println("Error reading from server");
@@ -196,5 +191,35 @@ public class Connection implements Runnable{
 		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
 		Node nValue = (Node) nlList.item(0);
 		return nValue.getNodeValue();
+	}
+	private SocketFactory getSocketFactory(String type){
+		if("TLS".equals(type)){
+			X509TrustManager trustManager = new X509TrustManager() {
+				@Override
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType) throws CertificateException {
+					//Do nothing
+				}
+				@Override
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType) throws CertificateException {
+					//Do nothing
+				}
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return new java.security.cert.X509Certificate[0];
+				}
+			};
+			try {
+				SSLContext sslContext = SSLContext.getInstance("TLS");
+				sslContext.init(null, new TrustManager[] { trustManager }, new SecureRandom());
+				return sslContext.getSocketFactory();
+			} catch (KeyManagementException | NoSuchAlgorithmException e) {
+				System.err.println("Could not setup TLS connection, going plain");
+			}
+		}
+		return SocketFactory.getDefault();
 	}
 }
