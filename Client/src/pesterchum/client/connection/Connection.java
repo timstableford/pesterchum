@@ -1,50 +1,27 @@
 package pesterchum.client.connection;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.CharArrayWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.net.URLDecoder;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.SocketFactory;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-import javax.security.cert.X509Certificate;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,6 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import pesterchum.client.Util;
 import pesterchum.client.gui.GUI;
 
 public class Connection implements Runnable{
@@ -62,6 +40,10 @@ public class Connection implements Runnable{
 	private DocumentBuilder builder;
 	private GUI gui;
 	private String username;
+	private SecretKeySpec sks;
+	private static final int VERSION = 1;
+	private List<byte[]> writeBuffer;
+	private boolean encrypted;
 	public Connection(GUI gui){
 		System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
 		this.username = null;
@@ -71,6 +53,8 @@ public class Connection implements Runnable{
 		} catch (ParserConfigurationException e) {
 			System.err.println("Couldn't setup document builder");
 		}
+		encrypted = false;
+		writeBuffer = Collections.synchronizedList(new LinkedList<byte[]>());
 	}
 	public boolean connect(String host, int port){
 		SocketFactory sf = getSocketFactory("plain");
@@ -103,35 +87,46 @@ public class Connection implements Runnable{
 		pw.appendChild(doc.createTextNode(password));
 		root.appendChild(pw);
 		//Magical code to turn it into a string and send it
-		try {
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			CharArrayWriter writer = new CharArrayWriter();
-			StreamResult result = new StreamResult(writer);
-			transformer.transform(source, result);
-			sendData(writer.toString());
-		} catch (TransformerException e) {
-			return false;
-		}
+		sendData(Util.docToString(doc));
 		return true;
 	}
 	private synchronized void sendData(String data){
 		byte[] toWrite = (data+"\n").getBytes();
-		try {
-			out.write(toWrite);
-		} catch (IOException e) {
-			System.err.println("Error writing to server");
-		}
+		writeBuffer.add(toWrite);
 	}
 	public void sendMessage(Message message){
 		sendData(message.getXML());
+	}
+	private void processHello(String data) throws SAXException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException{
+		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
+		doc.getDocumentElement().normalize();
+		NodeList nList = doc.getElementsByTagName("hello");
+		Node nNode = nList.item(0);
+		String key = null;
+		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			Element eElement = (Element) nNode;
+			int ver = Integer.parseInt(Util.getTagValue("version", eElement));
+			key = Util.getTagValue("key", eElement);
+			key = URLDecoder.decode(key, "UTF-8");
+			sks = new SecretKeySpec(key.getBytes(), "AES");
+		}
+		if(key!=null){
+			Cipher ce = Cipher.getInstance("AES");
+		    ce.init(Cipher.ENCRYPT_MODE, sks);
+		    Cipher cd = Cipher.getInstance("AES");
+		    cd.init(Cipher.DECRYPT_MODE, sks);
+		    out = new CipherOutputStream(socket.getOutputStream(), ce);
+		    in = new BufferedReader(new InputStreamReader(new CipherInputStream(socket.getInputStream(), cd)));
+		    System.out.println("Connection encrypted");
+		    encrypted = true;
+		}
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		String name = doc.getDocumentElement().getNodeName();
 		if(this.username!=null){
+			//logged in
 			switch(name){
 			case "message":
 				Message m = new Message(data);
@@ -142,9 +137,22 @@ public class Connection implements Runnable{
 				break;
 			}
 		}else if(name=="login"){
+			//not logged in
 			processLogin(data);
-		}else{
-			System.err.println("Unexpected data "+data);
+		}
+		//all
+		switch(name){
+		case "hello":
+			try {
+				processHello(data);
+			} catch (InvalidKeyException | NoSuchAlgorithmException
+					| NoSuchPaddingException e) {
+				System.err.println("Could not process hello message");
+			}
+			break;
+		default:
+			System.err.println("Incoming data unknown");
+			break;
 		}
 	}
 	private boolean processLogin(String data){
@@ -159,8 +167,8 @@ public class Connection implements Runnable{
 			Node nNode = nList.item(0);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
-				String un = getTagValue("username", eElement);
-				suc = Boolean.parseBoolean(getTagValue("success", eElement));
+				String un = Util.getTagValue("username", eElement);
+				suc = Boolean.parseBoolean(Util.getTagValue("success", eElement));
 				if(suc){
 					this.username = un;
 				}
@@ -175,10 +183,17 @@ public class Connection implements Runnable{
 			try {
 				if(in.ready()){
 					processIncoming(in.readLine());
-
 				}
 			} catch (IOException | SAXException e) {
 				System.err.println("Error reading from server");
+			}
+			if(encrypted&&writeBuffer.size()>0){
+				try {
+					out.write(writeBuffer.get(0));
+				} catch (IOException e) {
+					System.err.println("Could not send "+new String(writeBuffer.get(0)));
+				}
+				writeBuffer.remove(0);
 			}
 			try {
 				Thread.sleep(50);
@@ -187,39 +202,7 @@ public class Connection implements Runnable{
 			}
 		}
 	}
-	private String getTagValue(String sTag, Element eElement) {
-		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
-		Node nValue = (Node) nlList.item(0);
-		return nValue.getNodeValue();
-	}
 	private SocketFactory getSocketFactory(String type){
-		if("TLS".equals(type)){
-			X509TrustManager trustManager = new X509TrustManager() {
-				@Override
-				public void checkClientTrusted(
-						java.security.cert.X509Certificate[] chain,
-						String authType) throws CertificateException {
-					//Do nothing
-				}
-				@Override
-				public void checkServerTrusted(
-						java.security.cert.X509Certificate[] chain,
-						String authType) throws CertificateException {
-					//Do nothing
-				}
-				@Override
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return new java.security.cert.X509Certificate[0];
-				}
-			};
-			try {
-				SSLContext sslContext = SSLContext.getInstance("TLS");
-				sslContext.init(null, new TrustManager[] { trustManager }, new SecureRandom());
-				return sslContext.getSocketFactory();
-			} catch (KeyManagementException | NoSuchAlgorithmException e) {
-				System.err.println("Could not setup TLS connection, going plain");
-			}
-		}
 		return SocketFactory.getDefault();
 	}
 }

@@ -8,25 +8,22 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 public class KeyGen {
-	private PrivateKey pri;
-	private PublicKey pub;
+	private SecretKey key;
 	public KeyGen(){
-		KeyPairGenerator KPG;
+		KeyGenerator kg;
 		try {
-			KPG = KeyPairGenerator.getInstance("RSA");
-			KPG.initialize(1024);
-			KeyPair kp = KPG.generateKeyPair();
-			pri = kp.getPrivate();
-			pub = kp.getPublic();
+			kg = KeyGenerator.getInstance("AES");
+			kg.init(128);
+			key = kg.generateKey();
 		} catch (NoSuchAlgorithmException e) {
-			System.err.println("Could not generate keys");
-		}
+			System.err.println("Could not generate encryption key");
+		}	
 	}
-	public PrivateKey getPrivateKey(){
-		return pri;
-	}
-	public PublicKey getPublicKey(){
-		return pub;
+	public SecretKey getKey(){
+		return key;
 	}
 }
