@@ -5,15 +5,17 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.parsers.DocumentBuilder;
@@ -22,11 +24,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import pesterchum.server.data.User;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 public class Connection implements Runnable{
 	private static final int VERSION = 1;
@@ -37,6 +39,7 @@ public class Connection implements Runnable{
 	private DocumentBuilder builder;
 	private User user;
 	private SecretKeySpec sks;
+	private Cipher enc, denc;
 	public Connection(Socket socket){
 		this.socket = socket;
 		run = true;
@@ -49,6 +52,15 @@ public class Connection implements Runnable{
 		(new Thread(this)).start();
 	}
 	public void write(String data){
+		if(enc!=null){
+			//then we need to encrypt
+			try {
+				BASE64Encoder e = new BASE64Encoder();
+				data = URLEncoder.encode(new String(e.encode(enc.doFinal(data.getBytes()))), "UTF-8");
+			} catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
+				System.err.println("Could not encrypt and encode for "+socket.getInetAddress());
+			}
+		}
 		byte[] o = (data+"\n").getBytes();
 		try {
 			out.write(o);
@@ -57,6 +69,16 @@ public class Connection implements Runnable{
 		}
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
+		if(denc!=null){
+			//this we need to decrypt
+			try {
+				BASE64Decoder d = new BASE64Decoder();
+				byte[] a = d.decodeBuffer(URLDecoder.decode(data, "UTF-8"));
+				data = new String(denc.doFinal(a));
+			} catch (IllegalBlockSizeException | BadPaddingException e) {
+				System.err.println("Decoding and decryption failed for "+socket.getInetAddress());
+			}
+		}
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		String name = doc.getDocumentElement().getNodeName();
@@ -76,14 +98,14 @@ public class Connection implements Runnable{
 		case "login":
 			//TODO 
 			//processLogin(data);
-			System.out.println(data);
+			System.out.println("Login request from "+socket.getInetAddress());
 			break;
 		default:
 			System.err.println("Incoming data unknown");
 			break;
 		}
 	}
-	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException{
+	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
 		Document doc = builder.newDocument();
 		Element root = doc.createElement("hello");
 		doc.appendChild(root);
@@ -100,12 +122,10 @@ public class Connection implements Runnable{
 		out.write((Util.docToString(doc)+"\n").getBytes());
 		
 		sks = new SecretKeySpec(ke, "AES");
-		Cipher ce = Cipher.getInstance("AES");
-	    ce.init(Cipher.ENCRYPT_MODE, sks);
-	    Cipher cd = Cipher.getInstance("AES");
-	    cd.init(Cipher.DECRYPT_MODE, sks);
-	    out = new CipherOutputStream(socket.getOutputStream(), ce);
-	    in = new BufferedReader(new InputStreamReader(new CipherInputStream(socket.getInputStream(), cd)));
+		enc = Cipher.getInstance("AES");
+	    enc.init(Cipher.ENCRYPT_MODE, sks);
+	    denc = Cipher.getInstance("AES");
+	    denc.init(Cipher.DECRYPT_MODE, sks);
 	    System.out.println("Stream from "+socket.getInetAddress()+" encrypted");
 	}
 	@Override
@@ -122,7 +142,7 @@ public class Connection implements Runnable{
 			try {
 				sendHello();
 			} catch (InvalidKeyException | NoSuchAlgorithmException
-					| NoSuchPaddingException e) {
+					| NoSuchPaddingException | NoSuchProviderException e) {
 				System.err.println("Could not send hello to "+socket.getInetAddress());
 			}
 		} catch (IOException e2) {
@@ -132,7 +152,6 @@ public class Connection implements Runnable{
 			try {
 				if(in.ready()){
 					String i = in.readLine();
-					System.out.println("Received "+i);
 					processIncoming(i);
 				}
 			} catch (IOException | SAXException e1) {
