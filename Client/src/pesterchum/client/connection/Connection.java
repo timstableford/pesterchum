@@ -1,10 +1,10 @@
 package pesterchum.client.connection;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +30,7 @@ import pesterchum.client.gui.GUI;
 
 public class Connection implements Runnable{
 	private BufferedReader in;
-	private OutputStream out;
+	private BufferedOutputStream out;
 	private Socket socket;
 	private boolean run;
 	private DocumentBuilder builder;
@@ -40,8 +40,8 @@ public class Connection implements Runnable{
 	private List<String> writeBuffer;
 	private Encryption enc;
 	public Connection(GUI gui){
-		System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
 		this.username = null;
+		this.gui = gui;
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		try {
 			builder = dbFactory.newDocumentBuilder();
@@ -54,7 +54,7 @@ public class Connection implements Runnable{
 		try {
 			socket = getSocketFactory().createSocket(host, port);	
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = socket.getOutputStream();
+			out = new BufferedOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			return false;
 		}
@@ -92,7 +92,6 @@ public class Connection implements Runnable{
 		return false;
 	}
 	private void processHello(String data) throws SAXException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
-		System.out.println(data);
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		NodeList nList = doc.getElementsByTagName("hello");
@@ -101,8 +100,8 @@ public class Connection implements Runnable{
 			Element eElement = (Element) nNode;
 			int ver = Integer.parseInt(Util.getTagValue("version", eElement));
 			byte[] key = Encryption.decode(Util.getTagValue("key", eElement));
-		    enc = new Encryption(key);
-		    if(ver!=VERSION){
+			enc = new Encryption(key);
+			if(ver!=VERSION){
 				gui.versionMismatch(VERSION, ver);
 			}
 		}
@@ -112,6 +111,7 @@ public class Connection implements Runnable{
 			//this we need to decrypt
 			data = enc.decrypt(data);
 		}
+		boolean dealt = false;
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		String name = doc.getDocumentElement().getNodeName();
@@ -121,29 +121,31 @@ public class Connection implements Runnable{
 			case "message":
 				Message m = new Message(data);
 				gui.incomingMessage(m);
+				dealt = true;
+				break;
+			default:
+				break;
+			}
+		}else if(name=="login"&&!dealt){
+			//not logged in
+			processLogin(data);
+			dealt = true;
+		}
+		//all
+		if(!dealt)
+			switch(name){
+			case "hello":
+				try {
+					processHello(data);
+				} catch (InvalidKeyException | NoSuchAlgorithmException
+						| NoSuchPaddingException | NoSuchProviderException e) {
+					System.err.println("Could not process hello message");
+				}
 				break;
 			default:
 				System.err.println("Incoming data unknown");
 				break;
 			}
-		}else if(name=="login"){
-			//not logged in
-			processLogin(data);
-		}
-		//all
-		switch(name){
-		case "hello":
-			try {
-				processHello(data);
-			} catch (InvalidKeyException | NoSuchAlgorithmException
-					| NoSuchPaddingException | NoSuchProviderException e) {
-				System.err.println("Could not process hello message");
-			}
-			break;
-		default:
-			System.err.println("Incoming data unknown");
-			break;
-		}
 	}
 	private boolean processLogin(String data){
 		Document doc = null;

@@ -16,4 +16,13 @@ public class Message {
 		//TODO implement this shit
 		return null;
 	}
+	public String getMessage(){
+		return this.message;
+	}
+	public String getFrom(){
+		return this.from;
+	}
+	public String getTo(){
+		return this.to;
+	}
 }

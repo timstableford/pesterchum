@@ -1,23 +1,16 @@
 package pesterchum.server;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,37 +19,32 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import pesterchum.server.data.Database;
 import pesterchum.server.data.User;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 public class Connection implements Runnable{
 	private static final int VERSION = 1;
 	private BufferedReader in;
-	private OutputStream out;
+	private BufferedOutputStream out;
 	private boolean run;
 	private Socket socket;
 	private DocumentBuilder builder;
 	private User user;
 	private Encryption enc;
-	public Connection(Socket socket){
+	private Database database;
+	public Connection(Socket socket, Database database){
+		this.database = database;
 		this.socket = socket;
 		run = true;
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			builder = dbFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			System.err.println("Couldn't setup document builder");
-		}
 		(new Thread(this)).start();
 	}
-	public void write(String data){
+	public void sendData(String data){
 		if(enc!=null){
 			data = enc.encrypt(data);
 		}
-		byte[] o = (data+"\n").getBytes();
 		try {
-			out.write(o);
+			out.write((data+"\n").getBytes());
+			out.flush();
 		} catch (IOException e) {
 			System.err.println("Couldn't write to "+socket.getInetAddress());
 		}
@@ -83,13 +71,42 @@ public class Connection implements Runnable{
 		//all
 		switch(name){
 		case "login":
-			//TODO 
-			//processLogin(data);
 			System.out.println("Login request from "+socket.getInetAddress());
+			processLogin(data);
 			break;
 		default:
 			System.err.println("Incoming data unknown");
 			break;
+		}
+	}
+	private void processLogin(String data){
+		Document docin;
+		try {
+			docin = builder.parse(new ByteArrayInputStream(data.getBytes()));
+			Element e = Util.getFirst(docin, "login");
+			String un = Util.getTagValue("username", e);
+			String pw = Util.getTagValue("password", e);
+			User u = new User(un);
+			database.authenticate(u, pw);
+			Document doc = builder.newDocument();
+			Element root = doc.createElement("login");
+			doc.appendChild(root);
+			
+			Element username = doc.createElement("username");
+			username.appendChild(doc.createTextNode(un));
+			root.appendChild(username);
+			
+			Element suc = doc.createElement("success");
+			suc.appendChild(doc.createTextNode(u.authenticated()+""));
+			root.appendChild(suc);
+			
+			sendData(Util.docToString(doc));
+			
+			if(u.authenticated()){
+				this.user = u;
+			}
+		} catch (SAXException | IOException e1) {
+			System.err.println("Could not authenticate login for "+socket.getInetAddress());
 		}
 	}
 	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
@@ -108,16 +125,24 @@ public class Connection implements Runnable{
 		root.appendChild(key);
 		
 		out.write((Util.docToString(doc)+"\n").getBytes());
+		out.flush();
 		
 	    System.out.println("Stream from "+socket.getInetAddress()+" encrypted");
 	}
 	@Override
 	public void run() {
 		System.out.println("Connection from "+socket.getInetAddress());	
+		//setup document builder
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			builder = dbFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			System.err.println("Couldn't setup document builder");
+		}
 		//setup streams
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = socket.getOutputStream();
+			out = new BufferedOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			run = false;
 		}

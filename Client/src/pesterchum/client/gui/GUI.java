@@ -78,11 +78,11 @@ public class GUI extends JFrame{
 	}
 	
 	public void incomingMessage(Message message){
-
+		System.out.println("Message from "+message.getFrom()+" - "+message.getMessage());
 	}
 	
 	public void loginResponse(boolean success) {
-		
+		System.out.println("Login response - successful? "+success);
 	}
 	public void versionMismatch(int client, int server){
 		
