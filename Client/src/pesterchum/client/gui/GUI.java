@@ -24,6 +24,7 @@ public class GUI extends PFrame{
 	public GUI(){
 		ifa = new Interface(this);
 		this.setTitle("Pesterchum");
+		this.setUndecorated(true);
 		Login l = new Login("localhost",7423,ifa);
 		PPanel logoPlace, moods, buddyList;
 		PButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
