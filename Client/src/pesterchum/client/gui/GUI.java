@@ -19,8 +19,6 @@ public class GUI extends JFrame{
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
-		Login l = new Login(ifa);
-		l.setVisible(true);
 		
 		JPanel logoPlace, moods, buddyList;
 		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
@@ -110,6 +108,8 @@ public class GUI extends JFrame{
 	
 	public void setInterface(Interface i){
 		this.ifa = i;
+		//cant login until interface is set, this is pretty quick
+		new Login("localhost",7423,ifa);
 	}
 	
 	public void incomingMessage(Message message){

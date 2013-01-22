@@ -16,7 +16,11 @@ public class Login extends PFrame implements ActionListener{
 	private PTextField un;
 	private PPasswordField pw;
 	private Interface ifa;
-	public Login(Interface ifa){
+	private String host;
+	private int port;
+	public Login(String host, int port, Interface ifa){
+		this.host = host;
+		this.port = port;
 		this.ifa = ifa;
 		this.setTitle("Pesterchum Login");
 		GridLayout layout = new GridLayout(0,1);
@@ -46,8 +50,8 @@ public class Login extends PFrame implements ActionListener{
 			String u,p;
 			u = un.getText();
 			p = new String(pw.getPassword());
-			if(u!=null&&p!=null){
-				if(ifa.connect("localhost", 7423)){
+			if(ifa!=null&&u!=null&&p!=null){
+				if(ifa.connect(host, port)){
 					System.out.println("Connected to server");
 				}else{
 					System.err.println("Connection to server failed");
