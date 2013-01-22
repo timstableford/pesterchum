@@ -1,2 +1,6 @@
 # Class Files #
 *.class
+PesterServer/bin
+Client/bin
+Client/.settings
+PesterServer/.settings
