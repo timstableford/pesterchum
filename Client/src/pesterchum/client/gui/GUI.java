@@ -61,10 +61,11 @@ public class GUI extends PFrame implements ActionListener{
 		
 		//create menu bar + menus
 		menu= new PMenuBar();
+		menu.add(Box.createHorizontalStrut(5));
 		client = new PMenu("client"); profile = new PMenu("profile"); help = new PMenu("help"); 
 		
-		JMenuItem quit = new JMenuItem("X");
-		JMenuItem min = new JMenuItem("_");
+		PMenuItem quit = new PMenuItem("X");
+		PMenuItem min = new PMenuItem("_");
 		quit.addActionListener(this);
 		min.addActionListener(this);
 		menu.add(client); menu.add(profile); menu.add(help);
