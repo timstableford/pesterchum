@@ -9,7 +9,8 @@ import javax.swing.border.LineBorder;
 public class PButton extends JButton{
 
 	public PButton(String string) {
-		super(string);
+		//TODO whent he button is clicked stop it from being blue
+		super(string.toUpperCase());
 		Border b = new LineBorder(new Color(255,140,0), 2);
 		this.setBackground(Color.YELLOW);
 		this.setBorder(b);

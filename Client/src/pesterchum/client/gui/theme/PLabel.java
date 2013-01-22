@@ -16,7 +16,7 @@ public class PLabel extends JLabel{
 		this.setBorder(b);
 		this.setOpaque(true);
 		this.setBackground(Color.BLACK);
-		Font f = new Font("Serif", Font.BOLD, 16);
+		Font f = new Font("Aerial", Font.BOLD, 16);
 		this.setHorizontalAlignment(JLabel.CENTER);
 		this.setForeground(Color.WHITE);
 		this.setFont(f);
