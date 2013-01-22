@@ -40,7 +40,7 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		this.setUndecorated(true);
 		//menu
 		PMenuBar mb = new PMenuBar();
-		mb.add(Box.createHorizontalGlue());
+		mb.add(Box.createHorizontalStrut(140));
 		PMenuItem min = new PMenuItem("_");
 		mb.add(min);
 		min.addActionListener(this);
