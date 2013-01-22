@@ -24,6 +24,7 @@ public class PButton extends JButton implements MouseListener{
 		this.setContentAreaFilled(false);
         this.setOpaque(true);
         this.addMouseListener(this);
+        this.setFocusable(false);
 	}
 	public void unclickedColor(Color c){
 		NORMAL = c;
