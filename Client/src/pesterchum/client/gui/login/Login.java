@@ -11,17 +11,20 @@ import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PPasswordField;
 import pesterchum.client.gui.theme.PTextField;
 
-public class Login extends PFrame implements ActionListener{
+public class Login extends PFrame implements ActionListener, Runnable{
 	private static final long serialVersionUID = 5329488003668890739L;
 	private PTextField un;
 	private PPasswordField pw;
 	private Interface ifa;
 	private String host;
 	private int port;
+	private String u,p;
+	private boolean clicked;
 	public Login(String host, int port, Interface ifa){
 		this.host = host;
 		this.port = port;
 		this.ifa = ifa;
+		this.clicked = false;
 		this.setTitle("Pesterchum Login");
 		GridLayout layout = new GridLayout(0,1);
 		layout.setHgap(3);
@@ -47,22 +50,26 @@ public class Login extends PFrame implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		switch(arg0.getActionCommand().toUpperCase()){
 		case "LOGIN":
-			String u,p;
 			u = un.getText();
 			p = new String(pw.getPassword());
-			if(ifa!=null&&u!=null&&p!=null){
-				if(ifa.connect(host, port)){
-					System.out.println("Connected to server");
-				}else{
-					System.err.println("Connection to server failed");
-				}
-				//TODO configurable host
-				ifa.login(u,p);
+			if(!clicked&&ifa!=null&&u!=null&&p!=null){
+				clicked = true;
+				(new Thread(this)).start();
 			}
 			break;
 		default:
 			System.err.println("Action command unknwon - "+arg0.getActionCommand().toUpperCase());
 		}
 
+	}
+	@Override
+	public void run() {
+		if(ifa.connect(host, port)){
+			System.out.println("Connected to server");
+		}else{
+			System.err.println("Connection to server failed");
+		}
+		ifa.login(u,p);
+		clicked = false;
 	}
 }

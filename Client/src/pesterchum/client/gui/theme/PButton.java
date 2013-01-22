@@ -13,7 +13,7 @@ import javax.swing.border.LineBorder;
 public class PButton extends JButton implements MouseListener{
 	private static final long serialVersionUID = 4446906053611098414L;
 	private Color NORMAL = Color.yellow;
-	private Color CLICKED = Color.orange;
+	private Color CLICKED = new Color(255,255,100);
 	private ActionListener l;
 	public PButton(String string){
 		super(string.toUpperCase());

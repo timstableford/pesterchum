@@ -2,10 +2,13 @@ package pesterchum.server.data.database;
 
 import java.io.File;
 
+import org.tmatesoft.sqljet.core.SqlJetException;
+import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
+import org.tmatesoft.sqljet.core.table.ISqlJetTransaction;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
-public class SQLiteDatabase {
-	public SQLiteDatabase(File database){
+public class SQLiteDatabase implements Database{
+	public SQLiteDatabase(File database) throws SqlJetException{
 		SqlJetDb db = SqlJetDb.open(database, true);
 		// set DB option that have to be set before running any transactions: 
 		db.getOptions().setAutovacuum(true);
