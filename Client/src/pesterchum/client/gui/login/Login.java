@@ -14,6 +14,7 @@ public class Login extends PFrame{
 	private PTextField un;
 	private PPasswordField pw;
 	public Login(GUI gui, Interface ifa){
+		this.setTitle("Pesterchum Login");
 		GridLayout layout = new GridLayout(0,1);
 		layout.setHgap(3);
 		layout.setVgap(3);
