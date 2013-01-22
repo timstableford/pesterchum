@@ -1,9 +1,12 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
@@ -17,7 +20,7 @@ import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
-public class GUI extends PFrame{
+public class GUI extends PFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
@@ -50,9 +53,16 @@ public class GUI extends PFrame{
 		
 		//create menu bar + menus
 		menu= new JMenuBar();
-		client = new JMenu("client"); profile = new JMenu("profile"); help = new JMenu("help");
-		menu.add(client); menu.add(profile); menu.add(help);
+		client = new JMenu("client"); profile = new JMenu("profile"); help = new JMenu("help"); 
 		
+		JMenuItem quit = new JMenuItem("X");
+		JMenuItem min = new JMenuItem("_");
+		quit.addActionListener(this);
+		min.addActionListener(this);
+		menu.add(client); menu.add(profile); menu.add(help);
+		menu.add(Box.createHorizontalGlue());
+		menu.add(min);
+		menu.add(quit);
 		//set up the Client menu
 		options = new JMenuItem("options"); memos = new JMenuItem("memos");
 		pesterLog = new JMenuItem("pesterlog"); randomEcounter = new JMenuItem("random ecounter"); 
@@ -120,6 +130,18 @@ public class GUI extends PFrame{
 	
 	public void versionMismatch(int client, int server){
 		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch(e.getActionCommand()){
+		case "X":
+			System.exit(0);
+			break;
+		case "_":
+			this.setState(Frame.ICONIFIED);
+			break;
+		}
 	}
 
 }
