@@ -84,5 +84,8 @@ public class GUI extends JFrame{
 	public void loginResponse(boolean success) {
 		
 	}
+	public void versionMismatch(int client, int server){
+		
+	}
 
 }

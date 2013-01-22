@@ -38,8 +38,7 @@ public class Connection implements Runnable{
 	private Socket socket;
 	private DocumentBuilder builder;
 	private User user;
-	private SecretKeySpec sks;
-	private Cipher enc, denc;
+	private Encryption enc;
 	public Connection(Socket socket){
 		this.socket = socket;
 		run = true;
@@ -53,13 +52,7 @@ public class Connection implements Runnable{
 	}
 	public void write(String data){
 		if(enc!=null){
-			//then we need to encrypt
-			try {
-				BASE64Encoder e = new BASE64Encoder();
-				data = URLEncoder.encode(new String(e.encode(enc.doFinal(data.getBytes()))), "UTF-8");
-			} catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
-				System.err.println("Could not encrypt and encode for "+socket.getInetAddress());
-			}
+			data = enc.encrypt(data);
 		}
 		byte[] o = (data+"\n").getBytes();
 		try {
@@ -69,15 +62,9 @@ public class Connection implements Runnable{
 		}
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
-		if(denc!=null){
+		if(enc!=null){
 			//this we need to decrypt
-			try {
-				BASE64Decoder d = new BASE64Decoder();
-				byte[] a = d.decodeBuffer(URLDecoder.decode(data, "UTF-8"));
-				data = new String(denc.doFinal(a));
-			} catch (IllegalBlockSizeException | BadPaddingException e) {
-				System.err.println("Decoding and decryption failed for "+socket.getInetAddress());
-			}
+			data = enc.decrypt(data);
 		}
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
@@ -113,19 +100,15 @@ public class Connection implements Runnable{
 		Element ver = doc.createElement("version");
 		ver.appendChild(doc.createTextNode(VERSION+""));
 		root.appendChild(ver);
-		byte[] ke = (new KeyGen()).getKey().getEncoded();
-		String k = URLEncoder.encode(new String(ke),"UTF-8");
+		
+		enc = new Encryption();
+		String k = Encryption.encode(enc.getKey());
 		Element key = doc.createElement("key");
 		key.appendChild(doc.createTextNode(k));
 		root.appendChild(key);
 		
 		out.write((Util.docToString(doc)+"\n").getBytes());
 		
-		sks = new SecretKeySpec(ke, "AES");
-		enc = Cipher.getInstance("AES");
-	    enc.init(Cipher.ENCRYPT_MODE, sks);
-	    denc = Cipher.getInstance("AES");
-	    denc.init(Cipher.DECRYPT_MODE, sks);
 	    System.out.println("Stream from "+socket.getInetAddress()+" encrypted");
 	}
 	@Override
