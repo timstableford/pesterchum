@@ -1,6 +1,7 @@
 package pesterchum.client.gui.theme;
 
 import java.awt.Color;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.border.Border;
@@ -14,6 +15,9 @@ public class PButton extends JButton{
 		Border b = new LineBorder(new Color(255,140,0), 2);
 		this.setBackground(Color.YELLOW);
 		this.setBorder(b);
+	}
+	public void addActionListener(ActionListener l){
+		super.addActionListener(l);
 	}
 
 }

@@ -44,6 +44,7 @@ public class Connection implements Runnable{
 		writeBuffer = Collections.synchronizedList(new LinkedList<String>());
 	}
 	public boolean connect(String host, int port){
+		System.out.println("Connecting to "+host+" on port "+port);
 		try {
 			socket = getSocketFactory().createSocket(host, port);	
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
