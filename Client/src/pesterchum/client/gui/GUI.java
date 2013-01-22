@@ -1,6 +1,7 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -17,7 +18,11 @@ public class GUI extends JFrame{
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
-		JPanel top;
+		GridLayout gridLayout;
+		JPanel logo_place, moods;
+		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond;
+		
+		//menu objects
 		JMenuBar menu;
 		JMenu client, profile, help;
 		JMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
@@ -60,7 +65,22 @@ public class GUI extends JFrame{
 		//add the whole thing
 		this.add(menu, BorderLayout.NORTH);
 		
-		top = new JPanel();
+		//try for chumroll
+		
+		//try for grid layout for moods
+		moods = new JPanel();
+		
+		//buttons create + add
+		chummy = new JButton("chummy"); palsy = new JButton("palsy"); chipper = new JButton("chipper"); bully = new JButton("bully");
+		preppy = new JButton("peppy"); rancorous= new JButton("rancorous"); abscond = new JButton("abscond"); 
+		
+		moods.add(chummy); moods.add(bully); moods.add(palsy); moods.add(preppy); moods.add(chipper); moods.add(rancorous);moods.add(abscond);
+		//set grid
+		gridLayout = new GridLayout(0,2);
+		moods.setLayout(gridLayout);
+		
+		this.add(moods);
+		
 		//logo time!
 		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
 		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.CENTER);
