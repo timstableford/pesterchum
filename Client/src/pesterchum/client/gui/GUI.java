@@ -1,6 +1,7 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -12,39 +13,38 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.login.Login;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
+import pesterchum.client.gui.theme.PMenu;
+import pesterchum.client.gui.theme.PMenuBar;
+import pesterchum.client.gui.theme.PMenuItem;
 import pesterchum.client.gui.theme.PPanel;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
-public class GUI extends PFrame implements ActionListener, MouseListener, MouseMotionListener{
+public class GUI extends PFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
-	private int posX, posY;
 	public GUI(){
 		ifa = new Interface(this);
 		this.setTitle("Pesterchum");
 		this.setUndecorated(true);
-		this.addMouseListener(this);
-		this.addMouseMotionListener(this);
-		posX = 0;
-		posY = 0;
 		Login l = new Login("localhost",7423,ifa);
 		PPanel logoPlace, moods, buddyList;
 		PButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
 		addChum, block, pester;
-		
 		//menu objects
-		JMenuBar menu;
-		JMenu client, profile, help;
-		JMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
+		PMenuBar menu;
+		PMenu client, profile, help;
+		PMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
 		importThings, reconnect, exit, helpMe, about, reportBug;
 		
 		// menu at top
@@ -60,8 +60,8 @@ public class GUI extends PFrame implements ActionListener, MouseListener, MouseM
 		this.setSize(new Dimension(200, 400));
 		
 		//create menu bar + menus
-		menu= new JMenuBar();
-		client = new JMenu("client"); profile = new JMenu("profile"); help = new JMenu("help"); 
+		menu= new PMenuBar();
+		client = new PMenu("client"); profile = new PMenu("profile"); help = new PMenu("help"); 
 		
 		JMenuItem quit = new JMenuItem("X");
 		JMenuItem min = new JMenuItem("_");
@@ -72,18 +72,18 @@ public class GUI extends PFrame implements ActionListener, MouseListener, MouseM
 		menu.add(min);
 		menu.add(quit);
 		//set up the Client menu
-		options = new JMenuItem("options"); memos = new JMenuItem("memos");
-		pesterLog = new JMenuItem("pesterlog"); randomEcounter = new JMenuItem("random ecounter"); 
-		userList = new JMenuItem("user list"); idle = new JMenuItem("idle"); 
-		addGroup = new JMenuItem("add group"); importThings = new JMenuItem("import"); 
-		reconnect = new JMenuItem("reconnect"); exit = new JMenuItem("exit");
+		options = new PMenuItem("options"); memos = new PMenuItem("memos");
+		pesterLog = new PMenuItem("pesterlog"); randomEcounter = new PMenuItem("random ecounter"); 
+		userList = new PMenuItem("user list"); idle = new PMenuItem("idle"); 
+		addGroup = new PMenuItem("add group"); importThings = new PMenuItem("import"); 
+		reconnect = new PMenuItem("reconnect"); exit = new PMenuItem("exit");
 		
 		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEcounter);
 		client.add(userList); client.add(idle); client.add(addGroup); client.add(importThings);
 		client.add(reconnect); client.add(exit);
 		
 		//set up the Help menu
-		helpMe = new JMenuItem("help"); about = new JMenuItem("about"); reportBug = new JMenuItem("report a bug");
+		helpMe = new PMenuItem("help"); about = new PMenuItem("about"); reportBug = new PMenuItem("report a bug");
 		
 		help.add(helpMe); help.add(about); help.add(reportBug);
 		
@@ -151,26 +151,5 @@ public class GUI extends PFrame implements ActionListener, MouseListener, MouseM
 			break;
 		}
 	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		posX=e.getX();
-		posY=e.getY();
-	}
-	@Override
-	public void mouseDragged(MouseEvent e){
-		setLocation(e.getXOnScreen()-posX,e.getYOnScreen()-posY);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
-	@Override
-	public void mouseMoved(MouseEvent e) {}
 
 }

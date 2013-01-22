@@ -1,13 +1,18 @@
 package pesterchum.client.gui.login;
 
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.Box;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
+import pesterchum.client.gui.theme.PMenuBar;
+import pesterchum.client.gui.theme.PMenuItem;
 import pesterchum.client.gui.theme.PPasswordField;
 import pesterchum.client.gui.theme.PTextField;
 import pesterchum.client.resource.ResourceLoader;
@@ -32,6 +37,18 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		layout.setHgap(3);
 		layout.setVgap(3);
 		this.setLayout(layout);
+		this.setUndecorated(true);
+		//menu
+		PMenuBar mb = new PMenuBar();
+		mb.add(Box.createHorizontalGlue());
+		PMenuItem min = new PMenuItem("_");
+		mb.add(min);
+		min.addActionListener(this);
+		PMenuItem quit = new PMenuItem("X");
+		mb.add(quit);
+		quit.addActionListener(this);
+		this.add(mb);
+		//buttons and inpout
 		PLabel unl, pnl;
 		PButton login;
 		un = new PTextField(16);
@@ -58,6 +75,12 @@ public class Login extends PFrame implements ActionListener, Runnable{
 				clicked = true;
 				(new Thread(this)).start();
 			}
+			break;
+		case "_":
+			this.setState(Frame.ICONIFIED);
+			break;
+		case "X":
+			System.exit(0);
 			break;
 		default:
 			System.err.println("Action command unknwon - "+arg0.getActionCommand().toUpperCase());
