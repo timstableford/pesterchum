@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import pesterchum.server.data.Database;
+import pesterchum.server.data.Manager;
 import pesterchum.server.data.ICData;
 import pesterchum.server.data.User;
 
@@ -33,11 +33,11 @@ public class Connection implements Runnable{
 	private DocumentBuilder builder;
 	private User user;
 	private Encryption enc;
-	private Database database;	
+	private Manager database;	
 	private Server server;
 	private long lastPing;
 	private long lastPong;
-	public Connection(Socket socket, Database database, Server server){
+	public Connection(Socket socket, Manager database, Server server){
 		this.database = database;
 		this.socket = socket;
 		this.server = server;

@@ -9,17 +9,17 @@ import java.util.List;
 
 import javax.net.ServerSocketFactory;
 
-import pesterchum.server.data.Database;
+import pesterchum.server.data.Manager;
 import pesterchum.server.data.Interface;
 
 public class Server {
 	private boolean run;
 	private ServerSocket server;
 	private List<Connection> clients;
-	private Database database;
+	private Manager database;
 	public Server(int port){
 		//setup database connection
-		database = new Database();
+		database = new Manager();
 		Interface i = new Interface(database);
 		database.registerInterface("message", i);
 		database.registerInterface("login", i);

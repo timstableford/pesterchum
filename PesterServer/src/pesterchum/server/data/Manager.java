@@ -5,10 +5,10 @@ import java.util.Hashtable;
 import pesterchum.server.Connection;
 
 
-public class Database {
+public class Manager {
 	private Hashtable<String, Interface> interfaces;
 	private Hashtable<String, Connection> connected;
-	public Database(){
+	public Manager(){
 		interfaces = new Hashtable<String, Interface>();
 		connected = new Hashtable<String, Connection>();
 	}

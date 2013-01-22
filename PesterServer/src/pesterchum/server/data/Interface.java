@@ -14,9 +14,9 @@ import org.xml.sax.SAXException;
 import pesterchum.server.Util;
 
 public class Interface implements Incoming{
-	private Database database;
+	private Manager database;
 	private DocumentBuilder builder;
-	public Interface(Database database){
+	public Interface(Manager database){
 		this.database = database;
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
