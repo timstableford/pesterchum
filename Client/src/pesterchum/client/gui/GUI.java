@@ -10,11 +10,12 @@ import javax.swing.*;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.login.Login;
+import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
-public class GUI extends JFrame{
+public class GUI extends PFrame{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with

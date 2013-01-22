@@ -1,5 +1,7 @@
 package pesterchum.client.resource;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -14,12 +16,20 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class ResourceLoader {
+	private static Image icon;
+	private static final String icon_location = "/pesterchum.png";
 	protected HashMap<String, Resource> resources;
 	public ResourceLoader(){
 		resources = new HashMap<String, Resource>();
 	}
 	public Resource getResource(String name){
 		return resources.get(name);
+	}
+	public static Image getIcon(){
+		if(icon==null){
+			icon = (new Img(icon_location)).getImage();
+		}
+		return icon;
 	}
 	public boolean load(String file){
 		Document doc;

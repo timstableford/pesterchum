@@ -10,6 +10,7 @@ import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PPasswordField;
 import pesterchum.client.gui.theme.PTextField;
+import pesterchum.client.resource.ResourceLoader;
 
 public class Login extends PFrame implements ActionListener, Runnable{
 	private static final long serialVersionUID = 5329488003668890739L;
@@ -21,6 +22,7 @@ public class Login extends PFrame implements ActionListener, Runnable{
 	private String u,p;
 	private boolean clicked;
 	public Login(String host, int port, Interface ifa){
+		super();
 		this.host = host;
 		this.port = port;
 		this.ifa = ifa;
