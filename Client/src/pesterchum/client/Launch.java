@@ -2,7 +2,6 @@ package pesterchum.client;
 
 import pesterchum.client.connection.Connection;
 import pesterchum.client.gui.GUI;
-import pesterchum.client.resource.ResourceLoader;
 
 public class Launch {
 

@@ -31,7 +31,7 @@ public class Connection implements Runnable{
 	private DocumentBuilder builder;
 	private User user;
 	private Encryption enc;
-	private Database database;
+	private Database database;	
 	public Connection(Socket socket, Database database){
 		this.database = database;
 		this.socket = socket;

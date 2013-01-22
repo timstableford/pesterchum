@@ -60,7 +60,7 @@ public class Encryption {
 	public static String encode(byte[] data){
 		StringBuffer out = new StringBuffer();
 		for(int i=0; i<data.length; i++){
-			int a = (int)data[i];
+			int a = data[i];
 			a = a + 128;
 			out.append("%");
 			out.append(a);
