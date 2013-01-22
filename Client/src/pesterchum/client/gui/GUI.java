@@ -69,6 +69,7 @@ public class GUI extends JFrame{
 		buddyList = new JPanel();	
 		JTextArea chumroll = new JTextArea("set server connection to get and\ndisplay names 1 per line", 5, 15);
 		chumroll.setEditable(false);
+		//set proper layout for the buttons under list
 		addChum = new JButton("add chum"); block = new JButton("block"); pester = new JButton("pester!"); 
 		buddyList.add(chumroll); buddyList.add(addChum); buddyList.add(block); buddyList.add(pester);
 		this.add(buddyList);
