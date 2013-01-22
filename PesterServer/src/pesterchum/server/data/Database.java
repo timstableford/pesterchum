@@ -25,6 +25,7 @@ public class Database {
 		 * 1)Check if user online, if yes, send
 		 * 2)If user not online, commit to database
 		 */
+		System.out.println("Message from "+message.getFrom()+" to "+message.getTo()+" - "+message.getMessage());
 	}
 	public void registerInterface(String name, Interface inter){
 		interfaces.put(name, inter);

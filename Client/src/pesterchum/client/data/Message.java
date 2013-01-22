@@ -32,11 +32,17 @@ public class Message {
 	}
 	public Message(ICData data){
 		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			builder = dbFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			System.err.println("Couldn't setup document builder");
+		}
+		try {
 			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
 			Element e = Util.getFirst(doc, "message");
 			this.from = new String(Encryption.decode(Util.getTagValue("from", e)));
 			this.to = new String(Encryption.decode(Util.getTagValue("to", e)));
-			this.message = new String(Encryption.decode(Util.getTagValue("message", e)));
+			this.message = new String(Encryption.decode(Util.getTagValue("content", e)));
 			this.time = Long.parseLong(Util.getTagValue("time", e));
 		} catch (SAXException | IOException e1) {
 			System.err.println("Could not convert message from XML");
@@ -55,12 +61,12 @@ public class Message {
 		to.appendChild(doc.createTextNode(Encryption.encode(this.to.getBytes())));
 		root.appendChild(to);
 
-		Element message = doc.createElement("message");
+		Element message = doc.createElement("content");
 		message.appendChild(doc.createTextNode(Encryption.encode(this.message.getBytes())));
 		root.appendChild(message);
 
-		Element time = doc.createElement("message");
-		message.appendChild(doc.createTextNode(this.time+""));
+		Element time = doc.createElement("time");
+		time.appendChild(doc.createTextNode(this.time+""));
 		root.appendChild(time);
 
 		return Util.docToString(doc);
