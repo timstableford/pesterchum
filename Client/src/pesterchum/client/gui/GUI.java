@@ -7,6 +7,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
@@ -20,14 +23,19 @@ import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
-public class GUI extends PFrame implements ActionListener{
+public class GUI extends PFrame implements ActionListener, MouseListener, MouseMotionListener{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
+	private int posX, posY;
 	public GUI(){
 		ifa = new Interface(this);
 		this.setTitle("Pesterchum");
 		this.setUndecorated(true);
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
+		posX = 0;
+		posY = 0;
 		Login l = new Login("localhost",7423,ifa);
 		PPanel logoPlace, moods, buddyList;
 		PButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
@@ -143,5 +151,26 @@ public class GUI extends PFrame implements ActionListener{
 			break;
 		}
 	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		posX=e.getX();
+		posY=e.getY();
+	}
+	@Override
+	public void mouseDragged(MouseEvent e){
+		setLocation(e.getXOnScreen()-posX,e.getYOnScreen()-posY);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	@Override
+	public void mouseMoved(MouseEvent e) {}
 
 }
