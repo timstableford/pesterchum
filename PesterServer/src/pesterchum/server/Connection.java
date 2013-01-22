@@ -25,6 +25,7 @@ import pesterchum.server.data.User;
 
 public class Connection implements Runnable{
 	private static final int VERSION = 1;
+	private static final long TIMEOUT = 10000;
 	private BufferedReader in;
 	private BufferedOutputStream out;
 	private boolean run;
@@ -33,11 +34,20 @@ public class Connection implements Runnable{
 	private User user;
 	private Encryption enc;
 	private Database database;	
-	public Connection(Socket socket, Database database){
+	private Server server;
+	private long lastPing;
+	private long lastPong;
+	public Connection(Socket socket, Database database, Server server){
 		this.database = database;
 		this.socket = socket;
+		this.server = server;
+		this.lastPing = System.currentTimeMillis();
+		this.lastPong = System.currentTimeMillis();
 		run = true;
 		(new Thread(this)).start();
+	}
+	public void setLastPong(long pong){
+		this.lastPong = pong;
 	}
 	public void sendData(String data){
 		if(enc!=null){
@@ -70,15 +80,35 @@ public class Connection implements Runnable{
 	public String getSource(){
 		return socket.getInetAddress().toString();
 	}
+	public void disconnect(){
+		if(socket!=null){
+			sendData("<admin><command>disconnect</command></admin>");
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				//Silly impatient thread
+			}
+			try {
+				out.close();
+				in.close();
+				socket.close();
+			} catch (IOException e) {
+				//we're going to close it anyway
+			}
+			socket = null;
+			database.removeUser(this.user.getUsername());
+			server.disconnect(this);
+		}
+	}
 	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
 		Document doc = builder.newDocument();
 		Element root = doc.createElement("hello");
 		doc.appendChild(root);
-		
+
 		Element ver = doc.createElement("version");
 		ver.appendChild(doc.createTextNode(VERSION+""));
 		root.appendChild(ver);
-		
+
 		enc = new Encryption();
 		String k = Encryption.encode(enc.getKey());
 		Element key = doc.createElement("key");
@@ -112,9 +142,19 @@ public class Connection implements Runnable{
 		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException e2) {
 			System.err.println("Could not send hello to "+socket.getInetAddress());
 		}
+		lastPong = System.currentTimeMillis();
 		while(run){
+			//do the ping pong
+			if((System.currentTimeMillis()-lastPing)>TIMEOUT/2){
+				sendData("<admin><command>ping</command></admin>");
+				lastPing = System.currentTimeMillis();
+			}
+			if((System.currentTimeMillis()-lastPong)>TIMEOUT){
+				System.out.println("Timeout from "+this.getSource());
+				this.disconnect();
+			}
 			try {
-				if(in.ready()){
+				if(in!=null&&in.ready()){
 					String i = in.readLine();
 					processIncoming(i);
 				}

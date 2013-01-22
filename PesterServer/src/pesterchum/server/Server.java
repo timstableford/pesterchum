@@ -23,6 +23,7 @@ public class Server {
 		Interface i = new Interface(database);
 		database.registerInterface("message", i);
 		database.registerInterface("login", i);
+		database.registerInterface("admin", i);
 		//setup socket listener
 		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
 		try {
@@ -45,9 +46,15 @@ public class Server {
 				System.err.println("Could not accept connection");
 			}
 			if(socket!=null){
-				Connection conn = new Connection(socket, database);
+				Connection conn = new Connection(socket, database, this);
 				clients.add(conn);
 			}
+		}
+	}
+	public void disconnect(Connection conn){
+		conn.disconnect();
+		if(clients.contains(conn)){
+			clients.remove(conn);
 		}
 	}
 	private ServerSocketFactory createServerSocketFactory() {

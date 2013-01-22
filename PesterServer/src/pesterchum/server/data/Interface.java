@@ -38,6 +38,9 @@ public class Interface implements Incoming{
 			case "message":
 				database.sendMessage(new Message(data));
 				break;
+			case "admin":
+				processAdmin(data);
+				break;
 			default:
 				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
 			}
@@ -46,9 +49,30 @@ public class Interface implements Incoming{
 			case "login":
 				processLogin(data);
 				break;
+			case "admin":
+				processAdmin(data);
+				break;
 			default:
 				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
 			}
+		}
+	}
+	private void processAdmin(ICData data){
+		try {
+			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
+			Element e = Util.getFirst(doc, "admin");
+			switch(Util.getTagValue("command", e)){
+			case "disconnect":
+				data.getSource().disconnect();
+				break;
+			case "pong":
+				data.getSource().setLastPong(System.currentTimeMillis());
+				break;
+			default:
+				System.err.println("Unknown admin command from "+data.getSource().getSource());
+			}
+		} catch (SAXException | IOException e) {
+			System.err.println("Could not process request from "+data.getSource().getSource());
 		}
 	}
 	private void processLogin(ICData data){
@@ -76,6 +100,7 @@ public class Interface implements Incoming{
 			
 			if(u.authenticated()){
 				data.getSource().setUser(u);
+				database.registerUser(un, data.getSource());
 			}
 		} catch (SAXException | IOException e1) {
 			System.err.println("Could not authenticate login for "+data.getSource().getSource());

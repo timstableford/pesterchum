@@ -19,10 +19,12 @@ import pesterchum.client.connection.Encryption;
 import pesterchum.client.gui.GUI;
 
 public class Interface implements Incoming{
+	private static final long TIMEOUT = 10000;
 	private static final int VERSION = 1;
 	private DocumentBuilder builder;
 	private GUI gui;
 	private Connection conn;
+	private long lastPing;
 	public Interface(GUI gui){
 		this.gui = gui;
 		gui.setInterface(this);
@@ -30,12 +32,14 @@ public class Interface implements Incoming{
 		conn.registerIncoming("hello", this);
 		conn.registerIncoming("login", this);
 		conn.registerIncoming("message", this);
+		conn.registerIncoming("admin", this);
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			builder = dbFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
 			System.err.println("Couldn't setup document builder");
 		}
+		lastPing = System.currentTimeMillis();
 	}
 	public boolean authenticated(){
 		if(conn.getUsername()!=null){
@@ -51,6 +55,9 @@ public class Interface implements Incoming{
 				Message m = new Message(data);
 				gui.incomingMessage(m);
 				break;
+			case "admin":
+				processAdmin(data);
+				break;
 			default:
 				System.err.println("Unknown data from - "+data.getData());
 			}
@@ -61,6 +68,9 @@ public class Interface implements Incoming{
 				break;
 			case "hello":
 				processHello(data);
+				break;
+			case "admin":
+				processAdmin(data);
 				break;
 			default:
 				System.err.println("Unknown data from - "+data.getData());
@@ -88,6 +98,25 @@ public class Interface implements Incoming{
 	}
 	public void sendMessage(Message message){
 		conn.sendData(message.getXML());
+	}
+	private void processAdmin(ICData data){
+		try {
+			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
+			Element e = Util.getFirst(doc, "admin");
+			switch(Util.getTagValue("command", e)){
+			case "disconnect":
+				conn.disconnect();
+				break;
+			case "ping":
+				conn.sendData("<admin><command>pong</command></admin>");
+				lastPing = System.currentTimeMillis();
+				break;
+			default:
+				System.err.println("Unknown admin command");
+			}
+		} catch (SAXException | IOException e) {
+			System.err.println("Could not process admin request");
+		}
 	}
 	private boolean processLogin(ICData data){
 		Document doc = null;

@@ -58,6 +58,24 @@ public class Connection implements Runnable{
 	public void registerIncoming(String name, Incoming inc){
 		interfaces.put(name, inc);
 	}
+	public void disconnect(){
+		if(socket!=null){
+			sendData("<admin><command>disconnect</command></admin>");
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				//Silly impatient thread
+			}
+			try {
+				out.close();
+				in.close();
+				socket.close();
+			} catch (IOException e) {
+				//we're going to close it anyway
+			}
+			socket = null;
+		}
+	}
 	public Incoming getIncoming(String name){
 		return interfaces.get(name);
 	}
@@ -96,13 +114,13 @@ public class Connection implements Runnable{
 	public void run(){
 		while(run){
 			try {
-				if(in.ready()){
+				if(in!=null&&in.ready()){
 					processIncoming(in.readLine());
 				}
 			} catch (IOException | SAXException e) {
 				System.err.println("Error reading from server");
 			}
-			if(enc!=null&&writeBuffer.size()>0){
+			if(out!=null&&enc!=null&&writeBuffer.size()>0){
 				try {
 					String d = enc.encrypt(writeBuffer.get(0))+"\n";
 					out.write(d.getBytes());
