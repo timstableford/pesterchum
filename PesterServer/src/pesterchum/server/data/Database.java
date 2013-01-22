@@ -2,7 +2,6 @@ package pesterchum.server.data;
 
 import java.util.Hashtable;
 
-import pesterchum.server.Interface;
 
 public class Database {
 	private Hashtable<String, Interface> interfaces;

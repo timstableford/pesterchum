@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import pesterchum.server.data.Database;
+import pesterchum.server.data.ICData;
 import pesterchum.server.data.User;
 
 public class Connection implements Runnable{
@@ -57,57 +58,17 @@ public class Connection implements Runnable{
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
 		String name = doc.getDocumentElement().getNodeName();
-		if(this.user!=null&&this.user.authenticated()){
-			//logged in
-			switch(name){
-			case "message":
-				
-				break;
-			default:
-				System.err.println("Incoming data unknown");
-				break;
-			}
-		}
-		//all
-		switch(name){
-		case "login":
-			System.out.println("Login request from "+socket.getInetAddress());
-			processLogin(data);
-			break;
-		default:
-			System.err.println("Incoming data unknown");
-			break;
-		}
+		database.getInterface(name).processIncoming(new ICData(name, data, this));
 	}
-	private void processLogin(String data){
-		Document docin;
-		try {
-			docin = builder.parse(new ByteArrayInputStream(data.getBytes()));
-			Element e = Util.getFirst(docin, "login");
-			String un = Util.getTagValue("username", e);
-			String pw = Util.getTagValue("password", e);
-			User u = new User(un);
-			database.authenticate(u, pw);
-			Document doc = builder.newDocument();
-			Element root = doc.createElement("login");
-			doc.appendChild(root);
-			
-			Element username = doc.createElement("username");
-			username.appendChild(doc.createTextNode(un));
-			root.appendChild(username);
-			
-			Element suc = doc.createElement("success");
-			suc.appendChild(doc.createTextNode(u.authenticated()+""));
-			root.appendChild(suc);
-			
-			sendData(Util.docToString(doc));
-			
-			if(u.authenticated()){
-				this.user = u;
-			}
-		} catch (SAXException | IOException e1) {
-			System.err.println("Could not authenticate login for "+socket.getInetAddress());
-		}
+	
+	public User getUser(){
+		return this.user;
+	}
+	public void setUser(User user){
+		this.user = user;
+	}
+	public String getSource(){
+		return socket.getInetAddress().toString();
 	}
 	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
 		Document doc = builder.newDocument();
@@ -147,13 +108,8 @@ public class Connection implements Runnable{
 			run = false;
 		}
 		try {
-			try {
-				sendHello();
-			} catch (InvalidKeyException | NoSuchAlgorithmException
-					| NoSuchPaddingException | NoSuchProviderException e) {
-				System.err.println("Could not send hello to "+socket.getInetAddress());
-			}
-		} catch (IOException e2) {
+			sendHello();
+		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException e2) {
 			System.err.println("Could not send hello to "+socket.getInetAddress());
 		}
 		while(run){

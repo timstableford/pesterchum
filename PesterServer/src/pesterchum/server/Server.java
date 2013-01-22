@@ -10,6 +10,7 @@ import java.util.List;
 import javax.net.ServerSocketFactory;
 
 import pesterchum.server.data.Database;
+import pesterchum.server.data.Interface;
 
 public class Server {
 	private boolean run;
@@ -17,7 +18,12 @@ public class Server {
 	private List<Connection> clients;
 	private Database database;
 	public Server(int port){
+		//setup database connection
 		database = new Database();
+		Interface i = new Interface(database);
+		database.registerInterface("message", i);
+		database.registerInterface("login", i);
+		//setup socket listener
 		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
 		try {
 			server = sslserversocketfactory.createServerSocket(port);
