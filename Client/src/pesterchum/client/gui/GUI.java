@@ -6,6 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.*;
 
+import pesterchum.client.data.Interface;
 import pesterchum.client.data.Message;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
@@ -14,6 +15,7 @@ import pesterchum.client.resource.ResourceLoader;
 public class GUI extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
+	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
 		JPanel top;
 		JMenuBar menu;
@@ -76,7 +78,9 @@ public class GUI extends JFrame{
 		}
 		return null;
 	}
-	
+	public void setInterface(Interface i){
+		this.ifa = i;
+	}
 	public void incomingMessage(Message message){
 		System.out.println("Message from "+message.getFrom()+" - "+message.getMessage());
 	}

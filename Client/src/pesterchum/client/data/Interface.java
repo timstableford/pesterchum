@@ -25,6 +25,7 @@ public class Interface implements Incoming{
 	private Connection conn;
 	public Interface(GUI gui){
 		this.gui = gui;
+		gui.setInterface(this);
 		this.conn = new Connection();
 		conn.registerIncoming("hello", this);
 		conn.registerIncoming("login", this);
