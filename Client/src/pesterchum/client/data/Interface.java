@@ -60,6 +60,7 @@ public class Interface implements Incoming{
 				break;
 			case "hello":
 				processHello(data);
+				break;
 			default:
 				System.err.println("Unknown data from - "+data.getData());
 			}
