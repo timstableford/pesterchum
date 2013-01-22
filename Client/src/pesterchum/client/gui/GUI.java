@@ -6,7 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.*;
 
-import pesterchum.client.connection.Message;
+import pesterchum.client.data.Message;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;

@@ -1,4 +1,4 @@
-package pesterchum.client.connection;
+package pesterchum.client.data;
 
 public class Message {
 	private String to, from, message;

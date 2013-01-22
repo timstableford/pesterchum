@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import pesterchum.client.Util;
+import pesterchum.client.data.Message;
 import pesterchum.client.gui.GUI;
 
 public class Connection implements Runnable{
