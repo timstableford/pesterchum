@@ -34,7 +34,7 @@ public class PButton extends JButton implements MouseListener{
 	}
 	@Override
 	public void addActionListener(ActionListener l){
-		this.actionListener = l;
+		this.l = l;
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
