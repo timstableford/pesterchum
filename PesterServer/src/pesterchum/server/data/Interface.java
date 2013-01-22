@@ -39,7 +39,7 @@ public class Interface implements Incoming{
 
 				break;
 			default:
-				System.err.println("Unknown data from "+data.getSource().getSource());
+				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
@@ -47,7 +47,7 @@ public class Interface implements Incoming{
 				processLogin(data);
 				break;
 			default:
-				System.err.println("Unknown data from "+data.getSource().getSource());
+				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
 			}
 		}
 	}

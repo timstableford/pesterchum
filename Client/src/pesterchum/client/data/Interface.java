@@ -51,7 +51,7 @@ public class Interface implements Incoming{
 				gui.incomingMessage(m);
 				break;
 			default:
-				System.err.println("Unknown data from "+conn.getSource());
+				System.err.println("Unknown data from - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
@@ -61,7 +61,7 @@ public class Interface implements Incoming{
 			case "hello":
 				processHello(data);
 			default:
-				System.err.println("Unknown data from "+conn.getSource());
+				System.err.println("Unknown data from - "+data.getData());
 			}
 		}
 	}
