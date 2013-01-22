@@ -9,7 +9,7 @@ public class Message {
 		this.message = message;
 		this.time = System.currentTimeMillis();
 	}
-	public Message(String incoming){
+	public Message(ICData incoming){
 		//TODO convert xml to message
 	}
 	public String getXML(){
@@ -24,5 +24,8 @@ public class Message {
 	}
 	public String getTo(){
 		return this.to;
+	}
+	public long getTime(){
+		return time;
 	}
 }
