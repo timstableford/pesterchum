@@ -40,7 +40,15 @@ public class Util {
 	}
 	public static String getTagValue(String sTag, Element eElement) {
 		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
-		Node nValue = (Node) nlList.item(0);
+		Node nValue = nlList.item(0);
 		return nValue.getNodeValue();
+	}
+	public static Element getFirst(Document doc, String name){
+		NodeList nList = doc.getElementsByTagName(name);
+		Node nNode = nList.item(0);
+		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			return (Element) nNode;
+		}
+		return null;
 	}
 }

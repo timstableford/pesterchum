@@ -1,4 +1,4 @@
-package pesterchum.client.data;
+package pesterchum.server.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import pesterchum.client.Util;
-import pesterchum.client.connection.Encryption;
+import pesterchum.server.Encryption;
+import pesterchum.server.Util;
 
 public class Message {
 	private String to, from, message;
@@ -46,23 +46,23 @@ public class Message {
 		Document doc = builder.newDocument();
 		Element root = doc.createElement("message");
 		doc.appendChild(root);
-
+		
 		Element from = doc.createElement("from");
 		from.appendChild(doc.createTextNode(Encryption.encode(this.from.getBytes())));
 		root.appendChild(from);
-
+		
 		Element to = doc.createElement("to");
 		to.appendChild(doc.createTextNode(Encryption.encode(this.to.getBytes())));
 		root.appendChild(to);
-
+		
 		Element message = doc.createElement("message");
 		message.appendChild(doc.createTextNode(Encryption.encode(this.message.getBytes())));
 		root.appendChild(message);
-
+		
 		Element time = doc.createElement("message");
 		message.appendChild(doc.createTextNode(this.time+""));
 		root.appendChild(time);
-
+		
 		return Util.docToString(doc);
 	}
 	public String getMessage(){
