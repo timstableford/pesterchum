@@ -36,7 +36,7 @@ public class Interface implements Incoming{
 		if(authenticated(data)){
 			switch(data.getName()){
 			case "message":
-
+				
 				break;
 			default:
 				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());

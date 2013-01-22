@@ -19,6 +19,13 @@ public class Database {
 		user.setAuthenticated(true);
 		return authenticated;
 	}
+	public void sendMessage(Message message){
+		//TODO
+		/*
+		 * 1)Check if user online, if yes, send
+		 * 2)If user not online, commit to database
+		 */
+	}
 	public void registerInterface(String name, Interface inter){
 		interfaces.put(name, inter);
 	}
