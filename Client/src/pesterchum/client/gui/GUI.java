@@ -10,7 +10,9 @@ import javax.swing.*;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.login.Login;
+import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
+import pesterchum.client.gui.theme.PPanel;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
@@ -23,8 +25,8 @@ public class GUI extends PFrame{
 		ifa = new Interface(this);
 		this.setTitle("Pesterchum");
 		Login l = new Login("localhost",7423,ifa);
-		JPanel logoPlace, moods, buddyList;
-		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
+		PPanel logoPlace, moods, buddyList;
+		PButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
 		addChum, block, pester;
 		
 		//menu objects
@@ -44,7 +46,6 @@ public class GUI extends PFrame{
 		smilies = new ResourceLoader();
 		smilies.load("/smilies/smilies.xml");
 		this.setSize(new Dimension(200, 400));
-		this.getContentPane().setBackground(Color.ORANGE);
 		
 		//create menu bar + menus
 		menu= new JMenuBar();
@@ -71,20 +72,20 @@ public class GUI extends PFrame{
 		this.add(menu, BorderLayout.NORTH);
 		
 		//try for chumroll
-		buddyList = new JPanel();	
+		buddyList = new PPanel();	
 		JTextArea chumroll = new JTextArea("set server connection to get and\ndisplay names 1 per line", 5, 15);
 		chumroll.setEditable(false);
 		//set proper layout for the buttons under list
-		addChum = new JButton("add chum"); block = new JButton("block"); pester = new JButton("pester!"); 
+		addChum = new PButton("add chum"); block = new PButton("block"); pester = new PButton("pester!"); 
 		buddyList.add(chumroll); buddyList.add(addChum); buddyList.add(block); buddyList.add(pester);
 		this.add(buddyList);
 		
 		//try for grid layout for moods - SWITCH to GridBag Layout
-		moods = new JPanel();
+		moods = new PPanel();
 		
 		//buttons create + add
-		chummy = new JButton("chummy"); palsy = new JButton("palsy"); chipper = new JButton("chipper"); bully = new JButton("bully");
-		preppy = new JButton("peppy"); rancorous= new JButton("rancorous"); abscond = new JButton("abscond"); 
+		chummy = new PButton("chummy"); palsy = new PButton("palsy"); chipper = new PButton("chipper"); bully = new PButton("bully");
+		preppy = new PButton("peppy"); rancorous= new PButton("rancorous"); abscond = new PButton("abscond"); 
 		
 		moods.add(chummy); moods.add(bully); moods.add(palsy); moods.add(preppy); moods.add(chipper); moods.add(rancorous);moods.add(abscond);
 		//set grid
