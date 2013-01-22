@@ -48,6 +48,12 @@ public class Interface implements Incoming{
 		}
 		return false;
 	}
+	public boolean timeout(){
+		if((System.currentTimeMillis()-lastPing)>TIMEOUT){
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public void processIncoming(ICData data) {
 		if(authenticated()){

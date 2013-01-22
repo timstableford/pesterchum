@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
+import pesterchum.client.gui.login.Login;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
@@ -18,6 +19,9 @@ public class GUI extends JFrame{
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
+		Login l = new Login(ifa);
+		l.setVisible(true);
+		
 		JPanel logoPlace, moods, buddyList;
 		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
 		addChum, block, pester;

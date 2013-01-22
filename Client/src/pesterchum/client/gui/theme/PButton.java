@@ -8,7 +8,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 public class PButton extends JButton{
-
+	private static final long serialVersionUID = 4446906053611098414L;
 	public PButton(String string) {
 		//TODO whent he button is clicked stop it from being blue
 		super(string.toUpperCase());

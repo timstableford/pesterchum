@@ -2,7 +2,6 @@ package pesterchum.client;
 
 
 import pesterchum.client.connection.Interface;
-import pesterchum.client.data.Message;
 import pesterchum.client.gui.GUI;
 import pesterchum.client.gui.login.Login;
 

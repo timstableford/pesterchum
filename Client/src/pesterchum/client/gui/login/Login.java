@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import pesterchum.client.connection.Interface;
-import pesterchum.client.gui.GUI;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
@@ -13,6 +12,7 @@ import pesterchum.client.gui.theme.PPasswordField;
 import pesterchum.client.gui.theme.PTextField;
 
 public class Login extends PFrame implements ActionListener{
+	private static final long serialVersionUID = 5329488003668890739L;
 	private PTextField un;
 	private PPasswordField pw;
 	private Interface ifa;
