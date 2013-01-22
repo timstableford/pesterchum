@@ -21,6 +21,7 @@ public class GUI extends PFrame{
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
 		ifa = new Interface(this);
+		this.setTitle("Pesterchum");
 		Login l = new Login("localhost",7423,ifa);
 		JPanel logoPlace, moods, buddyList;
 		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
