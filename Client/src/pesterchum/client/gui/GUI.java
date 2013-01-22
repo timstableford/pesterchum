@@ -18,9 +18,9 @@ public class GUI extends JFrame{
 	private ResourceLoader smilies;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
-		GridLayout gridLayout;
-		JPanel logo_place, moods;
-		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond;
+		JPanel logoPlace, moods, buddyList;
+		JButton chummy, palsy, chipper, bully, preppy, rancorous, abscond,
+		addChum, block, pester;
 		
 		//menu objects
 		JMenuBar menu;
@@ -66,8 +66,14 @@ public class GUI extends JFrame{
 		this.add(menu, BorderLayout.NORTH);
 		
 		//try for chumroll
+		buddyList = new JPanel();	
+		JTextArea chumroll = new JTextArea("set server connection to get and\ndisplay names 1 per line", 5, 15);
+		chumroll.setEditable(false);
+		addChum = new JButton("add chum"); block = new JButton("block"); pester = new JButton("pester!"); 
+		buddyList.add(chumroll); buddyList.add(addChum); buddyList.add(block); buddyList.add(pester);
+		this.add(buddyList);
 		
-		//try for grid layout for moods
+		//try for grid layout for moods - SWITCH to GridBag Layout
 		moods = new JPanel();
 		
 		//buttons create + add
@@ -76,16 +82,14 @@ public class GUI extends JFrame{
 		
 		moods.add(chummy); moods.add(bully); moods.add(palsy); moods.add(preppy); moods.add(chipper); moods.add(rancorous);moods.add(abscond);
 		//set grid
-		gridLayout = new GridLayout(0,2);
+		GridLayout gridLayout = new GridLayout(0,2);
 		moods.setLayout(gridLayout);
 		
-		this.add(moods);
+		this.add(moods, BorderLayout.SOUTH);
 		
 		//logo time!
 		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
 		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.CENTER);
-		
-		
 		
 		this.setVisible(true);
 	}
@@ -98,9 +102,11 @@ public class GUI extends JFrame{
 		}
 		return null;
 	}
+	
 	public void setInterface(Interface i){
 		this.ifa = i;
 	}
+	
 	public void incomingMessage(Message message){
 		System.out.println("Message from "+message.getFrom()+" - "+message.getMessage());
 	}
@@ -108,6 +114,7 @@ public class GUI extends JFrame{
 	public void loginResponse(boolean success) {
 		System.out.println("Login response - successful? "+success);
 	}
+	
 	public void versionMismatch(int client, int server){
 		
 	}
