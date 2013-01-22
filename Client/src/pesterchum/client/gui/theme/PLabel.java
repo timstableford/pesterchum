@@ -1,4 +1,4 @@
-package pesterchum.client.gui;
+package pesterchum.client.gui.theme;
 
 import java.awt.Color;
 import java.awt.Font;
