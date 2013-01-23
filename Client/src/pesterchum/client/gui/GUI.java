@@ -3,7 +3,8 @@ package pesterchum.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -45,7 +46,7 @@ public class GUI extends PFrame implements ActionListener{
 		PMenuBar menu;
 		PMenu client, profile, help;
 		PMenuItem options, memos, pesterLog, randomEcounter, userList, idle, addGroup,
-		importThings, reconnect, exit, helpMe, about, reportBug;
+		importThings, reconnect, exit, helpMe, about, reportBug, quirks, trollSlum, color, switchChum;
 		
 		// menu at top
 		// logo
@@ -83,6 +84,11 @@ public class GUI extends PFrame implements ActionListener{
 		client.add(userList); client.add(idle); client.add(addGroup); client.add(importThings);
 		client.add(reconnect); client.add(exit);
 		
+		//set up the Profile menu
+		quirks = new PMenuItem("quirks"); trollSlum = new PMenuItem("trollslum"); color= new PMenuItem("color"); 
+		switchChum = new PMenuItem("switch");
+		profile.add(quirks); profile.add(trollSlum); profile.add(color); profile.add(switchChum);
+		
 		//set up the Help menu
 		helpMe = new PMenuItem("help"); about = new PMenuItem("about"); reportBug = new PMenuItem("report a bug");
 		
@@ -109,14 +115,11 @@ public class GUI extends PFrame implements ActionListener{
 		
 		moods.add(chummy); moods.add(bully); moods.add(palsy); moods.add(preppy); moods.add(chipper); moods.add(rancorous);moods.add(abscond);
 		//set grid
-		GridLayout gridLayout = new GridLayout(0,2);
-		moods.setLayout(gridLayout);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		moods.setLayout(gridBagLayout);
+		GridBagConstraints constraints = new GridBagConstraints();
 		
 		this.add(moods, BorderLayout.SOUTH);
-		
-		//logo time!
-		//this.add(new JLabel(getIcon(smilies.getResource("apple"))), BorderLayout.CENTER);
-		//this.add(new PLabel("Label", getIcon(smilies.getResource("apple"))),BorderLayout.CENTER);
 		
 		this.setVisible(true);
 	}
@@ -153,4 +156,8 @@ public class GUI extends PFrame implements ActionListener{
 		}
 	}
 
+
+	public void friendRequestResponse(String username, boolean found){
+
+	}
 }
