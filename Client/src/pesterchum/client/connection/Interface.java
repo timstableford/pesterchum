@@ -2,6 +2,7 @@ package pesterchum.client.connection;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +27,7 @@ public class Interface implements Incoming{
 	private GUI gui;
 	private Connection conn;
 	private long lastPing;
+	private LinkedList<String> friends;
 	public Interface(GUI gui){
 		this.gui = gui;
 		this.conn = new Connection();
@@ -33,6 +35,8 @@ public class Interface implements Incoming{
 		conn.registerIncoming("login", this);
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
+		conn.registerIncoming("friendrequest", this);
+		friends = new LinkedList<String>();
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			builder = dbFactory.newDocumentBuilder();
@@ -63,6 +67,9 @@ public class Interface implements Incoming{
 				break;
 			case "admin":
 				processAdmin(data);
+				break;
+			case "friendrequest":
+				processFriendRequest(data);
 				break;
 			default:
 				System.err.println("Unknown data from - "+data.getData());
@@ -111,6 +118,20 @@ public class Interface implements Incoming{
 	public void sendMessage(Message message){
 		conn.sendData(message.getXML());
 	}
+	public void addFriend(String username){
+		conn.sendData("<friendrequest>"+Encryption.encode(username.getBytes())+"</friendrequest>");
+	}
+	private void processFriendRequest(ICData data){
+		try {
+			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
+			Element e = Util.getFirst(doc, "friendrequest");
+			String username = Util.getTagValue("name", e);
+			boolean suc = Boolean.parseBoolean(Util.getTagValue("success", e));
+			gui.friendRequestResponse(username, suc);
+		} catch (SAXException | IOException e) {
+			//we'll just ignore this
+		}
+	}
 	private void processAdmin(ICData data){
 		try {
 			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
@@ -146,6 +167,14 @@ public class Interface implements Incoming{
 				suc = Boolean.parseBoolean(Util.getTagValue("success", eElement));
 				if(suc){
 					conn.setUsername(un);
+				}
+				NodeList list = eElement.getElementsByTagName("friends");
+				for(int i=0; i<list.getLength(); i++){
+					Node node = list.item(i);
+					if (node.getNodeType() == Node.ELEMENT_NODE) {
+						Element e = (Element) node;
+						friends.add(Util.getTagValue("friend", e));
+					}
 				}
 			}
 		}

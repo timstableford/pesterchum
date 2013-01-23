@@ -33,6 +33,9 @@ public class Manager {
 			connected.remove(user);
 		}
 	}
+	public Database getDatabase(){
+		return database;
+	}
 	public void sendMessage(Message message){
 		//TODO
 		/*

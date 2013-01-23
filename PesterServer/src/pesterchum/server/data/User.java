@@ -50,6 +50,9 @@ public class User {
 			return null;
 		}
 	}
+	public List<String> getFriends(){
+		return friends;
+	}
 	public void loadFriends(String xml){
 		try {
 			DocumentBuilder b = DocumentBuilderFactory.newInstance().newDocumentBuilder();

@@ -11,13 +11,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import pesterchum.server.Encryption;
 import pesterchum.server.Util;
 
 public class Interface implements Incoming{
-	private Manager database;
+	private Manager manager;
 	private DocumentBuilder builder;
-	public Interface(Manager database){
-		this.database = database;
+	public Interface(Manager manager){
+		this.manager = manager;
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			builder = dbFactory.newDocumentBuilder();
@@ -36,10 +37,13 @@ public class Interface implements Incoming{
 		if(authenticated(data)){
 			switch(data.getName()){
 			case "message":
-				database.sendMessage(new Message(data));
+				manager.sendMessage(new Message(data));
 				break;
 			case "admin":
 				processAdmin(data);
+				break;
+			case "friendrequest":
+				processFriendRequest(data);
 				break;
 			default:
 				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
@@ -55,6 +59,16 @@ public class Interface implements Incoming{
 			default:
 				System.err.println("Unknown data from "+data.getSource().getSource()+" - "+data.getData());
 			}
+		}
+	}
+	private void processFriendRequest(ICData data){
+		try {
+			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
+			String name = new String(Encryption.decode(doc.getDocumentElement().getNodeValue()));
+			data.getSource().sendData("<friendrequest><name>"+doc.getDocumentElement().getNodeValue()+"</name>"
+					+"<success>"+manager.getDatabase().userExists(new User(name))+"</success></friendrequest>");
+		} catch (SAXException | IOException e) {
+			//we'll just ignore it, if the client never gets a response it doesnt matter
 		}
 	}
 	private void processAdmin(ICData data){
@@ -83,7 +97,7 @@ public class Interface implements Incoming{
 			String un = Util.getTagValue("username", e);
 			String pw = Util.getTagValue("password", e);
 			User u = new User(un);
-			database.authenticate(u, pw);
+			manager.authenticate(u, pw);
 			Document doc = builder.newDocument();
 			Element root = doc.createElement("login");
 			doc.appendChild(root);
@@ -96,11 +110,20 @@ public class Interface implements Incoming{
 			suc.appendChild(doc.createTextNode(u.authenticated()+""));
 			root.appendChild(suc);
 			
+			Element friends = doc.createElement("friends");
+			root.appendChild(friends);
+			for(int i=0; i<u.getFriends().size(); i++){
+				String fn = u.getFriends().get(i);
+				Element friend = doc.createElement("friend");
+				friend.appendChild(doc.createTextNode(fn));
+				friends.appendChild(friend);
+			}
+			
 			data.getSource().sendData(Util.docToString(doc));
 			
 			if(u.authenticated()){
 				data.getSource().setUser(u);
-				database.registerUser(un, data.getSource());
+				manager.registerUser(un, data.getSource());
 			}
 		} catch (SAXException | IOException e1) {
 			System.err.println("Could not authenticate login for "+data.getSource().getSource());
