@@ -109,16 +109,36 @@ public class GUI extends PFrame implements ActionListener{
 		//try for grid layout for moods - SWITCH to GridBag Layout
 		moods = new PPanel();
 		
-		//buttons create + add
-		chummy = new PButton("chummy"); palsy = new PButton("palsy"); chipper = new PButton("chipper"); bully = new PButton("bully");
-		preppy = new PButton("peppy"); rancorous= new PButton("rancorous"); abscond = new PButton("abscond"); 
-		
-		moods.add(chummy); moods.add(bully); moods.add(palsy); moods.add(preppy); moods.add(chipper); moods.add(rancorous);moods.add(abscond);
-		//set grid
+		//set grid + create n add
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		moods.setLayout(gridBagLayout);
-		GridBagConstraints constraints = new GridBagConstraints();
+		GridBagConstraints c = new GridBagConstraints();
+
+		chummy = new PButton("chummy");
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.5;
+		c.gridwidth = 0;
+		c.gridx = 0;
+		c.gridy = 0;
+		moods.add(chummy);
 		
+		bully = new PButton("bully");
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.5;
+		c.gridwidth = 1;
+		c.gridx = 1;
+		c.gridy = 0;
+		moods.add(bully);
+		
+		
+		abscond = new PButton("abscond");
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.5;
+		c.gridwidth = 0;
+		c.gridx = 0;
+		c.gridy = 2;
+		moods.add(abscond, c);
+
 		this.add(moods, BorderLayout.SOUTH);
 		
 		this.setVisible(true);
@@ -160,4 +180,5 @@ public class GUI extends PFrame implements ActionListener{
 	public void friendRequestResponse(String username, boolean found){
 
 	}
-}
+}			
+
