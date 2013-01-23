@@ -100,6 +100,12 @@ public class Interface implements Incoming{
 		conn.sendData(Util.docToString(doc));
 	}
 	public boolean connect(String host, int port){
+		conn.disconnect();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			//insomniac thread
+		}
 		return conn.connect(host, port);
 	}
 	public void sendMessage(Message message){

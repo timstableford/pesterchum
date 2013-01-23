@@ -57,27 +57,24 @@ public class Encryption {
 		}
 		return data;
 	}
-	public static String encode(byte[] data){
-		StringBuffer out = new StringBuffer();
-		for(int i=0; i<data.length; i++){
-			int a = (int)data[i];
-			a = a + 128;
-			out.append("%");
-			out.append(a);
-		}
-		return out.toString();
+	public static String encode(byte[] bytes) {
+	    final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+	    char[] hexChars = new char[bytes.length * 2];
+	    int v;
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
-	public static byte[] decode(String data){
-		if(data.contains("%")){
-			String[] a = data.split("%");
-			byte[] ret = new byte[a.length-1];
-			for(int i=1; i<a.length; i++){
-				int j = Integer.parseInt(a[i]);
-				j = j - 128;
-				ret[i-1] = (byte)j;
-			}
-			return ret;
-		}
-		return null;
+	public static byte[] decode(String hex){
+		int len = hex.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+	                             + Character.digit(hex.charAt(i+1), 16));
+	    }
+	    return data;
 	}
 }

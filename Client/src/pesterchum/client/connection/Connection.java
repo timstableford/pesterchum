@@ -45,6 +45,7 @@ public class Connection implements Runnable{
 	}
 	public boolean connect(String host, int port){
 		System.out.println("Connecting to "+host+" on port "+port);
+		writeBuffer = Collections.synchronizedList(new LinkedList<String>());
 		try {
 			socket = getSocketFactory().createSocket(host, port);	
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -74,7 +75,9 @@ public class Connection implements Runnable{
 			} catch (IOException e) {
 				//we're going to close it anyway
 			}
+			enc = null;
 			socket = null;
+			run = false;
 		}
 	}
 	public Incoming getIncoming(String name){
@@ -120,6 +123,7 @@ public class Connection implements Runnable{
 				}
 			} catch (IOException | SAXException e) {
 				System.err.println("Error reading from server");
+				break; //going to assume lost connection and break loop
 			}
 			if(out!=null&&enc!=null&&writeBuffer.size()>0){
 				try {

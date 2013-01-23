@@ -1,28 +1,29 @@
 package pesterchum.server.data;
 
+import java.sql.SQLException;
 import java.util.Hashtable;
 
 import pesterchum.server.Connection;
+import pesterchum.server.data.database.Database;
+import pesterchum.server.data.database.SQLiteDatabase;
 
 
 public class Manager {
 	private Hashtable<String, Interface> interfaces;
 	private Hashtable<String, Connection> connected;
+	private Database database;
 	public Manager(){
 		interfaces = new Hashtable<String, Interface>();
 		connected = new Hashtable<String, Connection>();
+		try {
+			database = new SQLiteDatabase("database.db");
+		} catch (ClassNotFoundException | SQLException e) {
+			System.err.println("Could not open database");
+			e.printStackTrace();
+		}
 	}
 	public boolean authenticate(User user, String password){
-		boolean authenticated = true;
-		//TODO implement authentication
-		/*
-		 * 1)Hash Password
-		 * 2)Check against database
-		 * 4)Set authenticated
-		 * 3)Dispose of password
-		 */
-		user.setAuthenticated(true);
-		return authenticated;
+		return database.authenticate(user, password);
 	}
 	public void registerUser(String user, Connection conn){
 		connected.put(user, conn);

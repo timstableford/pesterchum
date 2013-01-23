@@ -57,7 +57,9 @@ public class Connection implements Runnable{
 			out.write((data+"\n").getBytes());
 			out.flush();
 		} catch (IOException e) {
-			System.err.println("Couldn't write to "+socket.getInetAddress());
+			if(socket!=null){
+				System.err.println("Couldn't write to "+socket.getInetAddress());
+			}
 		}
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
@@ -96,7 +98,10 @@ public class Connection implements Runnable{
 				//we're going to close it anyway
 			}
 			socket = null;
-			database.removeUser(this.user.getUsername());
+			if(this.user!=null){
+				database.removeUser(this.user.getUsername());
+			}
+			run = false;
 			server.disconnect(this);
 		}
 	}
@@ -159,7 +164,9 @@ public class Connection implements Runnable{
 					processIncoming(i);
 				}
 			} catch (IOException | SAXException e1) {
-				System.err.println("Could not read from "+socket.getInetAddress());
+				if(socket!=null){
+					System.err.println("Could not read from "+socket.getInetAddress());
+				}
 			}
 			try {
 				Thread.sleep(50);
