@@ -4,3 +4,4 @@ PesterServer/bin
 Client/bin
 Client/.settings
 PesterServer/.settings
+*.db
