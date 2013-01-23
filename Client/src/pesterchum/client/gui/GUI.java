@@ -134,13 +134,14 @@ public class GUI extends PFrame implements ActionListener{
 		moods.setLayout(gridBagLayout);
 		GridBagConstraints c = new GridBagConstraints();
 		PButton chummy = new PButton("chummy");
-		c.weightx = 0.1;
+		c.weightx = 0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		moods.add(chummy,c);
 		
 		PButton bully = new PButton("bully");
+		c.weightx = 0.7;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
