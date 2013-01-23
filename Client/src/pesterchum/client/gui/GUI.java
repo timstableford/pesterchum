@@ -119,13 +119,30 @@ public class GUI extends PFrame implements ActionListener{
 		return menu;
 	}
 	private PPanel getBuddyList(){
+		GridBagConstraints c = new GridBagConstraints();
 		PPanel buddyList = new PPanel();	
+		buddyList.setLayout(new GridBagLayout());
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		JTextArea chumroll = new JTextArea("set server connection to get and\ndisplay names 1 per line", 5, 15);
 		chumroll.setEditable(false);
+		c.gridwidth = 3;
+		buddyList.add(chumroll, c);
+		///////////////////
+		c.gridwidth = 1;
+		c.gridy = 1;
+		c.weightx = 0.5;
 		PButton addChum = new PButton("add chum"); 
+		buddyList.add(addChum, c);
+		////////////////////
+		c.gridx = 1;
 		PButton block = new PButton("block"); 
+		buddyList.add(block, c);
+		/////////////////////
+		c.gridx = 2;
 		PButton pester = new PButton("pester!"); 
-		buddyList.add(chumroll); buddyList.add(addChum); buddyList.add(block); buddyList.add(pester);
+		buddyList.add(pester, c);
 		return buddyList;
 	}
 	private PPanel getMoods(){
