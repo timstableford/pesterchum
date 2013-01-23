@@ -23,6 +23,7 @@ import pesterchum.client.data.Message;
 import pesterchum.client.gui.login.Login;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
+import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PMenu;
 import pesterchum.client.gui.theme.PMenuBar;
 import pesterchum.client.gui.theme.PMenuItem;
@@ -125,10 +126,19 @@ public class GUI extends PFrame implements ActionListener{
 		c.gridx = 0;
 		c.gridy = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		JTextArea chumroll = new JTextArea("set server connection to get and\ndisplay names 1 per line", 5, 15);
-		chumroll.setEditable(false);
+		
+		PPanel friendPanel = new PPanel();
+		friendPanel.setLayout(new BoxLayout(friendPanel, BoxLayout.Y_AXIS));
+		Box box = Box.createVerticalBox();
+		box.add(new PLabel("a"));
+		box.add(new PLabel("b"));
+		box.add(new PLabel("c"));
+		
+		JScrollPane jscrlpBox = new JScrollPane(box);
+		friendPanel.add(jscrlpBox);
+		
 		c.gridwidth = 3;
-		buddyList.add(chumroll, c);
+		buddyList.add(friendPanel, c);
 		///////////////////
 		c.gridwidth = 1;
 		c.gridy = 1;
