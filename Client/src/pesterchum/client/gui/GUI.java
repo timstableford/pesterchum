@@ -55,8 +55,6 @@ public class GUI extends PFrame implements ActionListener{
 		//create menu bar + menus
 		
 		PPanel content = new PPanel();
-		Border b = new LineBorder(Color.BLACK, 2);
-		content.setBorder(b);
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 0.5;
@@ -136,6 +134,7 @@ public class GUI extends PFrame implements ActionListener{
 		moods.setLayout(gridBagLayout);
 		GridBagConstraints c = new GridBagConstraints();
 		PButton chummy = new PButton("chummy");
+		c.weightx = 0.1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
@@ -145,13 +144,14 @@ public class GUI extends PFrame implements ActionListener{
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
+		
 		moods.add(bully, c);
 		
 		PButton abscond = new PButton("abscond");
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = 2;
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = 1;
 		moods.add(abscond, c);
 		return moods;
 	}
