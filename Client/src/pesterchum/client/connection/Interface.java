@@ -192,10 +192,11 @@ public class Interface implements Incoming{
 				Element eElement = (Element) nNode;
 				int ver = Integer.parseInt(Util.getTagValue("version", eElement));
 				byte[] key = Encryption.decode(Util.getTagValue("key", eElement));
-				conn.setEncryption(new Encryption(key));
+				conn.getEncryption().initSymmetric(key);
 				if(ver!=VERSION){
 					gui.versionMismatch(VERSION, ver);
 				}
+				System.out.println("Received symmetric key from server");
 			}
 		} catch (SAXException | IOException e) {
 			System.err.println("Could not process hello message from server");

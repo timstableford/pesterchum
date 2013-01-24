@@ -25,6 +25,7 @@ public class Server {
 		database.registerInterface("login", i);
 		database.registerInterface("admin", i);
 		database.registerInterface("friendrequest", i);
+		database.registerInterface("publickey", i);
 		//setup socket listener
 		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
 		try {

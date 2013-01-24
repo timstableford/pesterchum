@@ -53,12 +53,16 @@ public class Connection implements Runnable{
 		} catch (IOException e) {
 			return false;
 		}
+		enc = new Encryption();
 		run = true;
 		(new Thread(this)).start();
 		return true;
 	}
 	public void registerIncoming(String name, Incoming inc){
 		interfaces.put(name, inc);
+	}
+	public Encryption getEncryption(){
+		return this.enc;
 	}
 	public void disconnect(){
 		if(socket!=null){
@@ -75,8 +79,9 @@ public class Connection implements Runnable{
 			} catch (IOException e) {
 				//we're going to close it anyway
 			}
-			enc = null;
+			//enc.reset();
 			socket = null;
+			username = null;
 			run = false;
 		}
 	}
@@ -87,18 +92,18 @@ public class Connection implements Runnable{
 		writeBuffer.add(data);
 	}
 	public boolean encrypted(){
-		if(enc!=null){
-			return true;
-		}
-		return false;
-	}
-	public void setEncryption(Encryption enc){
-		this.enc = enc;
+		return enc.secure()==Secure.YES;
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
-		if(enc!=null){
-			//this we need to decrypt
-			data = enc.decrypt(data);
+		switch(enc.secure()){
+		case PUBLICKEY:
+			data = new String(enc.decryptAsymmetric(data));
+			break;
+		case YES:
+			data = new String(enc.decryptSymmetric(data));
+			break;
+		case NO:
+			break;
 		}
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
@@ -116,6 +121,7 @@ public class Connection implements Runnable{
 	}
 	@Override
 	public void run(){
+		sendHello();
 		while(run){
 			try {
 				if(in!=null&&in.ready()){
@@ -125,9 +131,9 @@ public class Connection implements Runnable{
 				System.err.println("Error reading from server");
 				break; //going to assume lost connection and break loop
 			}
-			if(out!=null&&enc!=null&&writeBuffer.size()>0){
+			if(out!=null&&enc!=null&&enc.secure()==Secure.YES&&writeBuffer.size()>0){
 				try {
-					String d = enc.encrypt(writeBuffer.get(0))+"\n";
+					String d = enc.encryptSymmetric(writeBuffer.get(0).getBytes())+"\n";
 					out.write(d.getBytes());
 					out.flush();
 				} catch (IOException e) {
@@ -144,5 +150,15 @@ public class Connection implements Runnable{
 	}
 	private SocketFactory getSocketFactory(){
 		return SocketFactory.getDefault();
+	}
+	private void sendHello(){
+		try {
+			out.write((enc.getPublicKeyXML()+"\n").getBytes());
+			System.out.println("Sending public key");
+			out.flush();
+		} catch (IOException e) {
+			System.err.println("Could not send hello to server");
+		}
+		
 	}
 }

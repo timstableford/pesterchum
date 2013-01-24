@@ -2,7 +2,12 @@ package pesterchum.server.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,6 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import pesterchum.server.Connection;
 import pesterchum.server.Encryption;
 import pesterchum.server.Util;
 
@@ -50,6 +56,9 @@ public class Interface implements Incoming{
 			}
 		}else{
 			switch(data.getName()){
+			case "publickey":
+				processHello(data);
+				break;
 			case "login":
 				processLogin(data);
 				break;
@@ -61,12 +70,40 @@ public class Interface implements Incoming{
 			}
 		}
 	}
+	private void processHello(ICData data){
+		try {
+			data.getSource().getEncryption().initAsymmetric(data.getData());
+			sendHello(data);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException
+				| ParserConfigurationException | SAXException | IOException 
+				| InvalidKeyException | NoSuchPaddingException | NoSuchProviderException e) {
+			System.err.println("Could not initialise public key");
+		}
+	}
+	private void sendHello(ICData data) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
+		Document doc = builder.newDocument();
+		Element root = doc.createElement("hello");
+		doc.appendChild(root);
+
+		Element ver = doc.createElement("version");
+		ver.appendChild(doc.createTextNode(Connection.VERSION+""));
+		root.appendChild(ver);
+		data.getSource().getEncryption().initSymmetric();
+		String k = Encryption.encode(data.getSource().getEncryption().getKey());
+		Element key = doc.createElement("key");
+		key.appendChild(doc.createTextNode(k));
+		root.appendChild(key);
+		
+		data.getSource().sendData(data.getSource().getEncryption().encryptAsymmetric(Util.docToString(doc).getBytes()), false);
+		
+	    System.out.println("Stream from "+data.getSource().getSource()+" encrypted");
+	}
 	private void processFriendRequest(ICData data){
 		try {
 			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
 			String name = new String(Encryption.decode(doc.getDocumentElement().getNodeValue()));
 			data.getSource().sendData("<friendrequest><name>"+doc.getDocumentElement().getNodeValue()+"</name>"
-					+"<success>"+manager.getDatabase().userExists(new User(name))+"</success></friendrequest>");
+					+"<success>"+manager.getDatabase().userExists(new User(name))+"</success></friendrequest>", true);
 		} catch (SAXException | IOException e) {
 			//we'll just ignore it, if the client never gets a response it doesnt matter
 		}
@@ -119,7 +156,7 @@ public class Interface implements Incoming{
 				friends.appendChild(friend);
 			}
 			
-			data.getSource().sendData(Util.docToString(doc));
+			data.getSource().sendData(Util.docToString(doc), true);
 			
 			if(u.authenticated()){
 				data.getSource().setUser(u);

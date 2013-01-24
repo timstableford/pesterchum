@@ -37,14 +37,9 @@ public class Manager {
 		return database;
 	}
 	public void sendMessage(Message message){
-		//TODO
-		/*
-		 * 1)Check if user online, if yes, send
-		 * 2)If user not online, commit to database
-		 */
 		if(connected.containsKey(message.getTo())){
 			Connection o = connected.get(message.getTo());
-			o.sendData(message.getXML());
+			o.sendData(message.getXML(), true);
 		}else{
 			//TODO Add to database
 			System.out.println("Could not send message user offline - "+message.getTo());

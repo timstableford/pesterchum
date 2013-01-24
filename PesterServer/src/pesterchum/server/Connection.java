@@ -6,17 +6,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
-import javax.crypto.NoSuchPaddingException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import pesterchum.server.data.Manager;
@@ -24,7 +19,7 @@ import pesterchum.server.data.ICData;
 import pesterchum.server.data.User;
 
 public class Connection implements Runnable{
-	private static final int VERSION = 1;
+	public static final int VERSION = 1;
 	private static final long TIMEOUT = 10000;
 	private BufferedReader in;
 	private BufferedOutputStream out;
@@ -43,15 +38,19 @@ public class Connection implements Runnable{
 		this.server = server;
 		this.lastPing = System.currentTimeMillis();
 		this.lastPong = System.currentTimeMillis();
+		this.enc = new Encryption();
 		run = true;
 		(new Thread(this)).start();
 	}
 	public void setLastPong(long pong){
 		this.lastPong = pong;
 	}
-	public void sendData(String data){
-		if(enc!=null){
-			data = enc.encrypt(data);
+	public Encryption getEncryption(){
+		return this.enc;
+	}
+	public void sendData(String data, boolean encrypt){
+		if(encrypt&&enc.secure()){
+			data = enc.encryptSymmetric(data);
 		}
 		try {
 			out.write((data+"\n").getBytes());
@@ -63,9 +62,9 @@ public class Connection implements Runnable{
 		}
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
-		if(enc!=null){
+		if(enc.secure()){
 			//this we need to decrypt
-			data = enc.decrypt(data);
+			data = enc.decryptSymmetric(data);
 		}
 		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
 		doc.getDocumentElement().normalize();
@@ -84,7 +83,7 @@ public class Connection implements Runnable{
 	}
 	public void disconnect(){
 		if(socket!=null){
-			sendData("<admin><command>disconnect</command></admin>");
+			sendData("<admin><command>disconnect</command></admin>", true);
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
@@ -105,26 +104,6 @@ public class Connection implements Runnable{
 			server.disconnect(this);
 		}
 	}
-	private void sendHello() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException{
-		Document doc = builder.newDocument();
-		Element root = doc.createElement("hello");
-		doc.appendChild(root);
-
-		Element ver = doc.createElement("version");
-		ver.appendChild(doc.createTextNode(VERSION+""));
-		root.appendChild(ver);
-
-		enc = new Encryption();
-		String k = Encryption.encode(enc.getKey());
-		Element key = doc.createElement("key");
-		key.appendChild(doc.createTextNode(k));
-		root.appendChild(key);
-		
-		out.write((Util.docToString(doc)+"\n").getBytes());
-		out.flush();
-		
-	    System.out.println("Stream from "+socket.getInetAddress()+" encrypted");
-	}
 	@Override
 	public void run() {
 		System.out.println("Connection from "+socket.getInetAddress());	
@@ -142,16 +121,11 @@ public class Connection implements Runnable{
 		} catch (IOException e) {
 			run = false;
 		}
-		try {
-			sendHello();
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException e2) {
-			System.err.println("Could not send hello to "+socket.getInetAddress());
-		}
 		lastPong = System.currentTimeMillis();
 		while(run){
 			//do the ping pong
 			if((System.currentTimeMillis()-lastPing)>TIMEOUT/2){
-				sendData("<admin><command>ping</command></admin>");
+				sendData("<admin><command>ping</command></admin>", true);
 				lastPing = System.currentTimeMillis();
 			}
 			if((System.currentTimeMillis()-lastPong)>TIMEOUT){
