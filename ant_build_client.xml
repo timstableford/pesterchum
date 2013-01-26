@@ -6,6 +6,7 @@
 	<property name="classes.dir" value="${build.dir}/bin"/>
 	<property name="src.dir" value="Client/src"/>
 	<property name="lib.dir" value="Client/lib"/>
+	<property name="graphics.dir" value="Client/graphics"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
     </path>
@@ -28,10 +29,14 @@
 		<jar 
 			destfile="${build.dir}/pesterchum_client.jar" 
 			basedir="${classes.dir}">
-            	<manifest>
-                	<attribute name="Main-Class" value="pesterchum.client.Launch"/>
-            	</manifest>
-		<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
-        	</jar>
+            <manifest>
+            	<attribute name="Main-Class" value="pesterchum.client.Launch"/>
+            </manifest>
+			<fileset dir="${graphics.dir}">
+				<include name="**/*.png" />
+				<include name="*.png" />
+			</fileset>
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
+        </jar>
 	</target>
 </project>
