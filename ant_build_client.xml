@@ -35,6 +35,7 @@
 			<fileset dir="${graphics.dir}">
 				<include name="**/*.png" />
 				<include name="*.png" />
+				<include name="**/*.xml" />
 			</fileset>
 			<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
         </jar>
