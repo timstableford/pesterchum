@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="Pesterchum">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+	<property name="build.dir" value="build"/>
+	<property name="classes.dir" value="${build.dir}/bin"/>
+	<property name="src.dir" value="PesterServer/src"/>
+	<property name="lib.dir" value="PesterServer/lib"/>
+    <path id="Pesterchum.classpath">
+        <pathelement location="${classes.dir}"/>
+	<pathelement location="${lib.dir}/*.jar>
+    </path>
+    <target name="init">
+		<echo message="Initialising files"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+    <target name="clean">
+		<echo message="Cleaning up"/>
+        <delete dir="${build.dir}"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+	<target name="Client">
+		<echo message="Building Pesterchum Server"/>
+        	<javac debug="true" debuglevel="${debuglevel}" 
+			srcdir="${src.dir}/pesterchum" destdir="${classes.dir}" 
+			classpathref="Pesterchum.classpath" 
+			includeantruntime="false" fork="yes" 
+			executable="/usr/lib/jvm/java-7-openjdk-i386/bin/javac" />
+		<jar 
+			destfile="${build.dir}/pesterchum_server.jar" 
+			basedir="${classes.dir}">
+            	<manifest>
+                	<attribute name="Main-Class" value="pesterchum.server.Run"/>
+            	</manifest>
+		<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
+        	</jar>
+	</target>
+</project>
