@@ -8,7 +8,7 @@
 	<property name="lib.dir" value="PesterServer/lib"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
-	<pathelement location="${lib.dir}/*.jar>
+	<pathelement location="${lib.dir}/*.jar/>
     </path>
     <target name="init">
 		<echo message="Initialising files"/>
