@@ -16,4 +16,9 @@ Future
 When the above goals have been met and it contains all the features possible from
 MSPaintAdventures Pesterchum, then we would like to develop an Android version.
 
+Automatic Building
+------------------
+Automatic builds happen daily. The server and client automatically include all jars in the lib folder and all class files.
+However other files such as xml and graphics will need to be added manually, as has been done for the client.
+
 
