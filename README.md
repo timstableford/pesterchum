@@ -21,6 +21,6 @@ Automatic Building
 Automatic builds happen whenever a change is pushed to the repo. The server and client automatically include all jars in the lib folder and all class files.
 However other files such as xml and graphics will need to be added manually in the ant build files, as has been done for the client.
 
-Downloads can be found at http://jenkins.hyperbadger.it.cx (reliability not guaranteed)
+Downloads can be found at http://jenkins.tstableford.co.uk/job/Pesterchum/
 
 
