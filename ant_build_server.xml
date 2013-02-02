@@ -24,8 +24,7 @@
         	<javac debug="true" debuglevel="${debuglevel}" 
 			srcdir="${src.dir}/pesterchum" destdir="${classes.dir}" 
 			classpathref="Pesterchum.classpath" 
-			includeantruntime="false" fork="yes" 
-			executable="/usr/lib/jvm/java-7-openjdk-i386/bin/javac" />
+			includeantruntime="false" fork="yes" />
 		<jar 
 			destfile="${build.dir}/pesterchum_server.jar" 
 			basedir="${classes.dir}">
