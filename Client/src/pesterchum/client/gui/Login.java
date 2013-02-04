@@ -8,6 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
@@ -18,7 +22,7 @@ import pesterchum.client.connection.Interface;
 import pesterchum.client.connection.SettingsException;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
-import pesterchum.client.gui.theme.PLabel;
+import pesterchum.client.gui.theme.POpaqueLabel;
 import pesterchum.client.gui.theme.PMenuBar;
 import pesterchum.client.gui.theme.PMenuItem;
 import pesterchum.client.gui.theme.PPanel;
@@ -28,20 +32,16 @@ import pesterchum.client.gui.theme.PTextField;
 
 public class Login extends PFrame implements ActionListener, Runnable, KeyListener{
 	private static final long serialVersionUID = 5329488003668890739L;
-	private PTextField un, run;
+	private PTextField un, run, server, port;
 	private PPasswordField pw, rpw, rpwr;
-	private PButton login, register;
+	private PButton login, register, save;
 	private PMenuItem min, quit;
 	private Interface ifa;
-	private String host;
-	private int port;
 	private String u,p;
 	private boolean clicked;
 	private Action action;
 	public Login(Interface ifa) throws SettingsException{
 		super();
-		this.host = ifa.getSettings().getString("host");
-		this.port = ifa.getSettings().getInt("port");
 		this.ifa = ifa;
 		this.clicked = false;
 		this.setTitle("Pesterchum Login");
@@ -63,9 +63,26 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		
 		tabs.addTab("LOGIN", createLoginPanel());
 		tabs.addTab("REGISTER", createRegisterPanel());
+		tabs.addTab("SERVER", createServerPanel());
 		this.add(tabs, BorderLayout.CENTER);
 
 		this.setVisible(true);
+	}
+	public PPanel createServerPanel() throws SettingsException{
+		PPanel serverPanel = new PPanel();
+		GridLayout layout = new GridLayout(0,1);
+		layout.setHgap(3);
+		serverPanel.setLayout(layout);
+		server = new PTextField(16);
+		port = new PTextField(16);
+		server.setText(ifa.getSettings().getString("host"));
+		port.setText(ifa.getSettings().getString("port"));
+		serverPanel.add(server);
+		serverPanel.add(port);
+		save = new PButton("SAVE");
+		save.addActionListener(this);
+		serverPanel.add(save);
+		return serverPanel;
 	}
 	public PPanel createRegisterPanel(){
 		PPanel registerPanel = new PPanel();
@@ -80,11 +97,11 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		rpwr.addKeyListener(this);
 		register = new PButton("Register");
 		register.addActionListener(this);
-		registerPanel.add(new PLabel("Username"));
+		registerPanel.add(new POpaqueLabel("Username"));
 		registerPanel.add(run);
-		registerPanel.add(new PLabel("Password"));
+		registerPanel.add(new POpaqueLabel("Password"));
 		registerPanel.add(rpw);
-		registerPanel.add(new PLabel("Password Again"));
+		registerPanel.add(new POpaqueLabel("Password Again"));
 		registerPanel.add(rpwr);
 		registerPanel.add(register);
 		return registerPanel;
@@ -94,13 +111,13 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		GridLayout layout = new GridLayout(0,1);
 		layout.setHgap(3);
 		loginPanel.setLayout(layout);
-		PLabel unl, pnl;
+		POpaqueLabel unl, pnl;
 		un = new PTextField(16);
 		un.addKeyListener(this);
 		pw = new PPasswordField(16);
 		pw.addKeyListener(this);
-		unl = new PLabel("Username");
-		pnl = new PLabel("Password");
+		unl = new POpaqueLabel("Username");
+		pnl = new POpaqueLabel("Password");
 		login = new PButton("Login");
 		login.addActionListener(this);
 		loginPanel.add(unl);
@@ -129,10 +146,10 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		action = Action.REGISTER;
 		if(!clicked&&ifa!=null&&u!=null&&pw!=null&&pwr!=null){
 			if(pw.equals(pwr)==false){
-				registrationError("Passwords do not match");
+				error("Passwords do not match");
 			}
 			if(!Util.verifyUsername(u)){
-				registrationError(Util.usernameFailureReason(u));
+				error(Util.usernameFailureReason(u));
 			}
 			this.u = u;
 			this.p = pw;
@@ -143,11 +160,43 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 			(new Thread(this)).start();
 		}
 	}
-	private void registrationError(String error){
+	private void error(String error){
 		JOptionPane.showMessageDialog(this,
-			    error,
-			    "Registration error",
-			    JOptionPane.ERROR_MESSAGE);
+				error,
+				"Error",
+				JOptionPane.ERROR_MESSAGE);
+	}
+	private void info(String info){
+		JOptionPane.showMessageDialog(this, info,
+		        "Information", JOptionPane.INFORMATION_MESSAGE);
+	}
+	public void save(){
+		String newServer = server.getText();
+		int newPort = 0;
+		try{
+			newPort = Integer.parseInt(port.getText());
+		}catch(NumberFormatException e){
+			error("Port not number");
+		}
+		if(newPort>0){
+			try{
+				SocketAddress sockaddr = new InetSocketAddress(newServer, newPort);
+				Socket socket = new Socket();
+				// Connect with 10 s timeout
+				socket.connect(sockaddr, 10000);
+				if(!socket.isConnected()||socket.isClosed()){
+					error("Could not contact server");
+				}else{
+					ifa.getSettings().setInt("port", newPort);
+					ifa.getSettings().setString("host", newServer);
+					ifa.getSettings().save();
+					info("Saved settings");
+				}
+				socket.close();
+			}catch(IOException e){
+				error("Could not contact server");
+			}
+		}
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
@@ -155,6 +204,8 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 			login();
 		}else if(arg0.getSource()==register){
 			register();
+		}else if(arg0.getSource()==save){
+			save();
 		}else if(arg0.getSource()==min){
 			this.setState(Frame.ICONIFIED);
 		}else if(arg0.getSource()==quit){
@@ -163,10 +214,14 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	}
 	@Override
 	public void run() {
-		if(ifa.connect(host, port)){
-			System.out.println("Connected to server");
-		}else{
-			System.err.println("Connection to server failed");
+		try {
+			if(ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"))){
+				System.out.println("Connected to server");
+			}else{
+				System.err.println("Connection to server failed");
+			}
+		} catch (SettingsException e) {
+			System.err.println("Error retrieving host/port configuration");
 		}
 		if(action==Action.LOGIN){
 			ifa.login(u,p);
