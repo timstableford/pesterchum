@@ -83,9 +83,6 @@ public class Connection implements Runnable{
 		return interfaces.get(name);
 	}
 	public synchronized void sendData(String data){
-		if(!data.endsWith("\n")){
-			data = data + "\n";
-		}
 		writeBuffer.add(data);
 	}
 	public boolean encrypted(){
@@ -132,9 +129,8 @@ public class Connection implements Runnable{
 				break; //going to assume lost connection and break loop
 			}
 			if(out!=null&&enc!=null&&enc.secure()==Secure.YES&&writeBuffer.size()>0){
-				System.out.println("secure");
 				try {
-					String d = enc.encryptSymmetric(writeBuffer.get(0).getBytes());
+					String d = enc.encryptSymmetric(writeBuffer.get(0).getBytes())+"\n";
 					out.write(d.getBytes());
 					out.flush();
 				} catch (IOException e) {

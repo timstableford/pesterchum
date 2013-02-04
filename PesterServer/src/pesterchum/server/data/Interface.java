@@ -114,6 +114,7 @@ public class Interface implements Incoming{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
+				.withField("username", JsonNodeBuilders.aStringBuilder(un))
 				.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(u.authenticated())));
 		if(u.authenticated()){
 			JsonArrayNodeBuilder arr = JsonNodeBuilders.anArrayBuilder();

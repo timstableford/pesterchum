@@ -1,7 +1,6 @@
 package pesterchum.client.resource;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.HashMap;
 

@@ -20,8 +20,6 @@ import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 
-import pesterchum.client.Util;
-
 public class Encryption {
 	private SecretKeySpec sks;
 	private Cipher enc, denc;
