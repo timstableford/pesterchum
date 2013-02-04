@@ -2,17 +2,17 @@ package pesterchum.server;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import argo.jdom.JdomParser;
+import argo.jdom.JsonNodeBuilders;
+import argo.jdom.JsonObjectNodeBuilder;
+import argo.jdom.JsonRootNode;
+import argo.saj.InvalidSyntaxException;
 
 import pesterchum.server.data.Manager;
 import pesterchum.server.data.ICData;
@@ -25,13 +25,13 @@ public class Connection implements Runnable{
 	private BufferedOutputStream out;
 	private boolean run;
 	private Socket socket;
-	private DocumentBuilder builder;
 	private User user;
 	private Encryption enc;
 	private Manager database;	
 	private Server server;
 	private long lastPing;
 	private long lastPong;
+	private final JdomParser parser = new JdomParser();
 	public Connection(Socket socket, Manager database, Server server){
 		this.database = database;
 		this.socket = socket;
@@ -53,7 +53,10 @@ public class Connection implements Runnable{
 			data = enc.encryptSymmetric(data);
 		}
 		try {
-			out.write((data+"\n").getBytes());
+			if(!data.endsWith("\n")){
+				data = data + "\n";
+			}
+			out.write(data.getBytes());
 			out.flush();
 		} catch (IOException e) {
 			if(socket!=null){
@@ -63,13 +66,15 @@ public class Connection implements Runnable{
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
 		if(enc.secure()){
-			//this we need to decrypt
 			data = enc.decryptSymmetric(data);
 		}
-		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
-		doc.getDocumentElement().normalize();
-		String name = doc.getDocumentElement().getNodeName();
-		database.getInterface(name).processIncoming(new ICData(name, data, this));
+		try {
+			JsonRootNode node = parser.parse(data);
+			String name = node.getStringValue("class");
+			database.getInterface(name).processIncoming(new ICData(name, node, this));
+		} catch (InvalidSyntaxException e) {
+			System.err.println("Error parsing incoming");
+		}
 	}
 	
 	public User getUser(){
@@ -83,6 +88,10 @@ public class Connection implements Runnable{
 	}
 	public void disconnect(){
 		if(socket!=null){
+			JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+					.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+					.withField("command", JsonNodeBuilders.aStringBuilder("disconnect"));
+			sendData(Util.jsonToString(builder.build()), true);
 			sendData("<admin><command>disconnect</command></admin>", true);
 			try {
 				Thread.sleep(10);
@@ -107,13 +116,6 @@ public class Connection implements Runnable{
 	@Override
 	public void run() {
 		System.out.println("Connection from "+socket.getInetAddress());	
-		//setup document builder
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			builder = dbFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			System.err.println("Couldn't setup document builder");
-		}
 		//setup streams
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -125,7 +127,10 @@ public class Connection implements Runnable{
 		while(run){
 			//do the ping pong
 			if((System.currentTimeMillis()-lastPing)>TIMEOUT/2){
-				sendData("<admin><command>ping</command></admin>", true);
+				JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+						.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+						.withField("command", JsonNodeBuilders.aStringBuilder("ping"));
+				sendData(Util.jsonToString(builder.build()), true);
 				lastPing = System.currentTimeMillis();
 			}
 			if((System.currentTimeMillis()-lastPong)>TIMEOUT){

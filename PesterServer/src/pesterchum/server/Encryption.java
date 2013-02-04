@@ -1,6 +1,5 @@
 package pesterchum.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -16,25 +15,20 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import pesterchum.server.data.ICData;
 
 public class Encryption {
 	private SecretKeySpec sks;
 	private Cipher enc, denc;
 	private PublicKey pubKey;
 	public Encryption(){}
-	public void initAsymmetric(String pubKeyXML) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-		DocumentBuilder builder =  DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		Document doc = builder.parse(new ByteArrayInputStream(pubKeyXML.getBytes()));
-		Element e = Util.getFirst(doc, "publickey");
-		BigInteger m = new BigInteger(Encryption.decode(Util.getTagValue("modulus", e)));
-		BigInteger ex = new BigInteger(Encryption.decode(Util.getTagValue("exponent", e)));
+	public void initAsymmetric(ICData data) throws ParserConfigurationException, SAXException, IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+		BigInteger m = new BigInteger(Encryption.decode(data.getData().getStringValue("modulus")));
+		BigInteger ex = new BigInteger(Encryption.decode(data.getData().getStringValue("exponent")));
 		RSAPublicKeySpec keySpec = new RSAPublicKeySpec(m, ex);
 		KeyFactory fact = KeyFactory.getInstance("RSA");
 		pubKey = fact.generatePublic(keySpec);

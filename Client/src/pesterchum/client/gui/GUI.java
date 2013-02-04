@@ -209,7 +209,7 @@ public class GUI extends PFrame implements ActionListener{
 		return null;
 	}
 	public void incomingMessage(Message message){
-		System.out.println("Message from "+message.getFrom()+" - "+message.getMessage());
+		System.out.println("Message from "+message.getFrom()+" - "+message.getContent());
 	}
 	
 	public void loginResponse(boolean success) {

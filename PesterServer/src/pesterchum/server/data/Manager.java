@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 import pesterchum.server.Connection;
+import pesterchum.server.Util;
 import pesterchum.server.data.database.Database;
 import pesterchum.server.data.database.SQLiteDatabase;
 
@@ -39,7 +40,7 @@ public class Manager {
 	public void sendMessage(Message message){
 		if(connected.containsKey(message.getTo())){
 			Connection o = connected.get(message.getTo());
-			o.sendData(message.getXML(), true);
+			o.sendData(Util.jsonToString(message.getJson()), true);
 		}else{
 			//TODO Add to database
 			System.out.println("Could not send message user offline - "+message.getTo());

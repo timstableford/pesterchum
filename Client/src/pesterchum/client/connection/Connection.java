@@ -2,7 +2,6 @@ package pesterchum.client.connection;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
@@ -12,13 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.SocketFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import argo.jdom.JdomParser;
+import argo.jdom.JsonRootNode;
+import argo.saj.InvalidSyntaxException;
+
+import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
 import pesterchum.client.data.Incoming;
 
@@ -27,20 +27,14 @@ public class Connection implements Runnable{
 	private BufferedOutputStream out;
 	private Socket socket;
 	private boolean run;
-	private DocumentBuilder builder;
 	private String username;
 	private List<String> writeBuffer;
 	private Hashtable<String, Incoming> interfaces;
 	private Encryption enc;
+	private final JdomParser parser = new JdomParser();
 	public Connection(){
 		this.username = null;
 		this.interfaces = new Hashtable<String, Incoming>();
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		try {
-			builder = dbFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			System.err.println("Couldn't setup document builder");
-		}
 		writeBuffer = Collections.synchronizedList(new LinkedList<String>());
 	}
 	public boolean connect(String host, int port){
@@ -89,6 +83,9 @@ public class Connection implements Runnable{
 		return interfaces.get(name);
 	}
 	public synchronized void sendData(String data){
+		if(!data.endsWith("\n")){
+			data = data + "\n";
+		}
 		writeBuffer.add(data);
 	}
 	public boolean encrypted(){
@@ -105,10 +102,13 @@ public class Connection implements Runnable{
 		case NO:
 			break;
 		}
-		Document doc = builder.parse(new ByteArrayInputStream(data.getBytes()));
-		doc.getDocumentElement().normalize();
-		String name = doc.getDocumentElement().getNodeName();
-		getIncoming(name).processIncoming(new ICData(name, data));
+		try {
+			JsonRootNode rn = parser.parse(data);
+			getIncoming(rn.getStringValue("class")).processIncoming(new ICData(rn.getStringValue("class"), rn));
+		} catch (InvalidSyntaxException e) {
+			e.printStackTrace();
+			System.err.println("Could not parse incoming data");
+		}
 	}
 	public void setUsername(String username){
 		this.username = username;
@@ -132,8 +132,9 @@ public class Connection implements Runnable{
 				break; //going to assume lost connection and break loop
 			}
 			if(out!=null&&enc!=null&&enc.secure()==Secure.YES&&writeBuffer.size()>0){
+				System.out.println("secure");
 				try {
-					String d = enc.encryptSymmetric(writeBuffer.get(0).getBytes())+"\n";
+					String d = enc.encryptSymmetric(writeBuffer.get(0).getBytes());
 					out.write(d.getBytes());
 					out.flush();
 				} catch (IOException e) {
@@ -153,7 +154,7 @@ public class Connection implements Runnable{
 	}
 	private void sendHello(){
 		try {
-			out.write((enc.getPublicKeyXML()+"\n").getBytes());
+			out.write((Util.jsonToString(enc.getPublicKeyJson())+"\n").getBytes());
 			System.out.println("Sending public key");
 			out.flush();
 		} catch (IOException e) {

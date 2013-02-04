@@ -1,11 +1,13 @@
 package pesterchum.server.data;
 
+import argo.jdom.JsonRootNode;
 import pesterchum.server.Connection;
 
 public class ICData {
-	private String name, data;
+	private String name;
+	private JsonRootNode data;
 	private Connection source;
-	public ICData(String name, String data, Connection source){
+	public ICData(String name, JsonRootNode data, Connection source){
 		this.name = name;
 		this.data = data;
 		this.source = source;
@@ -13,7 +15,7 @@ public class ICData {
 	public String getName(){
 		return name;
 	}
-	public String getData(){
+	public JsonRootNode getData(){
 		return data;
 	}
 	public Connection getSource(){

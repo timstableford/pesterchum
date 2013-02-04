@@ -1,15 +1,18 @@
 package pesterchum.client.data;
 
+import argo.jdom.JsonRootNode;
+
 public class ICData {
-	private String name, data;
-	public ICData(String name, String data){
+	private String name;
+	private JsonRootNode data;
+	public ICData(String name, JsonRootNode data){
 		this.name = name;
 		this.data = data;
 	}
 	public String getName(){
 		return name;
 	}
-	public String getData(){
+	public JsonRootNode getData(){
 		return data;
 	}
 }

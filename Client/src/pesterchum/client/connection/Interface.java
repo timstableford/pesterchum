@@ -1,19 +1,14 @@
 package pesterchum.client.connection;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeBuilders;
+import argo.jdom.JsonObjectNodeBuilder;
+import argo.jdom.JsonRootNode;
 
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
@@ -24,7 +19,6 @@ import pesterchum.client.gui.GUI;
 public class Interface implements Incoming{
 	private static final long TIMEOUT = 10000;
 	private static final int VERSION = 1;
-	private DocumentBuilder builder;
 	private GUI gui;
 	private Connection conn;
 	private long lastPing;
@@ -40,17 +34,9 @@ public class Interface implements Incoming{
 			System.err.println("Error loading settings");
 		}
 		conn.registerIncoming("hello", this);
-		conn.registerIncoming("login", this);
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
-		conn.registerIncoming("friendrequest", this);
 		friends = new LinkedList<String>();
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			builder = dbFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			System.err.println("Couldn't setup document builder");
-		}
 		lastPing = System.currentTimeMillis();
 	}
 	public Settings getSettings(){
@@ -82,17 +68,11 @@ public class Interface implements Incoming{
 			case "admin":
 				processAdmin(data);
 				break;
-			case "friendrequest":
-				processFriendRequest(data);
-				break;
 			default:
 				System.err.println("Unknown data from - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
-			case "login":
-				processLogin(data);
-				break;
 			case "hello":
 				processHello(data);
 				break;
@@ -105,20 +85,12 @@ public class Interface implements Incoming{
 		}
 	}
 	public void login(String username, String password){
-		//Create the document
-		Document doc = builder.newDocument();
-		Element root = doc.createElement("login");
-		doc.appendChild(root);
-		//Add the username element
-		Element un = doc.createElement("username");
-		un.appendChild(doc.createTextNode(username));
-		root.appendChild(un);
-		//Add the password element
-		Element pw = doc.createElement("password");
-		pw.appendChild(doc.createTextNode(password));
-		root.appendChild(pw);
-		//Magical code to turn it into a string and send it
-		conn.sendData(Util.docToString(doc));
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
+				.withField("username", JsonNodeBuilders.aStringBuilder(username))
+				.withField("password", JsonNodeBuilders.aStringBuilder(password));
+		conn.sendData(Util.jsonToString(builder.build()));
 	}
 	public boolean connect(String host, int port){
 		conn.disconnect();
@@ -130,90 +102,63 @@ public class Interface implements Incoming{
 		return conn.connect(host, port);
 	}
 	public void sendMessage(Message message){
-		conn.sendData(message.getXML());
+		conn.sendData(Util.jsonToString(message.getJson()));
 	}
 	public void addFriend(String username){
-		conn.sendData("<friendrequest>"+Encryption.encode(username.getBytes())+"</friendrequest>");
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
+				.withField("username", JsonNodeBuilders.aStringBuilder(Encryption.encode(username.getBytes())));
+		conn.sendData(Util.jsonToString(builder.build()));
 	}
-	private void processFriendRequest(ICData data){
-		try {
-			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
-			Element e = Util.getFirst(doc, "friendrequest");
-			String username = Util.getTagValue("name", e);
-			boolean suc = Boolean.parseBoolean(Util.getTagValue("success", e));
-			gui.friendRequestResponse(username, suc);
-		} catch (SAXException | IOException e) {
-			//we'll just ignore this
-		}
+	private void processFriendResponse(ICData data){
+		String username = new String(Encryption.decode(data.getData().getStringValue("username")));
+		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
+		gui.friendRequestResponse(username, suc);
 	}
 	private void processAdmin(ICData data){
-		try {
-			Document doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
-			Element e = Util.getFirst(doc, "admin");
-			switch(Util.getTagValue("command", e)){
-			case "disconnect":
-				conn.disconnect();
-				break;
-			case "ping":
-				conn.sendData("<admin><command>pong</command></admin>");
-				lastPing = System.currentTimeMillis();
-				break;
-			default:
-				System.err.println("Unknown admin command");
-			}
-		} catch (SAXException | IOException e) {
-			System.err.println("Could not process admin request");
+		switch(data.getData().getStringValue("command")){
+		case "disconnect":
+			conn.disconnect();
+			break;
+		case "ping":
+			JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder() 
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("pong"));
+			conn.sendData(Util.jsonToString(builder.build()));
+			lastPing = System.currentTimeMillis();
+			break;
+		case "friendresponse":
+			processFriendResponse(data);
+			break;
+		case "login":
+			processLogin(data);
+			break;
+		default:
+			System.err.println("Unknown admin command");
 		}
 	}
 	private boolean processLogin(ICData data){
-		Document doc = null;
-		boolean suc = false;
-		try {
-			doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
-		} catch (SAXException | IOException e) {}
-		if(doc!=null){
-			doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("login");
-			Node nNode = nList.item(0);
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				String un = Util.getTagValue("username", eElement);
-				suc = Boolean.parseBoolean(Util.getTagValue("success", eElement));
-				if(suc){
-					conn.setUsername(un);
-					NodeList list = eElement.getElementsByTagName("friends");
-					for(int i=0; i<list.getLength(); i++){
-						Node node = list.item(i);
-						if (node.getNodeType() == Node.ELEMENT_NODE) {
-							Element e = (Element) node;
-							friends.add(Util.getTagValue("friend", e));
-						}
-					}
-				}
+		System.out.println("Login response received");
+		String un = data.getData().getStringValue("username");
+		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
+		if(suc){
+			conn.setUsername(un);
+			List<JsonNode> friends = data.getData().getArrayNode("friends");
+			for(JsonNode f: friends){
+				this.friends.add(f.getStringValue("username"));
 			}
 		}
 		gui.loginResponse(suc);
 		return suc;
 	}
 	private void processHello(ICData data){
-		Document doc;
-		try {
-			doc = builder.parse(new ByteArrayInputStream(data.getData().getBytes()));
-			doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("hello");
-			Node nNode = nList.item(0);
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				int ver = Integer.parseInt(Util.getTagValue("version", eElement));
-				byte[] key = Encryption.decode(Util.getTagValue("key", eElement));
-				conn.getEncryption().initSymmetric(key);
-				if(ver!=VERSION){
-					gui.versionMismatch(VERSION, ver);
-				}
-				System.out.println("Received symmetric key from server");
-			}
-		} catch (SAXException | IOException e) {
-			System.err.println("Could not process hello message from server");
+		int ver = Integer.parseInt(data.getData().getStringValue("version"));
+		byte[] key = Encryption.decode(data.getData().getStringValue("key"));
+		conn.getEncryption().initSymmetric(key);
+		if(ver!=VERSION){
+			gui.versionMismatch(VERSION, ver);
 		}
+		System.out.println("Received symmetric key from server");
 	}
 }

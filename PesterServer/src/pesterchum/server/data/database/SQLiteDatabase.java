@@ -8,13 +8,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import argo.jdom.JdomParser;
+import argo.jdom.JsonRootNode;
+import argo.saj.InvalidSyntaxException;
+
 import pesterchum.server.Encryption;
+import pesterchum.server.Util;
 import pesterchum.server.data.User;
 
 public class SQLiteDatabase implements Database{
 	private static final int VERSION = 1;
 	private Statement statement;
 	private Connection connection;
+	private static final JdomParser JDOM_PARSER = new JdomParser();
 	public SQLiteDatabase(String database) throws ClassNotFoundException, SQLException{
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection("jdbc:sqlite:"+database);
@@ -44,14 +50,15 @@ public class SQLiteDatabase implements Database{
 				String pass = rs.getString("password");
 				if(pass.equals(Encryption.encode(getHash(password).getBytes()))){
 					user.setAuthenticated(true);
-					user.loadFriends(new String(Encryption.decode(rs.getString("friends"))));
+					JsonRootNode node = JDOM_PARSER.parse(new String(Encryption.decode(rs.getString("friends"))));
+					user.loadFriends(node);
 					return true;
 				}else{
 					user.setAuthenticated(false);
 					return false;
 				}
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | InvalidSyntaxException e) {
 			user.setAuthenticated(false);
 			return false;
 		}
@@ -69,7 +76,7 @@ public class SQLiteDatabase implements Database{
 			statement.executeUpdate("insert into users values("
 					+"'"+Encryption.encode(user.getUsername().getBytes())+"', "
 					+"'"+Encryption.encode(getHash(password).getBytes())+"', "
-					+"'"+Encryption.encode(user.getFriendsXML().getBytes())+"')");
+					+"'"+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+"')");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -84,7 +91,7 @@ public class SQLiteDatabase implements Database{
 				statement.executeUpdate("insert or replace into users values("
 						+Encryption.encode(user.getUsername().getBytes())+", "
 						+passHash+", "
-						+Encryption.encode(user.getFriendsXML().getBytes())+")");
+						+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
 			}
 		} catch (SQLException e1) {
 			System.err.println("Could not save user "+user.getUsername());
@@ -92,7 +99,7 @@ public class SQLiteDatabase implements Database{
 		try {
 			statement.executeUpdate("insert of replace into users values("
 					+Encryption.encode(user.getUsername().getBytes())+", "
-					+Encryption.encode(user.getFriendsXML().getBytes())+")");
+					+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
 		} catch (SQLException e) {
 			System.err.println("Could not save user "+user.getUsername());
 		}

@@ -113,7 +113,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	public void login(){
 		u = un.getText();
 		p = new String(pw.getPassword());
-		action = Action.REGISTER;
+		action = Action.LOGIN;
 		if(!clicked&&ifa!=null&&u!=null&&p!=null){
 			clicked = true;
 			login.setEnabled(false);

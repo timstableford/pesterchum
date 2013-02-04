@@ -15,12 +15,10 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import argo.jdom.JsonNodeBuilders;
+import argo.jdom.JsonObjectNodeBuilder;
+import argo.jdom.JsonRootNode;
 
 import pesterchum.client.Util;
 
@@ -73,25 +71,13 @@ public class Encryption {
 		priv = null;
 		initAsymmetric();
 	}
-	public String getPublicKeyXML(){
-		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.newDocument();
-			Element root = doc.createElement("publickey");
-			doc.appendChild(root);
-			
-			Element modulus = doc.createElement("modulus");
-			modulus.appendChild(doc.createTextNode(encode(pub.getModulus().toByteArray())));
-			root.appendChild(modulus);
-			
-			Element exp = doc.createElement("exponent");
-			exp.appendChild(doc.createTextNode(encode(pub.getPublicExponent().toByteArray())));
-			root.appendChild(exp);
-			
-			return Util.docToString(doc);
-		} catch (ParserConfigurationException e) {
-			return null;
-		}
+	public JsonRootNode getPublicKeyJson(){
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("publickey"))
+				.withField("modulus", JsonNodeBuilders.aStringBuilder(encode(pub.getModulus().toByteArray())))
+				.withField("exponent", JsonNodeBuilders.aStringBuilder(encode(pub.getPublicExponent().toByteArray())));
+		JsonRootNode json = builder.build();
+		return json;
 	}
 	public byte[] decryptAsymmetric(String data){
 		try {
