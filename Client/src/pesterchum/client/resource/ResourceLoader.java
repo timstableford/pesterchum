@@ -25,6 +25,9 @@ public class ResourceLoader {
 	public Resource getResource(String name){
 		return resources.get(name);
 	}
+	public Image getImage(String name){
+		return ((Img)(getResource(name))).getImage();
+	}
 	public static Image getIcon(){
 		if(icon==null){
 			icon = (new Img(icon_location)).getImage();

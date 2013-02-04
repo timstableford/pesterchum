@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -26,6 +27,7 @@ import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PMenu;
 import pesterchum.client.gui.theme.PMenuBar;
 import pesterchum.client.gui.theme.PMenuItem;
+import pesterchum.client.gui.theme.POpaqueLabel;
 import pesterchum.client.gui.theme.PPanel;
 import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
@@ -33,7 +35,7 @@ import pesterchum.client.resource.ResourceLoader;
 
 public class GUI extends PFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	private ResourceLoader smilies;
+	private ResourceLoader smilies, theme;
 	private Login login;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
@@ -53,7 +55,9 @@ public class GUI extends PFrame implements ActionListener{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		smilies = new ResourceLoader();
 		smilies.load("/smilies/smilies.xml");
-		this.setSize(new Dimension(200, 400));
+		theme = new ResourceLoader();
+		theme.load("/theme/images.xml");
+		this.setSize(new Dimension(230, 380));
 		//create menu bar + menus
 		
 		PPanel content = new PPanel();
@@ -65,11 +69,18 @@ public class GUI extends PFrame implements ActionListener{
 		content.setLayout(new GridBagLayout());
 		this.add(getMenu(), BorderLayout.NORTH);
 		this.add(content, BorderLayout.CENTER);
+		//logo
 		c.gridx = 0;
 		c.gridy = 0;
+		c.insets = new Insets(0,6,0,6);
+		content.add(new JLabel(new ImageIcon(theme.getImage("logo"))), c);
+		//////
+		c.gridy = 1;
 		content.add(getBuddyList(),c);
+		//////
 		c.anchor = GridBagConstraints.PAGE_END;
 		c.gridy = 1;
+		c.insets = new Insets(0,6,6,6);
 		content.add(getMoods(),c);
 
 	}
@@ -120,9 +131,13 @@ public class GUI extends PFrame implements ActionListener{
 		PPanel buddyList = new PPanel();	
 		buddyList.setLayout(new GridBagLayout());
 		c.gridx = 0;
-		c.gridy = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 0;
+		POpaqueLabel chumroll = new POpaqueLabel("CHUMROLL:");
+		buddyList.add(chumroll, c);
 		
+		
+		c.gridy = 1;
 		PPanel friendPanel = new PPanel();
 		friendPanel.setLayout(new BoxLayout(friendPanel, BoxLayout.Y_AXIS));
 		Box box = Box.createVerticalBox();
@@ -137,7 +152,7 @@ public class GUI extends PFrame implements ActionListener{
 		buddyList.add(friendPanel, c);
 		///////////////////
 		c.gridwidth = 1;
-		c.gridy = 1;
+		c.gridy = 2;
 		c.weightx = 0.5;
 		PButton addChum = new PButton("add chum"); 
 		buddyList.add(addChum, c);

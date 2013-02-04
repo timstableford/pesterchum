@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<resource>
+    <name>logo</name>
+    <path>/theme/logo.png</path>
+    <type>image</type>
+</resource>
