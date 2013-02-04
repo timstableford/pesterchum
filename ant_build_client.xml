@@ -9,7 +9,7 @@
 	<property name="graphics.dir" value="Client/graphics"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
-		<pathelement location="${lib.dir}/*.jar"/>
+		<pathelement location="${lib.dir}/argo-small-3.2.jar"/>
     </path>
     <target name="init">
 		<echo message="Initialising files"/>
