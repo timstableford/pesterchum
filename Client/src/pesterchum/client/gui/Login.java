@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
+import pesterchum.client.connection.SettingsException;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
@@ -37,10 +38,10 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	private String u,p;
 	private boolean clicked;
 	private Action action;
-	public Login(String host, int port, Interface ifa){
+	public Login(Interface ifa) throws SettingsException{
 		super();
-		this.host = host;
-		this.port = port;
+		this.host = ifa.getSettings().getString("host");
+		this.port = ifa.getSettings().getInt("port");
 		this.ifa = ifa;
 		this.clicked = false;
 		this.setTitle("Pesterchum Login");

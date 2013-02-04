@@ -1,6 +1,7 @@
 package pesterchum.client.connection;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -27,10 +28,17 @@ public class Interface implements Incoming{
 	private GUI gui;
 	private Connection conn;
 	private long lastPing;
+	private Settings settings;
 	private LinkedList<String> friends;
 	public Interface(GUI gui){
 		this.gui = gui;
 		this.conn = new Connection();
+		String s = System.getProperty("file.separator");
+		try {
+			this.settings = new Settings(new File(System.getProperty("user.home")+s+".pesterchum"+s+"settings.json"));
+		} catch (IOException e1) {
+			System.err.println("Error loading settings");
+		}
 		conn.registerIncoming("hello", this);
 		conn.registerIncoming("login", this);
 		conn.registerIncoming("message", this);
@@ -44,6 +52,9 @@ public class Interface implements Incoming{
 			System.err.println("Couldn't setup document builder");
 		}
 		lastPing = System.currentTimeMillis();
+	}
+	public Settings getSettings(){
+		return settings;
 	}
 	public void register(String u, String p){
 		//TODO

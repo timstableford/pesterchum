@@ -20,6 +20,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import pesterchum.client.connection.Interface;
+import pesterchum.client.connection.SettingsException;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
@@ -43,7 +44,12 @@ public class GUI extends PFrame implements ActionListener{
 		this.setTitle("Pesterchum");
 		this.setUndecorated(true);
 		this.setLocation(200,200);
-		login = new Login("localhost",7423,ifa);
+		try {
+			login = new Login(ifa);
+		} catch (SettingsException e) {
+			System.err.println("Could not load settings");
+			System.exit(-1);
+		}
 		
 		// menu at top
 		// logo
