@@ -3,11 +3,12 @@ package pesterchum.client.gui.theme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
-import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.border.LineBorder;
 
@@ -17,15 +18,23 @@ public class PTabbedPane extends PPanel implements ActionListener{
 	private HashMap<PButton, JComponent> components;
 	public PTabbedPane(){
 		this.setBorder(new LineBorder(Color.YELLOW));
-		this.setLayout(new BorderLayout());
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.weightx = 1;
+		c.weighty = 0;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 0;
 		buttons = new PPanel();
 		buttons.setBorder(new LineBorder(Color.YELLOW));
 		buttons.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
 		content = new PPanel();
 		content.setBorder(null);
 		components = new HashMap<PButton, JComponent>();
-		this.add(buttons, BorderLayout.CENTER);
-		this.add(content, BorderLayout.SOUTH);
+		this.add(buttons, c);
+		c.weighty = 1;
+		c.gridy = 1;
+		this.add(content, c);
 	}
 	public void addTab(String text, JComponent component){
 		PButton b = new PButton(text);

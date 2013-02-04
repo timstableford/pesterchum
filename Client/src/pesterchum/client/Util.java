@@ -20,10 +20,55 @@ public class Util {
 		System.arraycopy(b, 0, r, a.length, b.length);
 		return r;
 	}
-	public static void printArray(byte[] a){
-		for(int i=0; i<a.length; i++){
-			System.out.print((char)a[i]);
+	public static boolean verifyUsername(String username){
+		//check exactly 1 capital
+		int capitalcount = 0;
+		for(int i=0; i<username.length(); i++){
+			char c = username.charAt(i);
+			if(c>='A'&&c<='Z'){
+				if(i==0){
+					return false;
+				}
+				capitalcount++;
+			}
 		}
+		if(capitalcount!=1){
+			return false;
+		}
+		//check only letters
+		String ut = username.toString().toLowerCase();
+		for(int j=0; j<ut.length(); j++){
+			char c = ut.charAt(j);
+			if(c>'z'||c<'a'){
+				return false;
+			}
+		}
+		return true;
+	}
+	public static String usernameFailureReason(String username){
+		//check exactly 1 capital
+		int capitalcount = 0;
+		for(int i=0; i<username.length(); i++){
+			char c = username.charAt(i);
+			if(c>='A'&&c<='Z'){
+				if(i==0){
+					return "First letter must not be upper case";
+				}
+				capitalcount++;
+			}
+		}
+		if(capitalcount!=1){
+			return "Must contain exactly 1 upper case letter, not first";
+		}
+		//check only letters
+		String ut = username.toString().toLowerCase();
+		for(int j=0; j<ut.length(); j++){
+			char c = ut.charAt(j);
+			if(c>'z'||c<'a'){
+				return "Must be only letters";
+			}
+		}
+		return null;
 	}
 	public static String docToString(Document doc){
 		try {

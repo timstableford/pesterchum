@@ -1,21 +1,19 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
+import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
@@ -29,15 +27,16 @@ import pesterchum.client.gui.theme.PTextField;
 
 public class Login extends PFrame implements ActionListener, Runnable, KeyListener{
 	private static final long serialVersionUID = 5329488003668890739L;
-	private PTextField un;
-	private PPasswordField pw;
-	private PButton login;
+	private PTextField un, run;
+	private PPasswordField pw, rpw, rpwr;
+	private PButton login, register;
 	private PMenuItem min, quit;
 	private Interface ifa;
 	private String host;
 	private int port;
 	private String u,p;
 	private boolean clicked;
+	private Action action;
 	public Login(String host, int port, Interface ifa){
 		super();
 		this.host = host;
@@ -46,6 +45,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		this.clicked = false;
 		this.setTitle("Pesterchum Login");
 		this.setLocation(200,200);
+		this.setSize(new Dimension(200,240));
 		this.setUndecorated(true);
 		//menu
 		PMenuBar mb = new PMenuBar();
@@ -64,12 +64,28 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		tabs.addTab("REGISTER", createRegisterPanel());
 		this.add(tabs, BorderLayout.CENTER);
 
-		this.pack();
 		this.setVisible(true);
 	}
 	public PPanel createRegisterPanel(){
 		PPanel registerPanel = new PPanel();
-		registerPanel.add(new JLabel("register here"));
+		GridLayout layout = new GridLayout(0,1);
+		layout.setHgap(3);
+		registerPanel.setLayout(layout);
+		run = new PTextField(16);
+		rpw = new PPasswordField(16);
+		rpwr = new PPasswordField(16);
+		run.addKeyListener(this);
+		rpw.addKeyListener(this);
+		rpwr.addKeyListener(this);
+		register = new PButton("Register");
+		register.addActionListener(this);
+		registerPanel.add(new PLabel("Username"));
+		registerPanel.add(run);
+		registerPanel.add(new PLabel("Password"));
+		registerPanel.add(rpw);
+		registerPanel.add(new PLabel("Password Again"));
+		registerPanel.add(rpwr);
+		registerPanel.add(register);
 		return registerPanel;
 	}
 	public PPanel createLoginPanel(){
@@ -96,18 +112,48 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	public void login(){
 		u = un.getText();
 		p = new String(pw.getPassword());
+		action = Action.REGISTER;
 		if(!clicked&&ifa!=null&&u!=null&&p!=null){
 			clicked = true;
 			login.setEnabled(false);
+			register.setEnabled(false);
 			login.setText("Logging in...");
 			(new Thread(this)).start();
 		}
 	}
+	public void register(){
+		String u = run.getText();
+		String pw = new String(rpw.getPassword());
+		String pwr = new String(rpwr.getPassword());
+		action = Action.REGISTER;
+		if(!clicked&&ifa!=null&&u!=null&&pw!=null&&pwr!=null){
+			if(pw.equals(pwr)==false){
+				registrationError("Passwords do not match");
+			}
+			if(!Util.verifyUsername(u)){
+				registrationError(Util.usernameFailureReason(u));
+			}
+			this.u = u;
+			this.p = pw;
+			register.setText("Registering...");
+			login.setEnabled(false);
+			register.setEnabled(false);
+			clicked = true;
+			(new Thread(this)).start();
+		}
+	}
+	private void registrationError(String error){
+		JOptionPane.showMessageDialog(this,
+			    error,
+			    "Registration error",
+			    JOptionPane.ERROR_MESSAGE);
+	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		login.setActionCommand("LOGIN");
 		if(arg0.getSource()==login){
 			login();
+		}else if(arg0.getSource()==register){
+			register();
 		}else if(arg0.getSource()==min){
 			this.setState(Frame.ICONIFIED);
 		}else if(arg0.getSource()==quit){
@@ -121,13 +167,19 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		}else{
 			System.err.println("Connection to server failed");
 		}
-		ifa.login(u,p);
-		clicked = false;
+		if(action==Action.LOGIN){
+			ifa.login(u,p);
+		}else if(action==Action.REGISTER){
+			ifa.register(u, p);
+		}
+		
 	}
 	public void loginResponse(boolean success){
 		if(!success){
 			login.setText("LOGIN - FAILED");
 			login.setEnabled(true);
+			register.setEnabled(true);
+			clicked = false;
 		}
 	}
 	@Override
@@ -135,9 +187,18 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode()==KeyEvent.VK_ENTER){
-			login();
+			JComponent s = (JComponent)e.getSource();
+			if(s==un||s==pw){
+				login();
+			}else if(s==run||s==rpw||s==rpwr){
+				register();
+			}
 		}
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {}
+	enum Action{
+		REGISTER,
+		LOGIN;
+	}
 }

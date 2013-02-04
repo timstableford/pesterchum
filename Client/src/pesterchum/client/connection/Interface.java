@@ -45,6 +45,9 @@ public class Interface implements Incoming{
 		}
 		lastPing = System.currentTimeMillis();
 	}
+	public void register(String u, String p){
+		//TODO
+	}
 	public boolean authenticated(){
 		if(conn.getUsername()!=null){
 			return true;
