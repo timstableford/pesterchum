@@ -8,7 +8,8 @@
 	<property name="lib.dir" value="PesterServer/lib"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
-		<pathelement location="${lib.dir}/*.jar"/>
+	<pathelement location="${lib.dir}/argo-small-3.2.jar"/>
+	<pathelement location="${lib.dir}/sqlite-jdbc-3.7.2.jar"/>
     </path>
     <target name="init">
 		<echo message="Initialising files"/>
