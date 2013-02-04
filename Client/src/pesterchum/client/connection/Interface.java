@@ -167,13 +167,13 @@ public class Interface implements Incoming{
 				suc = Boolean.parseBoolean(Util.getTagValue("success", eElement));
 				if(suc){
 					conn.setUsername(un);
-				}
-				NodeList list = eElement.getElementsByTagName("friends");
-				for(int i=0; i<list.getLength(); i++){
-					Node node = list.item(i);
-					if (node.getNodeType() == Node.ELEMENT_NODE) {
-						Element e = (Element) node;
-						friends.add(Util.getTagValue("friend", e));
+					NodeList list = eElement.getElementsByTagName("friends");
+					for(int i=0; i<list.getLength(); i++){
+						Node node = list.item(i);
+						if (node.getNodeType() == Node.ELEMENT_NODE) {
+							Element e = (Element) node;
+							friends.add(Util.getTagValue("friend", e));
+						}
 					}
 				}
 			}

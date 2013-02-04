@@ -1,4 +1,4 @@
-package pesterchum.client.gui.login;
+package pesterchum.client.gui;
 
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -21,6 +21,8 @@ public class Login extends PFrame implements ActionListener, Runnable{
 	private static final long serialVersionUID = 5329488003668890739L;
 	private PTextField un;
 	private PPasswordField pw;
+	private PButton login;
+	private PMenuItem min, quit;
 	private Interface ifa;
 	private String host;
 	private int port;
@@ -33,6 +35,7 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		this.ifa = ifa;
 		this.clicked = false;
 		this.setTitle("Pesterchum Login");
+		this.setLocation(200,200);
 		GridLayout layout = new GridLayout(0,1);
 		layout.setHgap(3);
 		layout.setVgap(3);
@@ -41,16 +44,15 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		//menu
 		PMenuBar mb = new PMenuBar();
 		mb.add(Box.createHorizontalStrut(140));
-		PMenuItem min = new PMenuItem("_");
+		min = new PMenuItem("_");
 		mb.add(min);
 		min.addActionListener(this);
-		PMenuItem quit = new PMenuItem("X");
+		quit = new PMenuItem("X");
 		mb.add(quit);
 		quit.addActionListener(this);
 		this.add(mb);
 		//buttons and inpout
 		PLabel unl, pnl;
-		PButton login;
 		un = new PTextField(16);
 		pw = new PPasswordField(16);
 		unl = new PLabel("Username");
@@ -67,25 +69,21 @@ public class Login extends PFrame implements ActionListener, Runnable{
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		switch(arg0.getActionCommand().toUpperCase()){
-		case "LOGIN":
+		login.setActionCommand("LOGIN");
+		if(arg0.getSource()==login){
 			u = un.getText();
 			p = new String(pw.getPassword());
 			if(!clicked&&ifa!=null&&u!=null&&p!=null){
 				clicked = true;
+				login.setEnabled(false);
+				login.setText("Logging in...");
 				(new Thread(this)).start();
 			}
-			break;
-		case "_":
+		}else if(arg0.getSource()==min){
 			this.setState(Frame.ICONIFIED);
-			break;
-		case "X":
+		}else if(arg0.getSource()==quit){
 			System.exit(0);
-			break;
-		default:
-			System.err.println("Action command unknwon - "+arg0.getActionCommand().toUpperCase());
 		}
-
 	}
 	@Override
 	public void run() {
@@ -96,5 +94,11 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		}
 		ifa.login(u,p);
 		clicked = false;
+	}
+	public void loginResponse(boolean success){
+		if(!success){
+			login.setText("LOGIN - FAILED");
+			login.setEnabled(true);
+		}
 	}
 }

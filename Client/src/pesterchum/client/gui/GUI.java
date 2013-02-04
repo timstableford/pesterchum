@@ -20,7 +20,6 @@ import javax.swing.border.LineBorder;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
-import pesterchum.client.gui.login.Login;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
@@ -35,12 +34,14 @@ import pesterchum.client.resource.ResourceLoader;
 public class GUI extends PFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies;
+	private Login login;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
 		ifa = new Interface(this);
 		this.setTitle("Pesterchum");
 		this.setUndecorated(true);
-		Login l = new Login("localhost",7423,ifa);
+		this.setLocation(200,200);
+		login = new Login("localhost",7423,ifa);
 		
 		// menu at top
 		// logo
@@ -70,12 +71,7 @@ public class GUI extends PFrame implements ActionListener{
 		c.anchor = GridBagConstraints.PAGE_END;
 		c.gridy = 1;
 		content.add(getMoods(),c);
-		
-		
 
-		
-		
-		this.setVisible(true);
 	}
 	private PMenuBar getMenu(){
 		PMenuBar menu = new PMenuBar();
@@ -196,6 +192,11 @@ public class GUI extends PFrame implements ActionListener{
 	}
 	
 	public void loginResponse(boolean success) {
+		login.loginResponse(success);
+		if(success){
+			login.setVisible(false);
+			this.setVisible(true);
+		}
 		System.out.println("Login response - successful? "+success);
 	}
 	
