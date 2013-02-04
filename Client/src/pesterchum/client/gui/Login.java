@@ -1,13 +1,20 @@
 package pesterchum.client.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.gui.theme.PButton;
@@ -15,9 +22,10 @@ import pesterchum.client.gui.theme.PFrame;
 import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PMenuBar;
 import pesterchum.client.gui.theme.PMenuItem;
+import pesterchum.client.gui.theme.PPanel;
 import pesterchum.client.gui.theme.PPasswordField;
+import pesterchum.client.gui.theme.PTabbedPane;
 import pesterchum.client.gui.theme.PTextField;
-import pesterchum.client.resource.ResourceLoader;
 
 public class Login extends PFrame implements ActionListener, Runnable, KeyListener{
 	private static final long serialVersionUID = 5329488003668890739L;
@@ -38,10 +46,6 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		this.clicked = false;
 		this.setTitle("Pesterchum Login");
 		this.setLocation(200,200);
-		GridLayout layout = new GridLayout(0,1);
-		layout.setHgap(3);
-		layout.setVgap(3);
-		this.setLayout(layout);
 		this.setUndecorated(true);
 		//menu
 		PMenuBar mb = new PMenuBar();
@@ -52,8 +56,27 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		quit = new PMenuItem("X");
 		mb.add(quit);
 		quit.addActionListener(this);
-		this.add(mb);
-		//buttons and inpout
+		this.add(mb, BorderLayout.NORTH);
+
+		PTabbedPane tabs = new PTabbedPane();
+		
+		tabs.addTab("LOGIN", createLoginPanel());
+		tabs.addTab("REGISTER", createRegisterPanel());
+		this.add(tabs, BorderLayout.CENTER);
+
+		this.pack();
+		this.setVisible(true);
+	}
+	public PPanel createRegisterPanel(){
+		PPanel registerPanel = new PPanel();
+		registerPanel.add(new JLabel("register here"));
+		return registerPanel;
+	}
+	public PPanel createLoginPanel(){
+		PPanel loginPanel = new PPanel();
+		GridLayout layout = new GridLayout(0,1);
+		layout.setHgap(3);
+		loginPanel.setLayout(layout);
 		PLabel unl, pnl;
 		un = new PTextField(16);
 		un.addKeyListener(this);
@@ -63,13 +86,12 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		pnl = new PLabel("Password");
 		login = new PButton("Login");
 		login.addActionListener(this);
-		this.add(unl);
-		this.add(un);
-		this.add(pnl);
-		this.add(pw);
-		this.add(login);
-		this.pack();
-		this.setVisible(true);
+		loginPanel.add(unl);
+		loginPanel.add(un);
+		loginPanel.add(pnl);
+		loginPanel.add(pw);
+		loginPanel.add(login);
+		return loginPanel;
 	}
 	public void login(){
 		u = un.getText();
