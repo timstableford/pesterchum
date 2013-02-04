@@ -5,7 +5,7 @@
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="${build.dir}/bin"/>
 	<property name="src.dir" value="Client/src"/>
-	<property name="lib.dir" value="lib"/>
+	<property name="lib.dir" value="Client/lib"/>
 	<property name="graphics.dir" value="Client/graphics"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
