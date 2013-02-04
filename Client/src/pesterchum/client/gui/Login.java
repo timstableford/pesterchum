@@ -4,6 +4,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.Box;
 
@@ -17,7 +19,7 @@ import pesterchum.client.gui.theme.PPasswordField;
 import pesterchum.client.gui.theme.PTextField;
 import pesterchum.client.resource.ResourceLoader;
 
-public class Login extends PFrame implements ActionListener, Runnable{
+public class Login extends PFrame implements ActionListener, Runnable, KeyListener{
 	private static final long serialVersionUID = 5329488003668890739L;
 	private PTextField un;
 	private PPasswordField pw;
@@ -54,7 +56,9 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		//buttons and inpout
 		PLabel unl, pnl;
 		un = new PTextField(16);
+		un.addKeyListener(this);
 		pw = new PPasswordField(16);
+		pw.addKeyListener(this);
 		unl = new PLabel("Username");
 		pnl = new PLabel("Password");
 		login = new PButton("Login");
@@ -67,18 +71,21 @@ public class Login extends PFrame implements ActionListener, Runnable{
 		this.pack();
 		this.setVisible(true);
 	}
+	public void login(){
+		u = un.getText();
+		p = new String(pw.getPassword());
+		if(!clicked&&ifa!=null&&u!=null&&p!=null){
+			clicked = true;
+			login.setEnabled(false);
+			login.setText("Logging in...");
+			(new Thread(this)).start();
+		}
+	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		login.setActionCommand("LOGIN");
 		if(arg0.getSource()==login){
-			u = un.getText();
-			p = new String(pw.getPassword());
-			if(!clicked&&ifa!=null&&u!=null&&p!=null){
-				clicked = true;
-				login.setEnabled(false);
-				login.setText("Logging in...");
-				(new Thread(this)).start();
-			}
+			login();
 		}else if(arg0.getSource()==min){
 			this.setState(Frame.ICONIFIED);
 		}else if(arg0.getSource()==quit){
@@ -101,4 +108,14 @@ public class Login extends PFrame implements ActionListener, Runnable{
 			login.setEnabled(true);
 		}
 	}
+	@Override
+	public void keyTyped(KeyEvent e) {}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+			login();
+		}
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {}
 }
