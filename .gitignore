@@ -5,3 +5,4 @@ Client/bin
 Client/.settings
 PesterServer/.settings
 *.db
+*.log
