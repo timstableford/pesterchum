@@ -37,6 +37,7 @@
 				<include name="**/*.png" />
 				<include name="*.png" />
 				<include name="**/*.xml" />
+				<include name="**/*.json" />
 			</fileset>
 			<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
         </jar>
