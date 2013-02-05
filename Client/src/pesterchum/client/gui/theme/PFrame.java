@@ -26,6 +26,7 @@ public class PFrame extends JFrame implements MouseListener, MouseMotionListener
 		Border b = new LineBorder(Color.YELLOW, 2);
 		JComponent c = (JComponent)getContentPane();
 		c.setBorder(b);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	@Override

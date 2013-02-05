@@ -24,28 +24,25 @@ import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 import static argo.jdom.JsonNodeBuilders.*;
 
-public class Settings {
+public class Settings{
 	private File file;
 	private final JsonFormatter formatter;
 	private final JdomParser parser;
-	private HashMap<String, String> settings;
+	private HashMap<String, String> settings, defaults;
 	public Settings(File file) throws IOException{
 		this.file = file;
 		formatter = new PrettyJsonFormatter();
 		parser = new JdomParser();
 		load(file);
 	}
-	public void loadDefaults(){
-		for(Default v: Default.values()){
-			this.setString(v.name().toLowerCase(), v.getValue());
-		}
-	}
+	@SuppressWarnings("unchecked")
 	public void load(File file) throws IOException{
 		settings = new HashMap<String, String>();
 		if(!file.exists()){
 			(new File(file.getParent())).mkdirs();
 			file.createNewFile();
 			loadDefaults();
+			settings = (HashMap<String, String>) defaults.clone();
 			save();
 		}
 		BufferedReader is = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -104,29 +101,26 @@ public class Settings {
 	}
 	public String getString(String key) throws SettingsException{
 		if(!settings.containsKey(key)){
-			if(Default.getValue(key)!=null){
-				this.setString(key, Default.getValue(key));
+			if(defaults.containsKey(key)){
+				this.setString(key, defaults.get(key));
 			}else{
 				throw new SettingsException("Key "+key+" not found");
 			}
 		}
 		return settings.get(key);
 	}
-	
-	//TODO properly implement defaults
-	enum Default{
-		HOST("localhost"),
-		PORT("7423");
-		private final String value;
-		private Default(String text){
-			this.value = text;
+	private void loadDefaults() throws SettingsException{
+		defaults = new HashMap<String, String>();
+		BufferedReader is = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/pesterchum/client/config/defaults.json")));
+		JsonRootNode rn = null;
+		try {
+			rn = parser.parse(is);
+		} catch (InvalidSyntaxException | IOException e) {
+			throw new SettingsException("Error parsing json");
 		}
-		public String getValue(){
-			return this.value;
+		List<JsonNode> arr = rn.getArrayNode("settings");
+		for(JsonNode n: arr){
+			defaults.put(n.getStringValue("key"), n.getStringValue("value"));
 		}
-		public static String getValue(String key){
-			return Default.valueOf(key).value;
-		}
-		
 	}
 }

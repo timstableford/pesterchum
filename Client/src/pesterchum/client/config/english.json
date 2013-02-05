@@ -1,0 +1,12 @@
+{
+	"translations": [
+		{
+			"key": "port",
+			"value": "7423"
+		},
+		{
+			"key": "host",
+			"value": "tstableford.co.uk"
+		}
+	]
+}
