@@ -14,6 +14,7 @@ import pesterchum.client.data.ICData;
 import pesterchum.client.data.IncomingJson;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.GUI;
+import uk.co.tstableford.secureconnection.common.Utilities;
 
 public class Interface implements IncomingJson{
 	private GUI gui;
@@ -93,11 +94,11 @@ public class Interface implements IncomingJson{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(Encryption.encode(username.getBytes())));
+				.withField("username", JsonNodeBuilders.aStringBuilder((Utilities.encodeHex(username.getBytes()))));
 		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	private void processFriendResponse(ICData data){
-		String username = new String(Encryption.decode(data.getData().getStringValue("username")));
+		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
 		gui.friendRequestResponse(username, suc);
 	}
