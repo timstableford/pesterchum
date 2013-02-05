@@ -11,16 +11,13 @@ import argo.jdom.JsonObjectNodeBuilder;
 
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
-import pesterchum.client.data.Incoming;
+import pesterchum.client.data.IncomingJson;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.GUI;
 
-public class Interface implements Incoming{
-	private static final long TIMEOUT = 10000;
-	private static final int VERSION = 1;
+public class Interface implements IncomingJson{
 	private GUI gui;
 	private Connection conn;
-	private long lastPing;
 	private Settings settings;
 	private LinkedList<String> friends;
 	public Interface(GUI gui){
@@ -32,11 +29,9 @@ public class Interface implements Incoming{
 		} catch (IOException e1) {
 			System.err.println("Error loading settings");
 		}
-		conn.registerIncoming("hello", this);
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
 		friends = new LinkedList<String>();
-		lastPing = System.currentTimeMillis();
 	}
 	public Settings getSettings(){
 		return settings;
@@ -46,12 +41,6 @@ public class Interface implements Incoming{
 	}
 	public boolean authenticated(){
 		if(conn.getUsername()!=null){
-			return true;
-		}
-		return false;
-	}
-	public boolean timeout(){
-		if((System.currentTimeMillis()-lastPing)>TIMEOUT){
 			return true;
 		}
 		return false;
@@ -72,9 +61,6 @@ public class Interface implements Incoming{
 			}
 		}else{
 			switch(data.getName()){
-			case "hello":
-				processHello(data);
-				break;
 			case "admin":
 				processAdmin(data);
 				break;
@@ -89,10 +75,10 @@ public class Interface implements Incoming{
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
 				.withField("username", JsonNodeBuilders.aStringBuilder(username))
 				.withField("password", JsonNodeBuilders.aStringBuilder(password));
-		conn.sendData(Util.jsonToString(builder.build()));
+		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	public boolean connect(String host, int port){
-		conn.disconnect();
+		conn.close();
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
@@ -101,14 +87,14 @@ public class Interface implements Incoming{
 		return conn.connect(host, port);
 	}
 	public void sendMessage(Message message){
-		conn.sendData(Util.jsonToString(message.getJson()));
+		conn.getConnection().write(Util.jsonToString(message.getJson()));
 	}
 	public void addFriend(String username){
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
 				.withField("username", JsonNodeBuilders.aStringBuilder(Encryption.encode(username.getBytes())));
-		conn.sendData(Util.jsonToString(builder.build()));
+		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	private void processFriendResponse(ICData data){
 		String username = new String(Encryption.decode(data.getData().getStringValue("username")));
@@ -117,16 +103,6 @@ public class Interface implements Incoming{
 	}
 	private void processAdmin(ICData data){
 		switch(data.getData().getStringValue("command")){
-		case "disconnect":
-			conn.disconnect();
-			break;
-		case "ping":
-			JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder() 
-				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
-				.withField("command", JsonNodeBuilders.aStringBuilder("pong"));
-			conn.sendData(Util.jsonToString(builder.build()));
-			lastPing = System.currentTimeMillis();
-			break;
 		case "friendresponse":
 			processFriendResponse(data);
 			break;
@@ -150,14 +126,5 @@ public class Interface implements Incoming{
 		}
 		gui.loginResponse(suc);
 		return suc;
-	}
-	private void processHello(ICData data){
-		int ver = Integer.parseInt(data.getData().getStringValue("version"));
-		byte[] key = Encryption.decode(data.getData().getStringValue("key"));
-		conn.getEncryption().initSymmetric(key);
-		if(ver!=VERSION){
-			gui.versionMismatch(VERSION, ver);
-		}
-		System.out.println("Received symmetric key from server");
 	}
 }
