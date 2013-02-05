@@ -5,7 +5,7 @@ import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 
 import pesterchum.server.data.ICData;
-import pesterchum.server.Encryption;
+import uk.co.tstableford.secureconnection.common.Utilities;
 
 public class Message {
 	private String to, from, content;
@@ -17,17 +17,17 @@ public class Message {
 		this.time = System.currentTimeMillis();
 	}
 	public Message(ICData data){
-		this.from = new String(Encryption.decode(data.getData().getStringValue("from")));
-		this.to = new String(Encryption.decode(data.getData().getStringValue("to")));
-		this.content = new String(Encryption.decode(data.getData().getStringValue("content")));
+		this.from = new String(Utilities.decodeHex(data.getData().getStringValue("from")));
+		this.to = new String(Utilities.decodeHex(data.getData().getStringValue("to")));
+		this.content = new String(Utilities.decodeHex(data.getData().getStringValue("content")));
 		this.time = Long.parseLong(data.getData().getStringValue("time"));
 	}
 	public JsonRootNode getJson(){
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("message"))
-				.withField("from", JsonNodeBuilders.aStringBuilder(from))
-				.withField("to", JsonNodeBuilders.aStringBuilder(to))
-				.withField("content", JsonNodeBuilders.aStringBuilder(content))
+				.withField("from", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(from.getBytes())))
+				.withField("to", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(to.getBytes())))
+				.withField("content", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(content.getBytes())))
 				.withField("time", JsonNodeBuilders.aStringBuilder(Long.toString(time)));
 		return builder.build();
 	}

@@ -40,7 +40,7 @@ public class Manager {
 	public void sendMessage(Message message){
 		if(connected.containsKey(message.getTo())){
 			Connection o = connected.get(message.getTo());
-			o.sendData(Util.jsonToString(message.getJson()), true);
+			o.getConn().write(Util.jsonToString(message.getJson()));
 		}else{
 			//TODO Add to database
 			System.out.println("Could not send message user offline - "+message.getTo());

@@ -25,7 +25,6 @@ public class Server {
 		database.registerInterface("login", i);
 		database.registerInterface("admin", i);
 		database.registerInterface("friendrequest", i);
-		database.registerInterface("publickey", i);
 		//setup socket listener
 		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
 		try {
@@ -54,8 +53,8 @@ public class Server {
 		}
 	}
 	public void disconnect(Connection conn){
-		conn.disconnect();
 		if(clients.contains(conn)){
+			conn.close();
 			clients.remove(conn);
 		}
 	}

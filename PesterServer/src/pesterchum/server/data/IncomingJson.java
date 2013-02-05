@@ -1,5 +1,5 @@
 package pesterchum.server.data;
 
-public interface Incoming {
+public interface IncomingJson {
 	public void processIncoming(ICData data);
 }

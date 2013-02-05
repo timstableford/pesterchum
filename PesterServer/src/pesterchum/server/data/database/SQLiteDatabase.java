@@ -12,9 +12,9 @@ import argo.jdom.JdomParser;
 import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
-import pesterchum.server.Encryption;
 import pesterchum.server.Util;
 import pesterchum.server.data.User;
+import uk.co.tstableford.secureconnection.common.Utilities;
 
 public class SQLiteDatabase implements Database{
 	private static final int VERSION = 1;
@@ -30,7 +30,7 @@ public class SQLiteDatabase implements Database{
 	}
 	public boolean userExists(User user){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Encryption.encode(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
 			if(rs.next()){
 				return true;
 			}else{
@@ -42,15 +42,15 @@ public class SQLiteDatabase implements Database{
 	}
 	public boolean authenticate(User user, String password){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Encryption.encode(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
 			if(!rs.next()){
 				user.setAuthenticated(false);
 				return false;
 			}else{
 				String pass = rs.getString("password");
-				if(pass.equals(Encryption.encode(getHash(password).getBytes()))){
+				if(pass.equals(Utilities.encodeHex(getHash(password).getBytes()))){
 					user.setAuthenticated(true);
-					JsonRootNode node = JDOM_PARSER.parse(new String(Encryption.decode(rs.getString("friends"))));
+					JsonRootNode node = JDOM_PARSER.parse(new String(Utilities.decodeHex(rs.getString("friends"))));
 					user.loadFriends(node);
 					return true;
 				}else{
@@ -65,7 +65,7 @@ public class SQLiteDatabase implements Database{
 	}
 	public boolean newUser(User user, String password){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Encryption.encode(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
 			if(rs.next()){
 				return false;
 			}
@@ -74,9 +74,9 @@ public class SQLiteDatabase implements Database{
 		}
 		try {
 			statement.executeUpdate("insert into users values("
-					+"'"+Encryption.encode(user.getUsername().getBytes())+"', "
-					+"'"+Encryption.encode(getHash(password).getBytes())+"', "
-					+"'"+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+"')");
+					+"'"+Utilities.encodeHex(user.getUsername().getBytes())+"', "
+					+"'"+Utilities.encodeHex(getHash(password).getBytes())+"', "
+					+"'"+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+"')");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -85,21 +85,21 @@ public class SQLiteDatabase implements Database{
 	}
 	public void saveUser(User user){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Encryption.encode(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
 			if(rs.next()){
 				String passHash = rs.getString("password");
 				statement.executeUpdate("insert or replace into users values("
-						+Encryption.encode(user.getUsername().getBytes())+", "
+						+Utilities.encodeHex(user.getUsername().getBytes())+", "
 						+passHash+", "
-						+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
+						+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
 			}
 		} catch (SQLException e1) {
 			System.err.println("Could not save user "+user.getUsername());
 		}
 		try {
 			statement.executeUpdate("insert of replace into users values("
-					+Encryption.encode(user.getUsername().getBytes())+", "
-					+Encryption.encode(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
+					+Utilities.encodeHex(user.getUsername().getBytes())+", "
+					+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
 		} catch (SQLException e) {
 			System.err.println("Could not save user "+user.getUsername());
 		}
