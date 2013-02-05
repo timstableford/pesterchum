@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+import pesterchum.client.PesterchumGUI;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.connection.SettingsException;
 import pesterchum.client.data.Message;
@@ -34,13 +35,17 @@ import pesterchum.client.resource.Img;
 import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
-public class GUI extends PFrame implements ActionListener{
+public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies, theme;
 	private Login login;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
-		ifa = new Interface(this);
+		//this is called if anything needs to be done before the interface is setup
+	}
+	@Override
+	public void init(Interface ifa) {
+		this.ifa = ifa;
 		this.setTitle("Pesterchum");
 		this.setUndecorated(true);
 		this.setLocation(200,200);
@@ -88,7 +93,6 @@ public class GUI extends PFrame implements ActionListener{
 		c.gridy = 1;
 		c.insets = new Insets(0,6,6,6);
 		content.add(getMoods(),c);
-
 	}
 	private PMenuBar getMenu(){
 		PMenuBar menu = new PMenuBar();
@@ -220,11 +224,6 @@ public class GUI extends PFrame implements ActionListener{
 		}
 		System.out.println("Login response - successful? "+success);
 	}
-	
-	public void versionMismatch(int client, int server){
-		
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch(e.getActionCommand()){

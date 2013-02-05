@@ -1,7 +1,5 @@
 package pesterchum.client.connection;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,27 +7,23 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
+import pesterchum.client.PesterchumGUI;
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
 import pesterchum.client.data.IncomingJson;
 import pesterchum.client.data.Message;
-import pesterchum.client.gui.GUI;
+import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
 public class Interface implements IncomingJson{
-	private GUI gui;
+	private PesterchumGUI gui;
 	private Connection conn;
 	private Settings settings;
 	private LinkedList<String> friends;
-	public Interface(GUI gui){
+	public Interface(PesterchumGUI gui, Settings settings, Log log){
 		this.gui = gui;
-		this.conn = new Connection();
-		String s = System.getProperty("file.separator");
-		try {
-			this.settings = new Settings(new File(System.getProperty("user.home")+s+".pesterchum"+s+"settings.json"));
-		} catch (IOException e1) {
-			System.err.println("Error loading settings");
-		}
+		this.conn = new Connection(log);
+		this.settings = settings;
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
 		friends = new LinkedList<String>();

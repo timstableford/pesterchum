@@ -13,21 +13,24 @@ import pesterchum.client.data.IncomingJson;
 import uk.co.tstableford.secureconnection.client.SecureClientConnection;
 import uk.co.tstableford.secureconnection.common.interfaces.Incoming;
 import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;
+import uk.co.tstableford.utilities.Log;
 
 public class Connection implements Incoming{
 	private SecureConnection conn;
 	private String username;
 	private Hashtable<String, IncomingJson> interfaces;
 	private final JdomParser parser = new JdomParser();
-	public Connection(){
+	private Log log;
+	public Connection(Log log){
 		this.username = null;
+		this.log = log;
 		this.interfaces = new Hashtable<String, IncomingJson>();
 	}
 	public boolean connect(String host, int port){
 		System.out.println("Connecting to "+host+" on port "+port);
 		try {
 			Socket s = new Socket(host, port);
-			conn = new SecureClientConnection(s, this);
+			conn = new SecureClientConnection(s, this, this.log);
 		} catch (IOException e) {
 			return false;
 		}
