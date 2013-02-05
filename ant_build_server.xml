@@ -10,6 +10,7 @@
         <pathelement location="${classes.dir}"/>
 	<pathelement location="${lib.dir}/argo-small-3.2.jar"/>
 	<pathelement location="${lib.dir}/sqlite-jdbc-3.7.2.jar"/>
+	<pathelement location="${lib.dir}/utilities.jar"/>
     </path>
     <target name="init">
 		<echo message="Initialising files"/>
