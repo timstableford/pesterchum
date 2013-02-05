@@ -4,7 +4,7 @@ import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 
-import uk.co.tstableford.secureconnection.common.Utilities;
+import uk.co.tstableford.utilities.Utilities;
 
 public class Message {
 	private String to, from, content;

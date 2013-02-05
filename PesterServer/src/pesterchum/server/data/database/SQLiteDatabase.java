@@ -14,7 +14,7 @@ import argo.saj.InvalidSyntaxException;
 
 import pesterchum.server.Util;
 import pesterchum.server.data.User;
-import uk.co.tstableford.secureconnection.common.Utilities;
+import uk.co.tstableford.utilities.Utilities;
 
 public class SQLiteDatabase implements Database{
 	private static final int VERSION = 1;

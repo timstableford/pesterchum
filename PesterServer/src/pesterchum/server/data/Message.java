@@ -5,7 +5,7 @@ import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 
 import pesterchum.server.data.ICData;
-import uk.co.tstableford.secureconnection.common.Utilities;
+import uk.co.tstableford.utilities.Utilities;
 
 public class Message {
 	private String to, from, content;

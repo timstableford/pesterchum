@@ -34,7 +34,9 @@ public class Connection implements Incoming{
 		return true;
 	}
 	public void close(){
-		conn.close();
+		if(conn!=null){
+			conn.close();
+		}
 		this.username = null;
 	}
 	public void registerIncoming(String name, IncomingJson inc){

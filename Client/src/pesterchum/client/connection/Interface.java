@@ -14,7 +14,7 @@ import pesterchum.client.data.ICData;
 import pesterchum.client.data.IncomingJson;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.GUI;
-import uk.co.tstableford.secureconnection.common.Utilities;
+import uk.co.tstableford.utilities.Utilities;
 
 public class Interface implements IncomingJson{
 	private GUI gui;
