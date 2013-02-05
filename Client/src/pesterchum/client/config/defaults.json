@@ -7,6 +7,10 @@
 		{
 			"key": "host",
 			"value": "tstableford.co.uk"
+		},
+		{
+			"key": "language",
+			"value": "english"
 		}
 	]
 }

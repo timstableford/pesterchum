@@ -1,23 +1,15 @@
 package pesterchum.client.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import pesterchum.client.PesterchumGUI;
 import pesterchum.client.connection.Interface;
@@ -97,9 +89,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private PMenuBar getMenu(){
 		PMenuBar menu = new PMenuBar();
 		menu.add(Box.createHorizontalStrut(5));
-		PMenu client = new PMenu("client");
-		PMenu profile = new PMenu("profile"); 
-		PMenu help = new PMenu("help"); 
+		PMenu client = new PMenu(ifa.translate("client"));
+		PMenu profile = new PMenu(ifa.translate("profile")); 
+		PMenu help = new PMenu(ifa.translate("help")); 
 		
 		PMenuItem quit = new PMenuItem("X");
 		PMenuItem min = new PMenuItem("_");
@@ -111,26 +103,28 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		menu.add(quit);
 		//set up the Client menu
 		PMenuItem options, memos, pesterLog, randomEncounter, userList, idle, addGroup;
-		PMenuItem importThings, reconnect, exit;
-		options = new PMenuItem("options"); memos = new PMenuItem("memos");
-		pesterLog = new PMenuItem("pesterlog"); randomEncounter = new PMenuItem("random ecounter"); 
-		userList = new PMenuItem("user list"); idle = new PMenuItem("idle"); 
-		addGroup = new PMenuItem("add group"); importThings = new PMenuItem("import"); 
-		reconnect = new PMenuItem("reconnect"); exit = new PMenuItem("exit");
+		PMenuItem reconnect, exit;
+		options = new PMenuItem(ifa.translate("options")); memos = new PMenuItem(ifa.translate("memos"));
+		pesterLog = new PMenuItem(ifa.translate("pesterlog")); randomEncounter = new PMenuItem(ifa.translate("random encounter")); 
+		userList = new PMenuItem(ifa.translate("user list")); idle = new PMenuItem(ifa.translate("idle")); 
+		addGroup = new PMenuItem(ifa.translate("add group")); 
+		reconnect = new PMenuItem(ifa.translate("reconnect")); exit = new PMenuItem(ifa.translate("exit"));
 		
 		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
-		client.add(userList); client.add(idle); client.add(addGroup); client.add(importThings);
+		client.add(userList); client.add(idle); client.add(addGroup);
 		client.add(reconnect); client.add(exit);
 		
 		//set up the Profile menu
 		PMenuItem quirks, trollSlum, color, switchChum;
-		quirks = new PMenuItem("quirks"); trollSlum = new PMenuItem("trollslum"); color = new PMenuItem("color"); 
-		switchChum = new PMenuItem("switch");
+		quirks = new PMenuItem(ifa.translate("quirks")); trollSlum = new PMenuItem(ifa.translate("trollslum")); 
+		color = new PMenuItem(ifa.translate("color")); 
+		switchChum = new PMenuItem(ifa.translate("switch"));
 		profile.add(quirks); profile.add(trollSlum); profile.add(color); profile.add(switchChum);
 		
 		//set up the Help menu
 		PMenuItem helpMe, about, reportBug;
-		helpMe = new PMenuItem("help"); about = new PMenuItem("about"); reportBug = new PMenuItem("report a bug");
+		helpMe = new PMenuItem(ifa.translate("help")); about = new PMenuItem(ifa.translate("about")); 
+		reportBug = new PMenuItem(ifa.translate("report a bug"));
 		
 		help.add(helpMe); help.add(about); help.add(reportBug);
 		
@@ -143,7 +137,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridx = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridy = 0;
-		POpaqueLabel chumroll = new POpaqueLabel("CHUMROLL:");
+		POpaqueLabel chumroll = new POpaqueLabel(ifa.translate("chumroll").toUpperCase()+":");
 		buddyList.add(chumroll, c);
 		
 		
@@ -164,15 +158,15 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridwidth = 1;
 		c.gridy = 2;
 		c.weightx = 0.5;
-		PButton addChum = new PButton("add chum"); 
+		PButton addChum = new PButton(ifa.translate("add chum")); 
 		buddyList.add(addChum, c);
 		////////////////////
 		c.gridx = 1;
-		PButton block = new PButton("block"); 
+		PButton block = new PButton(ifa.translate("block")); 
 		buddyList.add(block, c);
 		/////////////////////
 		c.gridx = 2;
-		PButton pester = new PButton("pester!"); 
+		PButton pester = new PButton(ifa.translate("pester")+"!"); 
 		buddyList.add(pester, c);
 		return buddyList;
 	}
@@ -181,14 +175,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		moods.setLayout(gridBagLayout);
 		GridBagConstraints c = new GridBagConstraints();
-		PButton chummy = new PButton("chummy");
+		PButton chummy = new PButton(ifa.translate("chummy"));
 		c.weightx = 0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		moods.add(chummy,c);
 		
-		PButton bully = new PButton("bully");
+		PButton bully = new PButton(ifa.translate("bully"));
 		c.weightx = 0.7;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
@@ -196,7 +190,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		
 		moods.add(bully, c);
 		
-		PButton abscond = new PButton("abscond");
+		PButton abscond = new PButton(ifa.translate("abscond"));
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = 2;
 		c.gridx = 0;

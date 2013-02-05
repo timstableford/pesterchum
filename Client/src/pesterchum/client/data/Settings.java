@@ -1,4 +1,4 @@
-package pesterchum.client.connection;
+package pesterchum.client.data;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import pesterchum.client.connection.SettingsException;
 
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;

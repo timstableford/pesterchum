@@ -1,5 +1,7 @@
 package pesterchum.client.connection;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +13,9 @@ import pesterchum.client.PesterchumGUI;
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
 import pesterchum.client.data.IncomingJson;
+import pesterchum.client.data.Language;
 import pesterchum.client.data.Message;
+import pesterchum.client.data.Settings;
 import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
@@ -21,7 +25,8 @@ public class Interface implements IncomingJson{
 	private Settings settings;
 	private LinkedList<String> friends;
 	private Log log;
-	public Interface(PesterchumGUI gui, Settings settings, Log log){
+	private Language lang;
+	public Interface(PesterchumGUI gui, Settings settings, Log log) throws IOException{
 		this.gui = gui;
 		this.conn = new Connection(log);
 		this.log = log;
@@ -29,6 +34,17 @@ public class Interface implements IncomingJson{
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
 		friends = new LinkedList<String>();
+		//load the language
+		if(this.getClass().getResource("/pesterchum/client/config/"+settings.getString("language")+".json")!=null){
+			lang = new Language("/pesterchum/client/config/"+settings.getString("language")+".json");
+		}else if((new File(settings.getString("language")).exists())){
+			lang = new Language(new File(settings.getString("language")));
+		}else{
+			lang = new Language();
+		}
+	}
+	public String translate(String key){
+		return lang.get(key);
 	}
 	public Settings getSettings(){
 		return settings;

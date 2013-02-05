@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.IOException;
 
 import pesterchum.client.connection.Interface;
-import pesterchum.client.connection.Settings;
+import pesterchum.client.data.Language;
+import pesterchum.client.data.Settings;
 import pesterchum.client.gui.GUI;
 import uk.co.tstableford.utilities.Log;
 
@@ -43,10 +44,16 @@ public class Launch {
 			System.err.println("Error loading settings");
 		}
 		Log log = new Log(new File(U_H+F_S+PC_DIR+F_S+LOG_FILE), debug, verbose);
+		
 		//TODO implement ability to load gui from other packages
 		PesterchumGUI gui = new GUI();
-		Interface ifa = new Interface(gui, settings, log);
-		gui.init(ifa);
+		try {
+			Interface ifa = new Interface(gui, settings, log);
+			gui.init(ifa);
+		} catch (IOException e) {
+			System.err.println("Error, could not load interface");
+		}
+		
 	}
 
 }

@@ -1,12 +1,117 @@
 {
-	"translations": [
+	"client": "client",
+	"profile": "profile",
+	"help": "help",
+	"options": "options",
+	"memos": "memos",
+	"pesterlog": "pesterlog",
+}
+
+{
+	"settings": [
 		{
-			"key": "port",
-			"value": "7423"
+			"from": "client",
+			"to": "client"
 		},
 		{
-			"key": "host",
-			"value": "tstableford.co.uk"
+			"from": "profile",
+			"to": "profile"
+		},
+		{
+			"from": "help",
+			"to": "help"
+		},
+		{
+			"from": "options",
+			"to": "options"
+		},
+		{
+			"from": "memos",
+			"to": "memos"
+		},
+		{
+			"from": "pesterlog",
+			"to": "pesterlog"
+		},
+		{
+			"from": "random encounter",
+			"to": "random encounter"
+		},
+		{
+			"from": "user list",
+			"to": "user list"
+		},
+		{
+			"from": "idle",
+			"to": "idle"
+		},
+		{
+			"from": "add group",
+			"to": "add group"
+		},
+		{
+			"from": "reconnect",
+			"to": "reconnect"
+		},
+		{
+			"from": "exit",
+			"to": "exit"
+		},
+		{
+			"from": "quirks",
+			"to": "quirks"
+		},
+		{
+			"from": "trollslum",
+			"to": "trollslum"
+		},
+		{
+			"from": "color",
+			"to": "color"
+		},
+		{
+			"from": "switch",
+			"to": "switch"
+		},
+		{
+			"from": "help",
+			"to": "help"
+		},
+		{
+			"from": "about",
+			"to": "about"
+		},
+		{
+			"from": "report a bug",
+			"to": "report a bug"
+		},
+		{
+			"from": "chumroll",
+			"to": "chumroll"
+		},
+		{
+			"from": "add chum",
+			"to": "add chum"
+		},
+		{
+			"from": "block",
+			"to": "block"
+		},
+		{
+			"from": "pester",
+			"to": "pester"
+		},
+		{
+			"from": "chummy",
+			"to": "chummy"
+		},
+		{
+			"from": "bully",
+			"to": "bully"
+		},
+		{
+			"from": "abscond",
+			"to": "abscond"
 		}
 	]
 }
