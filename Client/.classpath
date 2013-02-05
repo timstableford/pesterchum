@@ -5,6 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/argo-small-3.2.jar"/>
-	<classpathentry kind="lib" path="lib/secureconnection.jar"/>
+	<classpathentry kind="lib" path="lib/utilities.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
