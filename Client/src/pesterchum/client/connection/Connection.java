@@ -60,6 +60,7 @@ public class Connection implements Runnable{
 	}
 	public void disconnect(){
 		if(socket!=null){
+			//TODO convert this to json
 			sendData("<admin><command>disconnect</command></admin>");
 			try {
 				Thread.sleep(10);
