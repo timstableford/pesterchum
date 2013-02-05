@@ -234,5 +234,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	public void friendRequestResponse(String username, boolean found){
 
 	}
+	@Override
+	public void timeout() {
+		System.out.println("Connection timeout");
+	}
 }			
 

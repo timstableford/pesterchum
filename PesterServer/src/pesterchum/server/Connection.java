@@ -50,5 +50,10 @@ public class Connection implements Incoming{
 			System.err.println("Error parsing incoming");
 		}
 	}
+	@Override
+	public void timeout() {
+		System.err.println("Connection timeout from "+this.getConn().getSource());
+		close();
+	}
 
 }

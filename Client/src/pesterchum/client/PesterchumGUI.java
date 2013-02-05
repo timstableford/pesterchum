@@ -8,4 +8,5 @@ public interface PesterchumGUI {
 	public void incomingMessage(Message message);
 	public void loginResponse(boolean success);
 	public void friendRequestResponse(String username, boolean found);
+	public void timeout();
 }

@@ -28,7 +28,7 @@ public class Interface implements IncomingJson{
 	private Language lang;
 	public Interface(PesterchumGUI gui, Settings settings, Log log) throws IOException{
 		this.gui = gui;
-		this.conn = new Connection(log);
+		this.conn = new Connection(this, log);
 		this.log = log;
 		this.settings = settings;
 		conn.registerIncoming("message", this);
@@ -57,6 +57,9 @@ public class Interface implements IncomingJson{
 			return true;
 		}
 		return false;
+	}
+	public void timeout(){
+		gui.timeout();
 	}
 	@Override
 	public void processIncoming(ICData data) {

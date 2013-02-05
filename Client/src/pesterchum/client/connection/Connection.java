@@ -21,9 +21,11 @@ public class Connection implements Incoming{
 	private Hashtable<String, IncomingJson> interfaces;
 	private final JdomParser parser = new JdomParser();
 	private Log log;
-	public Connection(Log log){
+	private Interface ifa;
+	public Connection(Interface ifa, Log log){
 		this.username = null;
 		this.log = log;
+		this.ifa = ifa;
 		this.interfaces = new Hashtable<String, IncomingJson>();
 	}
 	public boolean connect(String host, int port){
@@ -39,6 +41,7 @@ public class Connection implements Incoming{
 	public void close(){
 		if(conn!=null){
 			conn.close();
+			conn = null;
 		}
 		this.username = null;
 	}
@@ -66,5 +69,10 @@ public class Connection implements Incoming{
 	}
 	private IncomingJson getIncoming(String name){
 		return interfaces.get(name);
+	}
+	@Override
+	public void timeout() {
+		this.close();
+		ifa.timeout();
 	}
 }
