@@ -35,6 +35,7 @@ public class Settings{
 		this.file = file;
 		formatter = new PrettyJsonFormatter();
 		parser = new JdomParser();
+		loadDefaults();
 		load(file);
 	}
 	@SuppressWarnings("unchecked")
@@ -43,7 +44,6 @@ public class Settings{
 		if(!file.exists()){
 			(new File(file.getParent())).mkdirs();
 			file.createNewFile();
-			loadDefaults();
 			settings = (HashMap<String, String>) defaults.clone();
 			save();
 		}

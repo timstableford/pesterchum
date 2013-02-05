@@ -42,7 +42,7 @@ public class Language {
 		} catch (InvalidSyntaxException e) {
 			throw new SettingsException("Error parsing json");
 		}
-		List<JsonNode> arr = rn.getArrayNode("settings");
+		List<JsonNode> arr = rn.getArrayNode("translations");
 		for(JsonNode n: arr){
 			lang.put(n.getStringValue("from"), n.getStringValue("to"));
 		}

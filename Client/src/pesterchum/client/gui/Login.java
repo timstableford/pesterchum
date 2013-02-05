@@ -44,7 +44,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		super();
 		this.ifa = ifa;
 		this.clicked = false;
-		this.setTitle("Pesterchum Login");
+		this.setTitle("Pesterchum "+ifa.translate("login"));
 		this.setLocation(200,200);
 		this.setSize(new Dimension(200,240));
 		this.setUndecorated(true);
@@ -61,9 +61,9 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 
 		PTabbedPane tabs = new PTabbedPane();
 		
-		tabs.addTab("LOGIN", createLoginPanel());
-		tabs.addTab("REGISTER", createRegisterPanel());
-		tabs.addTab("SERVER", createServerPanel());
+		tabs.addTab(ifa.translate("login").toUpperCase(), createLoginPanel());
+		tabs.addTab(ifa.translate("register").toUpperCase(), createRegisterPanel());
+		tabs.addTab(ifa.translate("server").toUpperCase(), createServerPanel());
 		this.add(tabs, BorderLayout.CENTER);
 
 		this.setVisible(true);
@@ -95,13 +95,13 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		run.addKeyListener(this);
 		rpw.addKeyListener(this);
 		rpwr.addKeyListener(this);
-		register = new PButton("Register");
+		register = new PButton(ifa.translate("register"));
 		register.addActionListener(this);
-		registerPanel.add(new POpaqueLabel("Username"));
+		registerPanel.add(new POpaqueLabel(ifa.translate("username")));
 		registerPanel.add(run);
-		registerPanel.add(new POpaqueLabel("Password"));
+		registerPanel.add(new POpaqueLabel(ifa.translate("password")));
 		registerPanel.add(rpw);
-		registerPanel.add(new POpaqueLabel("Password Again"));
+		registerPanel.add(new POpaqueLabel(ifa.translate("repeat")));
 		registerPanel.add(rpwr);
 		registerPanel.add(register);
 		return registerPanel;
@@ -116,9 +116,9 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		un.addKeyListener(this);
 		pw = new PPasswordField(16);
 		pw.addKeyListener(this);
-		unl = new POpaqueLabel("Username");
-		pnl = new POpaqueLabel("Password");
-		login = new PButton("Login");
+		unl = new POpaqueLabel(ifa.translate("username"));
+		pnl = new POpaqueLabel(ifa.translate("password"));
+		login = new PButton(ifa.translate("login"));
 		login.addActionListener(this);
 		loginPanel.add(unl);
 		loginPanel.add(un);
@@ -135,7 +135,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 			clicked = true;
 			login.setEnabled(false);
 			register.setEnabled(false);
-			login.setText("Logging in...");
+			login.setText(ifa.translate("logging in")+"...");
 			(new Thread(this)).start();
 		}
 	}
@@ -146,14 +146,14 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		action = Action.REGISTER;
 		if(!clicked&&ifa!=null&&u!=null&&pw!=null&&pwr!=null){
 			if(pw.equals(pwr)==false){
-				error("Passwords do not match");
+				error(ifa.translate("passwords do not match"));
 			}
 			if(!Util.verifyUsername(u)){
 				error(Util.usernameFailureReason(u));
 			}
 			this.u = u;
 			this.p = pw;
-			register.setText("Registering...");
+			register.setText(ifa.translate("registering")+"...");
 			login.setEnabled(false);
 			register.setEnabled(false);
 			clicked = true;
@@ -163,12 +163,12 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	private void error(String error){
 		JOptionPane.showMessageDialog(this,
 				error,
-				"Error",
+				ifa.translate("error"),
 				JOptionPane.ERROR_MESSAGE);
 	}
 	private void info(String info){
 		JOptionPane.showMessageDialog(this, info,
-		        "Information", JOptionPane.INFORMATION_MESSAGE);
+		        ifa.translate("information"), JOptionPane.INFORMATION_MESSAGE);
 	}
 	public void save(){
 		String newServer = server.getText();
@@ -176,7 +176,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		try{
 			newPort = Integer.parseInt(port.getText());
 		}catch(NumberFormatException e){
-			error("Port not number");
+			error(ifa.translate("port not a number"));
 		}
 		if(newPort>0){
 			try{
@@ -185,16 +185,16 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 				// Connect with 10 s timeout
 				socket.connect(sockaddr, 10000);
 				if(!socket.isConnected()||socket.isClosed()){
-					error("Could not contact server");
+					error(ifa.translate("could not contact server"));
 				}else{
 					ifa.getSettings().setInt("port", newPort);
 					ifa.getSettings().setString("host", newServer);
 					ifa.getSettings().save();
-					info("Saved settings");
+					info(ifa.translate("saved settings"));
 				}
 				socket.close();
 			}catch(IOException e){
-				error("Could not contact server");
+				error(ifa.translate("could not contact server"));
 			}
 		}
 	}

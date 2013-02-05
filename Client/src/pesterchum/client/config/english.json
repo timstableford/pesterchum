@@ -1,14 +1,5 @@
 {
-	"client": "client",
-	"profile": "profile",
-	"help": "help",
-	"options": "options",
-	"memos": "memos",
-	"pesterlog": "pesterlog",
-}
-
-{
-	"settings": [
+	"translations": [
 		{
 			"from": "client",
 			"to": "client"
@@ -112,6 +103,62 @@
 		{
 			"from": "abscond",
 			"to": "abscond"
+		},
+		{
+			"from": "login",
+			"to": "login"
+		},
+		{
+			"from": "register",
+			"to": "register"
+		},
+		{
+			"from": "server",
+			"to": "server"
+		},
+		{
+			"from": "username",
+			"to": "username"
+		},
+		{
+			"from": "password",
+			"to": "password"
+		},
+		{
+			"from": "repeat",
+			"to": "repeat"
+		},
+		{
+			"from": "logging in",
+			"to": "logging in"
+		},
+		{
+			"from": "passwords do not match",
+			"to": "passwords do not match"
+		},
+		{
+			"from": "registering",
+			"to": "registering"
+		},
+		{
+			"from": "error",
+			"to": "error"
+		},
+		{
+			"from": "information",
+			"to": "information"
+		},
+		{
+			"from": "port not a number",
+			"to": "port not a number"
+		},
+		{
+			"from": "could not contact server",
+			"to": "could not contact server"
+		},
+		{
+			"from": "saved settings",
+			"to": "saved settings"
 		}
 	]
 }

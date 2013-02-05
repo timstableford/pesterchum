@@ -51,6 +51,7 @@ public class Launch {
 			Interface ifa = new Interface(gui, settings, log);
 			gui.init(ifa);
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.err.println("Error, could not load interface");
 		}
 		
