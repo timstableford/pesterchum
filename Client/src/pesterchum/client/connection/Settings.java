@@ -112,6 +112,8 @@ public class Settings {
 		}
 		return settings.get(key);
 	}
+	
+	//TODO properly implement defaults
 	enum Default{
 		HOST("localhost"),
 		PORT("7423");

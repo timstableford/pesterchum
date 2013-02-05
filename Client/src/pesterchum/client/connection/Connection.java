@@ -27,7 +27,7 @@ public class Connection implements Incoming{
 		this.interfaces = new Hashtable<String, IncomingJson>();
 	}
 	public boolean connect(String host, int port){
-		System.out.println("Connecting to "+host+" on port "+port);
+		log.info("Connecting to "+host+" on port "+port);
 		try {
 			Socket s = new Socket(host, port);
 			conn = new SecureClientConnection(s, this, this.log);
@@ -61,7 +61,7 @@ public class Connection implements Incoming{
 			getIncoming(rn.getStringValue("class")).processIncoming(new ICData(rn.getStringValue("class"), rn));
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace();
-			System.err.println("Could not parse incoming data");
+			log.error("Could not parse incoming data");
 		}
 	}
 	private IncomingJson getIncoming(String name){
