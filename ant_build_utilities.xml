@@ -4,13 +4,10 @@
     <property name="debuglevel" value="source,lines,vars"/>
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="${build.dir}/bin"/>
-	<property name="src.dir" value="Client/src"/>
-	<property name="lib.dir" value="Client/lib"/>
-	<property name="graphics.dir" value="Client/graphics"/>
+	<property name="src.dir" value="Utilities/src"/>
+	<property name="lib.dir" value="Utilities/lib"/>
     <path id="Pesterchum.classpath">
         <pathelement location="${classes.dir}"/>
-	<pathelement location="${lib.dir}/argo-small-3.2.jar"/>
-	<pathelement location="${lib.dir}/utilities.jar"/>
     </path>
     <target name="init">
 		<echo message="Initialising files"/>
@@ -21,19 +18,19 @@
         <delete dir="${build.dir}"/>
     </target>
     <target depends="clean" name="cleanall"/>
-	<target name="Client">
+	<target name="Utilities">
 		<echo message="Building Pesterchum Client"/>
         	<javac debug="true" debuglevel="${debuglevel}" 
-			srcdir="${src.dir}/pesterchum" destdir="${classes.dir}" 
+			srcdir="${src.dir}" destdir="${classes.dir}" 
 			classpathref="Pesterchum.classpath" 
 			includeantruntime="false" fork="yes" />
 		<jar 
-			destfile="${build.dir}/pesterchum_client.jar" 
+			destfile="${build.dir}/utilities.jar" 
 			basedir="${classes.dir}">
             <manifest>
-            	<attribute name="Main-Class" value="pesterchum.client.Launch"/>
+            	
             </manifest>
-			<fileset dir="Client/">
+			<fileset dir="Utilities/">
 				<include name="**/*.png" />
 				<include name="*.png" />
 				<include name="**/*.xml" />
