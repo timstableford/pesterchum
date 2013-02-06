@@ -35,8 +35,8 @@ public class Interface implements IncomingJson{
 		conn.registerIncoming("admin", this);
 		friends = new LinkedList<String>();
 		//load the language
-		if(this.getClass().getResource("/pesterchum/client/config/"+settings.getString("language")+".json")!=null){
-			lang = new Language("/pesterchum/client/config/"+settings.getString("language")+".json");
+		if(this.getClass().getResource("/"+settings.getString("language")+".json")!=null){
+			lang = new Language("/"+settings.getString("language")+".json");
 		}else if((new File(settings.getString("language")).exists())){
 			lang = new Language(new File(settings.getString("language")));
 		}else{
