@@ -33,7 +33,7 @@
             <manifest>
             	<attribute name="Main-Class" value="pesterchum.client.Launch"/>
             </manifest>
-			<fileset dir="${graphics.dir}">
+			<fileset dir="Client/">
 				<include name="**/*.png" />
 				<include name="*.png" />
 				<include name="**/*.xml" />
