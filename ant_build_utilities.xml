@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="Pesterchum">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+	<property name="build.dir" value="build"/>
+	<property name="classes.dir" value="${build.dir}/bin"/>
+	<property name="src.dir" value="Utilities/src"/>
+	<property name="lib.dir" value="Utilities/lib"/>
+    <path id="Pesterchum.classpath">
+        <pathelement location="${classes.dir}"/>
+    </path>
+    <target name="init">
+		<echo message="Initialising files"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+    <target name="clean">
+		<echo message="Cleaning up"/>
+        <delete dir="${build.dir}"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+	<target name="Utilities">
+		<echo message="Building Pesterchum Client"/>
+        	<javac debug="true" debuglevel="${debuglevel}" 
+			srcdir="${src.dir}" destdir="${classes.dir}" 
+			classpathref="Pesterchum.classpath" 
+			includeantruntime="false" fork="yes" />
+		<jar 
+			destfile="${build.dir}/utilities.jar" 
+			basedir="${classes.dir}">
+            <manifest>
+            	
+            </manifest>
+			<fileset dir="${graphics.dir}">
+				<include name="**/*.png" />
+				<include name="*.png" />
+				<include name="**/*.xml" />
+				<include name="**/*.json" />
+			</fileset>
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
+        </jar>
+	</target>
+</project>
