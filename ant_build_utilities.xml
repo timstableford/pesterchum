@@ -30,7 +30,7 @@
             <manifest>
             	
             </manifest>
-			<fileset dir="${graphics.dir}">
+			<fileset dir="Utilities/">
 				<include name="**/*.png" />
 				<include name="*.png" />
 				<include name="**/*.xml" />
