@@ -113,7 +113,7 @@ public class Settings{
 	}
 	private void loadDefaults() throws SettingsException{
 		defaults = new HashMap<String, String>();
-		BufferedReader is = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/pesterchum/client/config/defaults.json")));
+		BufferedReader is = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/defaults.json")));
 		JsonRootNode rn = null;
 		try {
 			rn = parser.parse(is);
