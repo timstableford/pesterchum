@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 import pesterchum.client.connection.Interface;
-import pesterchum.client.data.Language;
 import pesterchum.client.data.Settings;
 import pesterchum.client.gui.GUI;
 import uk.co.tstableford.utilities.Log;

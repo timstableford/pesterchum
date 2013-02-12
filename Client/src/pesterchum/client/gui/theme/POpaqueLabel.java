@@ -3,10 +3,8 @@ package pesterchum.client.gui.theme;
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
 
 public class POpaqueLabel extends JLabel{
 	private static final long serialVersionUID = 1L;
