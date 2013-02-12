@@ -36,8 +36,8 @@ public class Connection implements Incoming{
 			this.user = null;
 			conn.close();
 			conn = null;
+			server.disconnect(this);
 		}
-		server.disconnect(this);
 	}
 	public SecureConnection getConn(){
 		return conn;
