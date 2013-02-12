@@ -26,6 +26,10 @@ public class PButton extends JButton implements MouseListener{
         this.addMouseListener(this);
         this.setFocusable(false);
 	}
+	@Override
+	public void setText(String text){
+		super.setText(text.toUpperCase());
+	}
 	public void unclickedColor(Color c){
 		NORMAL = c;
 	}
