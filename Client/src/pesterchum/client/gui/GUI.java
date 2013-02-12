@@ -17,14 +17,11 @@ import pesterchum.client.connection.SettingsException;
 import pesterchum.client.data.Message;
 import pesterchum.client.gui.theme.PButton;
 import pesterchum.client.gui.theme.PFrame;
-import pesterchum.client.gui.theme.PLabel;
 import pesterchum.client.gui.theme.PMenu;
 import pesterchum.client.gui.theme.PMenuBar;
 import pesterchum.client.gui.theme.PMenuItem;
 import pesterchum.client.gui.theme.POpaqueLabel;
 import pesterchum.client.gui.theme.PPanel;
-import pesterchum.client.resource.Img;
-import pesterchum.client.resource.Resource;
 import pesterchum.client.resource.ResourceLoader;
 
 public class GUI extends PFrame implements ActionListener, PesterchumGUI{
@@ -199,21 +196,11 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		moods.add(abscond, c);
 		return moods;
 	}
-	private ImageIcon getIcon(Resource res){
-		if(res instanceof Img){
-			Img img = (Img)res;
-			ImageIcon i = new ImageIcon(img.getImage());
-			return i;
-		}
-		return null;
-	}
 	private void redrawFriends(){
 		friends.removeAll();
 		for(String f: ifa.getFriends()){
 			friends.add(new JLabel(f));
 		}
-		//friends.validate();
-		//friends.repaint();
 		this.validate();
 		this.repaint();
 	}

@@ -1,9 +1,6 @@
 package pesterchum.client.gui;
 
-import javax.swing.JLabel;
-
 import pesterchum.client.gui.theme.PButton;
-import pesterchum.client.gui.theme.PLabel;
 
 public class FriendComponent extends PButton{
 	private static final long serialVersionUID = 1L;
