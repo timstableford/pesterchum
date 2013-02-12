@@ -53,7 +53,7 @@ public class Server {
 		}
 	}
 	public void disconnect(Connection conn){
-		if(clients.contains(conn)){
+		if(conn!=null&&clients.contains(conn)){
 			conn.close();
 			clients.remove(conn);
 		}

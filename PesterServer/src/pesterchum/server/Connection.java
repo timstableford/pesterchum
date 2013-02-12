@@ -31,9 +31,11 @@ public class Connection implements Incoming{
 		this.user = user;
 	}
 	public void close(){
-		conn.close();
-		if(this.user!=null){
+		if(this.user!=null&&this.conn!=null){
 			database.removeUser(this.user.getUsername());
+			this.user = null;
+			conn.close();
+			conn = null;
 		}
 		server.disconnect(this);
 	}

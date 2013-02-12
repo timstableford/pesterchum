@@ -52,6 +52,9 @@ public class Interface implements IncomingJson{
 	public void register(String u, String p){
 		//TODO
 	}
+	public List<String> getFriends(){
+		return friends;
+	}
 	public boolean authenticated(){
 		if(conn.getUsername()!=null){
 			return true;
@@ -115,6 +118,9 @@ public class Interface implements IncomingJson{
 	private void processFriendResponse(ICData data){
 		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
+		if(suc){
+			friends.add(username);
+		}
 		gui.friendRequestResponse(username, suc);
 	}
 	private void processAdmin(ICData data){

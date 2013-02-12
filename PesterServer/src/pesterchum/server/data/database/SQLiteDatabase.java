@@ -28,9 +28,9 @@ public class SQLiteDatabase implements Database{
 		statement.setQueryTimeout(30);  // set timeout to 30 sec.
 		setup();
 	}
-	public boolean userExists(User user){
+	public boolean userExists(String user){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getBytes())+"'");
 			if(rs.next()){
 				return true;
 			}else{

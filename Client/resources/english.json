@@ -159,6 +159,18 @@
 		{
 			"from": "saved settings",
 			"to": "saved settings"
+		},
+		{
+			"from": "enter chum name",
+			"to": "enter chum name"
+		},
+		{
+			"from": "cancel",
+			"to": "cancel"
+		},
+		{
+			"from": "accept",
+			"to": "accept"
 		}
 	]
 }

@@ -5,6 +5,7 @@ import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
 import pesterchum.server.Util;
+import uk.co.tstableford.utilities.Utilities;
 
 public class Interface implements IncomingJson{
 	private Manager manager;
@@ -41,12 +42,12 @@ public class Interface implements IncomingJson{
 		}
 	}
 	private void processFriendRequest(ICData data){
-		String username = data.getData().getStringValue("username");
+		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("friendresponse"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(username));
-		boolean exists = manager.getDatabase().userExists(new User(username));
+				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(username.getBytes())));
+		boolean exists = manager.getDatabase().userExists(username);
 		builder.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(exists)));
 		data.getSource().getConn().write(Util.jsonToString(builder.build()));
 	}

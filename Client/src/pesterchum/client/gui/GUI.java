@@ -30,6 +30,8 @@ import pesterchum.client.resource.ResourceLoader;
 public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies, theme;
+	private PButton addchum;
+	private Box friends;
 	private Login login;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
@@ -135,31 +137,30 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		PPanel buddyList = new PPanel();	
 		buddyList.setLayout(new GridBagLayout());
 		c.gridx = 0;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.fill = GridBagConstraints.BOTH;
 		c.gridy = 0;
 		POpaqueLabel chumroll = new POpaqueLabel(ifa.translate("chumroll").toUpperCase()+":");
 		buddyList.add(chumroll, c);
 		
-		
+		c.weighty = 1;
 		c.gridy = 1;
 		PPanel friendPanel = new PPanel();
 		friendPanel.setLayout(new BoxLayout(friendPanel, BoxLayout.Y_AXIS));
-		Box box = Box.createVerticalBox();
-		box.add(new PLabel("a"));
-		box.add(new PLabel("b"));
-		box.add(new PLabel("c"));
-		
-		JScrollPane jscrlpBox = new JScrollPane(box);
+		friends = Box.createVerticalBox();
+		this.redrawFriends();
+		JScrollPane jscrlpBox = new JScrollPane(friends);
 		friendPanel.add(jscrlpBox);
 		
+		c.weighty = 0.2;
 		c.gridwidth = 3;
 		buddyList.add(friendPanel, c);
 		///////////////////
 		c.gridwidth = 1;
 		c.gridy = 2;
 		c.weightx = 0.5;
-		PButton addChum = new PButton(ifa.translate("add chum")); 
-		buddyList.add(addChum, c);
+		addchum = new PButton(ifa.translate("add chum")); 
+		addchum.addActionListener(this);
+		buddyList.add(addchum, c);
 		////////////////////
 		c.gridx = 1;
 		PButton block = new PButton(ifa.translate("block")); 
@@ -206,6 +207,16 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}
 		return null;
 	}
+	private void redrawFriends(){
+		friends.removeAll();
+		for(String f: ifa.getFriends()){
+			friends.add(new JLabel(f));
+		}
+		//friends.validate();
+		//friends.repaint();
+		this.validate();
+		this.repaint();
+	}
 	public void incomingMessage(Message message){
 		System.out.println("Message from "+message.getFrom()+" - "+message.getContent());
 	}
@@ -216,6 +227,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			login.setVisible(false);
 			this.setVisible(true);
 		}
+		this.redrawFriends();
 		System.out.println("Login response - successful? "+success);
 	}
 	@Override
@@ -228,11 +240,19 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			this.setState(Frame.ICONIFIED);
 			break;
 		}
+		if(e.getSource()==addchum){
+			String chum = JOptionPane.showInputDialog("Enter chums name");
+			ifa.addFriend(chum);
+		}
 	}
 
 
 	public void friendRequestResponse(String username, boolean found){
-
+		if(found){
+			redrawFriends();
+		}else{
+			//TODO
+		}
 	}
 	@Override
 	public void timeout() {
