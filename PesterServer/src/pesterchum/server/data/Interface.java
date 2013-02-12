@@ -51,6 +51,9 @@ public class Interface implements IncomingJson{
 		if(exists){
 			if(data.getSource().getUser().hasFriend(username)){
 				exists = false;
+			}else{
+				data.getSource().getUser().addFriend(username);
+				manager.getDatabase().saveUser(data.getSource().getUser());
 			}
 		}
 		builder.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(exists)));

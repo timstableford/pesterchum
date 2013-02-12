@@ -81,23 +81,12 @@ public class SQLiteDatabase implements Database{
 	}
 	public void saveUser(User user){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
-			if(rs.next()){
-				String passHash = rs.getString("password");
-				statement.executeUpdate("insert or replace into users values("
-						+Utilities.encodeHex(user.getUsername().getBytes())+", "
-						+passHash+", "
-						+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
-			}
+			statement.executeUpdate("update users set friends='"+
+					Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())
+					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
 		} catch (SQLException e1) {
 			System.err.println("Could not save user "+user.getUsername());
-		}
-		try {
-			statement.executeUpdate("insert of replace into users values("
-					+Utilities.encodeHex(user.getUsername().getBytes())+", "
-					+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+")");
-		} catch (SQLException e) {
-			System.err.println("Could not save user "+user.getUsername());
+			e1.printStackTrace();
 		}
 	}
 	private void setup() throws SQLException{

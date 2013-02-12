@@ -7,5 +7,4 @@ public interface Database {
 	public boolean authenticate(User user, String password);
 	public boolean newUser(User user, String password);
 	public void saveUser(User user);
-	
 }
