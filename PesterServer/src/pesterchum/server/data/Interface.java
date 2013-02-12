@@ -74,7 +74,29 @@ public class Interface implements IncomingJson{
 		}
 	}
 	private void processRegistration(ICData data){
-		//TODO
+		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
+		String pw = new String(Utilities.decodeHex(data.getData().getStringValue("password")));
+		User u = new User(un);
+		manager.register(u, pw);
+
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
+				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(un.getBytes())))
+				.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(u.authenticated())));
+		if(u.authenticated()){
+			JsonArrayNodeBuilder arr = JsonNodeBuilders.anArrayBuilder();
+			for(String f: u.getFriends()){
+				arr.withElement(JsonNodeBuilders.anObjectBuilder()
+						.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(f.getBytes()))));
+			}
+			builder.withField("friends", arr);
+		}
+		data.getSource().getConn().write(Util.jsonToString(builder.build()));
+		if(u.authenticated()){
+			data.getSource().setUser(u);
+			manager.registerUser(un, data.getSource());
+		}
 	}
 	private void processLogin(ICData data){
 		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));

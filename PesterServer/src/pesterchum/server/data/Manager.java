@@ -26,6 +26,9 @@ public class Manager {
 	public boolean authenticate(User user, String password){
 		return database.authenticate(user, password);
 	}
+	public boolean register(User user, String password){
+		return database.newUser(user, password);
+	}
 	public void registerUser(String user, Connection conn){
 		connected.put(user, conn);
 	}

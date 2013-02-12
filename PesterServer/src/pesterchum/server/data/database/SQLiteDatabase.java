@@ -64,13 +64,8 @@ public class SQLiteDatabase implements Database{
 		}
 	}
 	public boolean newUser(User user, String password){
-		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
-			if(rs.next()){
-				return false;
-			}
-		} catch (SQLException e) {
-			//ignore because user simply not found, which is good
+		if(userExists(user.getUsername())){
+			return false;
 		}
 		try {
 			statement.executeUpdate("insert into users values("
@@ -81,6 +76,7 @@ public class SQLiteDatabase implements Database{
 			e.printStackTrace();
 			return false;
 		}
+		user.setAuthenticated(true);
 		return true;
 	}
 	public void saveUser(User user){
