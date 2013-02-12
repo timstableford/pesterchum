@@ -112,13 +112,6 @@ public class SQLiteDatabase implements Database{
 		//setup user table
 		statement.executeUpdate("drop table if exists users");
 		statement.executeUpdate("create table users (name varchar(20) PRIMARY KEY, password string, friends string)");
-		//TODO remove this initial propgation
-		User u = new User("frushiMoto");
-		u.addFriend("hyperBadger");
-		newUser(u, "password");
-		User u2 = new User("hyperBadger");
-		u2.addFriend("frushiMoto");
-		newUser(u2, "password");
 	}
 	private void update(int oldVersion){
 		
