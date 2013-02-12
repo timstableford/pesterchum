@@ -36,6 +36,14 @@ public class User {
 	public List<String> getFriends(){
 		return friends;
 	}
+	public boolean hasFriend(String username){
+		for(String s: friends){
+			if(s.equalsIgnoreCase(username)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public void loadFriends(JsonRootNode json){
 		List<JsonNode> arr = json.getArrayNode("friends");
 		for(JsonNode n: arr){

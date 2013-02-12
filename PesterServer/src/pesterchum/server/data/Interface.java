@@ -48,6 +48,11 @@ public class Interface implements IncomingJson{
 				.withField("command", JsonNodeBuilders.aStringBuilder("friendresponse"))
 				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(username.getBytes())));
 		boolean exists = manager.getDatabase().userExists(username);
+		if(exists){
+			if(data.getSource().getUser().hasFriend(username)){
+				exists = false;
+			}
+		}
 		builder.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(exists)));
 		data.getSource().getConn().write(Util.jsonToString(builder.build()));
 	}

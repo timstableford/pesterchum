@@ -96,6 +96,14 @@ public class Interface implements IncomingJson{
 				.withField("password", JsonNodeBuilders.aStringBuilder(password));
 		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
+	public boolean hasFriend(String username){
+		for(String s: friends){
+			if(s.equalsIgnoreCase(username)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public boolean connect(String host, int port){
 		conn.close();
 		try {
@@ -109,11 +117,13 @@ public class Interface implements IncomingJson{
 		conn.getConnection().write(Util.jsonToString(message.getJson()));
 	}
 	public void addFriend(String username){
-		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
-				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
-				.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
-				.withField("username", JsonNodeBuilders.aStringBuilder((Utilities.encodeHex(username.getBytes()))));
-		conn.getConnection().write(Util.jsonToString(builder.build()));
+		if(!hasFriend(username)){
+			JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+					.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+					.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
+					.withField("username", JsonNodeBuilders.aStringBuilder((Utilities.encodeHex(username.getBytes()))));
+			conn.getConnection().write(Util.jsonToString(builder.build()));
+		}
 	}
 	private void processFriendResponse(ICData data){
 		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
