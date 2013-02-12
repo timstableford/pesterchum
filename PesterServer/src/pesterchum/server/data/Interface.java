@@ -67,26 +67,31 @@ public class Interface implements IncomingJson{
 		case "login":
 			processLogin(data);
 			break;
+		case "register":
+			processRegistration(data);
 		default:
 			System.err.println("Unknown admin command from "+data.getSource().getConn().getSource());
 		}
 	}
+	private void processRegistration(ICData data){
+		//TODO
+	}
 	private void processLogin(ICData data){
-		String un = data.getData().getStringValue("username");
-		String pw = data.getData().getStringValue("password");
+		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
+		String pw = new String(Utilities.decodeHex(data.getData().getStringValue("password")));
 		User u = new User(un);
 		manager.authenticate(u, pw);
 
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(un))
+				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(un.getBytes())))
 				.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(u.authenticated())));
 		if(u.authenticated()){
 			JsonArrayNodeBuilder arr = JsonNodeBuilders.anArrayBuilder();
 			for(String f: u.getFriends()){
 				arr.withElement(JsonNodeBuilders.anObjectBuilder()
-						.withField("username", JsonNodeBuilders.aStringBuilder(f)));
+						.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(f.getBytes()))));
 			}
 			builder.withField("friends", arr);
 		}

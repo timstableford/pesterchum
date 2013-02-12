@@ -52,6 +52,8 @@ public class PButton extends JButton implements MouseListener{
 	@Override
 	public void mouseEntered(MouseEvent e) {}
 	@Override
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {
+		this.setBackground(NORMAL);
+	}
 
 }

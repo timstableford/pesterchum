@@ -49,8 +49,13 @@ public class Interface implements IncomingJson{
 	public Settings getSettings(){
 		return settings;
 	}
-	public void register(String u, String p){
-		//TODO
+	public void register(String username, String password){
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("register"))
+				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(username.getBytes())))
+				.withField("password", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(password.getBytes())));
+		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	public List<String> getFriends(){
 		return friends;
@@ -92,8 +97,8 @@ public class Interface implements IncomingJson{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(username))
-				.withField("password", JsonNodeBuilders.aStringBuilder(password));
+				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(username.getBytes())))
+				.withField("password", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(password.getBytes())));
 		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	public boolean hasFriend(String username){
@@ -147,13 +152,13 @@ public class Interface implements IncomingJson{
 	}
 	private boolean processLogin(ICData data){
 		log.info("Login response received");
-		String un = data.getData().getStringValue("username");
+		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
 		if(suc){
 			conn.setUsername(un);
 			List<JsonNode> friends = data.getData().getArrayNode("friends");
 			for(JsonNode f: friends){
-				this.friends.add(f.getStringValue("username"));
+				this.friends.add(new String(Utilities.decodeHex(f.getStringValue("username"))));
 			}
 		}
 		gui.loginResponse(suc);
