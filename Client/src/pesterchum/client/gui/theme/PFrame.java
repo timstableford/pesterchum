@@ -15,6 +15,8 @@ import pesterchum.client.resource.ResourceLoader;
 public class PFrame extends JFrame implements MouseListener, MouseMotionListener{
 	private static final long serialVersionUID = -1247010000409362602L;
 	protected int posX,posY;
+	private int w,h;
+	private boolean resize = false;
 	public PFrame(){
 		super();
 		posX = 0;
@@ -33,17 +35,31 @@ public class PFrame extends JFrame implements MouseListener, MouseMotionListener
 	public void mousePressed(MouseEvent e) {
 		posX=e.getX();
 		posY=e.getY();
+		resize = inBottomRight(e);
+		w = this.getX();
+		h = this.getY();
 	}
 	@Override
 	public void mouseDragged(MouseEvent e){
-		setLocation(e.getXOnScreen()-posX,e.getYOnScreen()-posY);
+		if(resize){
+			int x = e.getXOnScreen()-w;
+			int y = e.getYOnScreen()-h;
+			this.setSize(x, y);
+		}else{
+			setLocation(e.getXOnScreen()-posX,e.getYOnScreen()-posY);
+		}
+	}
+	private boolean inBottomRight(MouseEvent e){
+		return e.getX()>this.getWidth()-8&&e.getY()>this.getHeight()-8;
 	}
 	@Override
 	public void mouseMoved(MouseEvent e) {}
 	@Override
 	public void mouseClicked(MouseEvent e) {}
 	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		
+	}
 	@Override
 	public void mouseEntered(MouseEvent e) {}
 	@Override
