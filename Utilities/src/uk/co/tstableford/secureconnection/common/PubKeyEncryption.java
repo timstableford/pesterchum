@@ -19,13 +19,20 @@ import javax.crypto.NoSuchPaddingException;
 
 import uk.co.tstableford.utilities.Utilities;
 
-
+/**
+ * Utilities to generate public/private keys and encrypt/decrypt
+ * @author Tim Stableford
+ *
+ */
 public class PubKeyEncryption {
 	private RSAPublicKeySpec pub;
 	private PublicKey pubKey;
 	private RSAPrivateKeySpec priv;
 	private EncryptionMode mode;
 	//DECRYPTION, decryptee, key creator, public key sender
+	/**
+	 * Called when you are the decrypting end and want to generate a key pair.
+	 */
 	public PubKeyEncryption(){
 		this.mode = EncryptionMode.DECRYPT;
 		initAsymmetric();
@@ -42,6 +49,10 @@ public class PubKeyEncryption {
 			System.err.println("Could not create public private encryption");
 		}
 	}
+	/**
+	 * @return the public key as a string with descriptors
+	 * In format type:publickey;modulus:[modulus];exponent:[exponent];
+	 */
 	public String getPublicKeyString(){
 		if(mode==EncryptionMode.DECRYPT){
 			StringBuffer b = new StringBuffer();
@@ -55,6 +66,11 @@ public class PubKeyEncryption {
 			return null;
 		}
 	}
+	/**
+	 * Decrypts a string of data into a byte array
+	 * @param data data to decrypt
+	 * @return the decrypted data in a byte array
+	 */
 	public byte[] decrypt(String data){
 		try {
 			KeyFactory fact = KeyFactory.getInstance("RSA");
@@ -70,15 +86,27 @@ public class PubKeyEncryption {
 	}
 	
 	//ENCRYPTION, public key receiver, encryptee
+	/**
+	 * The public key receiver, the one encrypting.
+	 * @param modulus the modulus of the received key
+	 * @param exponent the exponent of the received key
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 */
 	public PubKeyEncryption(BigInteger modulus, BigInteger exponent) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		this.mode = EncryptionMode.ENCRYPT;
 		initAsymmetric(modulus, exponent);
 	}
-	public void initAsymmetric(BigInteger modulus, BigInteger exponent) throws NoSuchAlgorithmException, InvalidKeySpecException{
+	private void initAsymmetric(BigInteger modulus, BigInteger exponent) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
 		KeyFactory fact = KeyFactory.getInstance("RSA");
 		pubKey = fact.generatePublic(keySpec);
 	}
+	/**
+	 * Encrypts a piece of data after intialisation
+	 * @param data byte array to encrypt
+	 * @return hex encoded, encrypted
+	 */
 	public String encrypt(byte[] data){
 		if(mode==EncryptionMode.ENCRYPT){
 			try {
@@ -96,7 +124,7 @@ public class PubKeyEncryption {
 		}
 	}
 	
-	public enum EncryptionMode{
+	enum EncryptionMode{
 		ENCRYPT,
 		DECRYPT;
 	}

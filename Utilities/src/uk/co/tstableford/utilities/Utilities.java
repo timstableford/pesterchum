@@ -1,8 +1,18 @@
 package uk.co.tstableford.utilities;
 
 import java.util.HashMap;
-
+/**
+ * Misc functions class
+ * @author Tim Stableford
+ *
+ */
 public class Utilities {
+	/**
+	 * Decodes key/value data to hashmap
+	 * @param data the string representation
+	 * @return the decoded hashmap
+	 * Format is [key]:[value]; where ; denotes end of line and multiple lines can be used
+	 */
 	public static HashMap<String, String> decode(String data){
 		HashMap<String, String> in = null;
 		if(data.contains(";")){
@@ -18,6 +28,11 @@ public class Utilities {
 		}
 		return in;
 	}
+	/**
+	 * Encodes a byte array to ascii hex
+	 * @param bytes byte array to encode to hex
+	 * @return encoded byte array as hex
+	 */
 	public static String encodeHex(byte[] bytes) {
 	    final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 	    char[] hexChars = new char[bytes.length * 2];
@@ -29,6 +44,11 @@ public class Utilities {
 	    }
 	    return new String(hexChars);
 	}
+	/**
+	 * Decodes ascii hex to a byte array
+	 * @param hex string of ascii hex to decode
+	 * @return the decoded byte array
+	 */
 	public static byte[] decodeHex(String hex){
 		int len = hex.length();
 	    byte[] data = new byte[len / 2];

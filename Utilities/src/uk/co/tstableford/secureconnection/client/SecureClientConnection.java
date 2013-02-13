@@ -18,7 +18,12 @@ import uk.co.tstableford.secureconnection.common.PubKeyEncryption;
 import uk.co.tstableford.secureconnection.common.interfaces.Incoming;
 import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;
 import uk.co.tstableford.utilities.Log;
-
+/**
+ * Wraps a socket, client half
+ * @author Tim Stableford
+ * Wraps around a socket creating an encrypted connection.
+ * This the client half.
+ */
 public class SecureClientConnection implements Runnable, SecureConnection{
 	private static final String LOG_FILE = "secure_client.log";
 	private static final long TIMEOUT = 15000;
@@ -31,6 +36,11 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 	private Incoming handler;
 	private Encryption enc;
 	private Log log;
+	/**
+	 * @param socket Pre-created and connected socket.
+	 * @param handler Class implementing "Incoming" which is passed incoming data
+	 * @param log The log to use
+	 */
 	public SecureClientConnection(Socket socket, Incoming handler, Log log){
 		this.handler = handler;
 		this.log = log;
@@ -47,16 +57,31 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 		run = true;
 		(new Thread(this)).start();
 	}
+	/**
+	 * @param socket Pre-created and connected socket.
+	 * @param handler Class implementing "Incoming" which is passed incoming data
+	 * This creates it's own log
+	 */
 	public SecureClientConnection(Socket socket, Incoming handler){
 		this(socket, handler, new Log(new File(LOG_FILE), 5, false));
 	}
+	/**
+	 * @return a class which wraps the 2 encryption types
+	 */
 	public Encryption getEncryption(){
 		return this.enc;
 	}
+	/**
+	 * Allows changing of the incoming data processor
+	 * @param handler the handler to change to
+	 */
 	@Override
 	public void setHandler(Incoming handler) {
 		this.handler = handler;
 	}
+	/**
+	 * Gracefully stops the process and closes the socket
+	 */
 	public void close(){
 		log.debug("[SC] Close called", 5);
 		if(socket!=null){
@@ -77,10 +102,20 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 			run = false;
 		}
 	}
+	/**
+	 * Writes a string to the encrypted socket
+	 * This will not send data unless encryption was established
+	 * @param data The data to write
+	 */
 	public synchronized void write(String data){
 		log.debug("[SC] Writing "+data, 4);
 		writeBuffer.add(data.getBytes());
 	}
+	/**
+	 * Writes unencrypted data to the socket
+	 * This does not buffer, so may block until sent
+	 * @param data data to write
+	 */
 	public synchronized void writeNow(String data){
 		log.debug("[SC] Writing now unencrypted - "+data, 4);
 		if(out!=null){
@@ -97,15 +132,21 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 			log.error("[SC] Could not write to socket");
 		}
 	}
+	/**
+	 * @return true if full encryption is established
+	 */
 	public boolean encrypted(){
 		return enc.isSymmetricInit();
+	}
+	/**
+	 * @return the string representation of the source
+	 */
+	public String getSource(){
+		return this.socket.getInetAddress().toString();
 	}
 	private void processIncoming(String data) throws SAXException, IOException{
 		log.debug("[SC] Incoming data - "+data, 4);
 		new IncomingRunner(data, handler, this, log);
-	}
-	public String getSource(){
-		return this.socket.getInetAddress().toString();
 	}
 	@Override
 	public void run(){
@@ -148,12 +189,18 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 			handler.timeout();
 		}
 	}
+	/**
+	 * Called when a ping is received from the server, returns a pong
+	 */
 	@Override
 	public void ping() {
 		//respond to ping with pong
 		lastPing = System.currentTimeMillis();
 		this.writeNow("type:pong;");
 	}
+	/**
+	 * Not used, pong never received
+	 */
 	@Override
 	public void pong() {
 		//shouldnt't ever be ponged, just here because pretty interface

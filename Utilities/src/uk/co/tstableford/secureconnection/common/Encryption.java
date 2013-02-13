@@ -1,5 +1,9 @@
 package uk.co.tstableford.secureconnection.common;
-
+/**
+ * Wraps encryption methods
+ * @author Tim Stableford
+ * Wraps symmetric and asymmetric encryption
+ */
 public class Encryption {
 	private SymmetricEncryption symmetric;
 	private PubKeyEncryption pubKey;

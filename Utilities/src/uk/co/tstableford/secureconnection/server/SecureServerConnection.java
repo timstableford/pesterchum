@@ -17,7 +17,11 @@ import uk.co.tstableford.secureconnection.common.IncomingRunner;
 import uk.co.tstableford.secureconnection.common.interfaces.Incoming;
 import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;
 import uk.co.tstableford.utilities.Log;
-
+/**
+ * Server half of the secure connection
+ * @author Tim Stableford
+ *
+ */
 public class SecureServerConnection implements Runnable, SecureConnection{
 	private static final String LOG_FILE = "secure_server.log";
 	private static final long TIMEOUT = 15000;
@@ -31,9 +35,19 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 	private Encryption enc;
 	private Incoming handler;
 	private List<byte[]> writeBuffer;
+	/**
+	 * @param socket A connected socket to use
+	 * @param handler the upstream class to pass data to
+	 * Uses default log file
+	 */
 	public SecureServerConnection(Socket socket, Incoming handler){
 		this(socket, handler, new Log(new File(LOG_FILE), 5, false));
 	}
+	/**
+	 * @param socket A connected socket to use
+	 * @param handler the upstream class to pass data to
+	 * @param log the log to use
+	 */
 	public SecureServerConnection(Socket socket, Incoming handler, Log log){
 		this.log = log;
 		this.socket = socket;
@@ -51,27 +65,46 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 		(new Thread(this)).start();
 	}
 	@Override
+	/**
+	 * @param data writes encrypted data to the connection
+	 */
 	public void write(String data) {
 		log.debug("[SC]Adding to write buffer - "+data, 4);
 		writeBuffer.add(data.getBytes());
 	}
 	@Override
+	/**
+	 * @return string representation of the connected address
+	 */
 	public String getSource() {
 		return this.socket.getInetAddress().toString();
 	}
 	@Override
+	/**
+	 * @return the encryption wrapper class
+	 */
 	public Encryption getEncryption() {
 		return this.enc;
 	}
 	@Override
+	/**
+	 * Used to change the handler after initialisation
+	 * @param handler the upstream class to set to
+	 */
 	public void setHandler(Incoming handler) {
 		this.handler = handler;
 	}
 	@Override
+	/**
+	 * @return true if fully encrypted
+	 */
 	public boolean encrypted() {
 		return enc.isSymmetricInit();
 	}
 	@Override
+	/**
+	 * Gracefully stops threads and closes socket
+	 */
 	public void close() {
 		log.debug("[SC]Close requested", 5);
 		if(socket!=null){
@@ -92,6 +125,11 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 			run = false;
 		}
 	}
+	/**
+	 * Writes data without buffering encrypted
+	 * @param data data to write
+	 * This will block until sent
+	 */
 	public synchronized void writeNow(String data){
 		log.debug("[SC]Writing now unencrypted - "+data, 4);
 		if(out!=null){
@@ -159,9 +197,15 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 		}
 	}
 	@Override
+	/**
+	 * Never called, server is never pinged only ponged
+	 */
 	public void ping() {
 		//should never be pinged, just here for pretty interface
 	}
+	/**
+	 * Registers a pong
+	 */
 	@Override
 	public void pong() {
 		log.debug("Ponged", 5);

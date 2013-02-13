@@ -1,7 +1,11 @@
 package uk.co.tstableford.secureconnection.common.interfaces;
 
 import uk.co.tstableford.secureconnection.common.Encryption;
-
+/**
+ * Designates common methods for the server and client secure connections
+ * @author Tim Stableford
+ *
+ */
 public interface SecureConnection {
 	public void write(String data);
 	public void writeNow(String data);

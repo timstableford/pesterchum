@@ -13,6 +13,11 @@ public class Log {
 	private int debug = -1;
 	private boolean verbose = false;
 	private BufferedWriter out = null;
+	/**
+	 * @param output The file to write to
+	 * @param debug the debug level 0 is off and lowest
+	 * @param verbose whether to output to console
+	 */
 	public Log(File output, int debug, boolean verbose){
 		try{
 			this.debug = debug;
@@ -25,15 +30,26 @@ public class Log {
 			System.err.println("[ERROR] Could not create log");
 		}
 	}
+	/**
+	 * @return the current debug level
+	 */
 	public int debugLevel(){
 		return debug;
 	}
+	/**
+	 * @param data writes info type to log
+	 */
 	public synchronized void info(String data){
 		write("[INFO]"+data);
 		if(verbose){
 			System.out.println("[INFO]"+data);
 		}
 	}
+	/**
+	 * writes debug data to log if debug>=level
+	 * @param data data to write
+	 * @param level the debug level in
+	 */
 	public synchronized void debug(String data, int level){
 		if(debug>=level){
 			write("[DEBUG][LEVEL"+level+"]"+data);
@@ -42,6 +58,9 @@ public class Log {
 			}
 		}
 	}
+	/**
+	 * @param data write to log if debug>0
+	 */
 	public synchronized void error(String data){
 		if(debug>0){
 			write("[ERROR]"+data);
@@ -50,6 +69,9 @@ public class Log {
 			}
 		}
 	}
+	/**
+	 * closes the log file
+	 */
 	public void close(){
 		try {
 			out.close();

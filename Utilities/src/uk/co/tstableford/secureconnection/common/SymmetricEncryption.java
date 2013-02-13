@@ -11,10 +11,18 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import uk.co.tstableford.utilities.Utilities;
-
+/**
+ * AES-128 symmetric encryption/decryption utility class
+ * @author Tim Stableford
+ *
+ */
 public class SymmetricEncryption {
 	private SecretKeySpec sks;
 	private Cipher enc, denc;
+	/**
+	 * Called when you are given a key
+	 * @param key the byte representation of the key
+	 */
 	public SymmetricEncryption(byte[] key){
 		this.sks = new SecretKeySpec(key, "AES");
 		try {
@@ -26,6 +34,9 @@ public class SymmetricEncryption {
 			System.err.println("Error setting of encoders");
 		}
 	}
+	/**
+	 * called when you want to generate a key
+	 */
 	public SymmetricEncryption(){
 		this.sks = new SecretKeySpec(generateKey(), "AES");
 		try {
@@ -37,9 +48,17 @@ public class SymmetricEncryption {
 			System.err.println("Error setting of encoders");
 		}
 	}
+	/**
+	 * @return the key in a byte array
+	 */
 	public byte[] getSymmetricKey(){
 		return sks.getEncoded();
 	}
+	/**
+	 * Encrypts data
+	 * @param data to encrypt
+	 * @return encrypted, hex encoded string
+	 */
 	public String encrypt(byte[] data){
 		try {
 			return new String(Utilities.encodeHex(enc.doFinal(data)));
@@ -48,6 +67,11 @@ public class SymmetricEncryption {
 		}
 		return null;
 	}
+	/**
+	 * Decrypts data
+	 * @param data hex encoded, encrypted data
+	 * @return the decrypted byte array
+	 */
 	public byte[] decrypt(String data){
 		try {
 			return denc.doFinal(Utilities.decodeHex(data));

@@ -10,12 +10,22 @@ import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;
 import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
-
+/**
+ * Processes a piece of incoming data in it's own thread
+ * @author Tim Stableford
+ *
+ */
 public class IncomingRunner implements Runnable{
 	private String data;
 	private Incoming handler;
 	private SecureConnection conn;
 	private Log log;
+	/**
+	 * @param data the incoming line of data
+	 * @param handler the handler to pass upstream to
+	 * @param conn the connection sent from
+	 * @param log the log class
+	 */
 	public IncomingRunner(String data, Incoming handler, SecureConnection conn, Log log){
 		this.log = log;
 		this.data = data;
@@ -35,6 +45,14 @@ public class IncomingRunner implements Runnable{
 			}
 		}
 	}
+	/**
+	 * Checks to see if a piece of data is a "special case"
+	 * @param data
+	 * @return
+	 * It establishes whether it's a special case by seeing if it is not encrypted
+	 * and can be decoded to an expected format.
+	 * Cases this is used when when establishing encryption and and for ping/pong.
+	 */
 	private boolean isSpecialCase(String data){
 		HashMap<String, String> in = Utilities.decode(data);
 		if(in!=null){
