@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -30,8 +32,10 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private PButton addchum;
 	private FriendPane friends;
 	private Login login;
+	private List<Messaging> messWindows;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
+		this.messWindows = new ArrayList<Messaging>();
 		//this is called if anything needs to be done before the interface is setup
 	}
 	@Override
@@ -147,7 +151,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.weighty = 1;
 		c.gridy = 1;
 		c.gridwidth = 3;
-		friends = new FriendPane(ifa);
+		friends = new FriendPane(this, ifa);
 		this.redrawFriends();
 		buddyList.add(friends, c);
 		
@@ -197,13 +201,27 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		moods.add(abscond, c);
 		return moods;
 	}
+	public Messaging getChat(String user){
+		for(Messaging m: messWindows){
+			if(m.getUser().equals(user)){
+				m.toFront();
+				return m;
+			}
+		}
+		Messaging m = new Messaging(ifa, user, this);
+		messWindows.add(m);
+		return m;
+	}
+	public void message(String user){
+		getChat(user);
+	}
 	private void redrawFriends(){
 		friends.redraw();
 		this.validate();
 		this.repaint();
 	}
 	public void incomingMessage(Message message){
-		System.out.println("Message from "+message.getFrom()+" - "+message.getContent());
+		getChat(message.getFrom()).incoming(message);
 	}
 	
 	public void loginResponse(boolean success) {
@@ -213,7 +231,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			this.setVisible(true);
 		}
 		this.redrawFriends();
-		System.out.println("Login response - successful? "+success);
+		//TODO implment failure notification
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {

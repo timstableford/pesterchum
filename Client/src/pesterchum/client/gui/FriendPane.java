@@ -19,9 +19,11 @@ public class FriendPane extends JScrollPane implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private Interface ifa;
 	private JPanel box;
+	private GUI gui;
 	private List<FriendComponent> components;
-	public FriendPane(Interface ifa){
+	public FriendPane(GUI gui, Interface ifa){
 		super();
+		this.gui = gui;
 		this.setBorder(new LineBorder(Color.yellow, 2));
 		box = new JPanel(new GridBagLayout());
 		box.setBorder(null);
@@ -67,7 +69,7 @@ public class FriendPane extends JScrollPane implements ActionListener{
 		switch(aC){
 		case "clicked":
 			String user = source.getUsername();
-			new Messaging(ifa, user);
+			gui.message(user);
 			break;
 		case "selected":
 			for(FriendComponent f: components){
