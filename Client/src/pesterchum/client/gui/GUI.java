@@ -69,7 +69,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		PPanel content = new PPanel();
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.5;
+		c.weightx = 1;
 		c.weighty = 1;
 		c.anchor = GridBagConstraints.PAGE_START;
 		content.setLayout(new GridBagLayout());
@@ -80,7 +80,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridy = 0;
 		c.weighty = 0;
 		c.insets = new Insets(0,6,0,6);
-		content.add(new JLabel(new ImageIcon(theme.getImage("logo"))), c);
+		content.add(new JLabel(new ImageIcon(theme.getImage("logo")), SwingConstants.LEFT), c);
 		//////
 		c.gridy = 1;
 		c.weighty = 1;
