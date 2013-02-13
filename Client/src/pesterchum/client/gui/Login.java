@@ -3,6 +3,8 @@ package pesterchum.client.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,12 +52,21 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		this.setUndecorated(true);
 		//menu
 		PMenuBar mb = new PMenuBar();
-		mb.add(Box.createHorizontalStrut(140));
+		mb.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.gridx = 0;
+		mb.add(Box.createHorizontalGlue(), c);
+		c.weightx = 0;
+		//icons
+		c.gridx = 1;
 		min = new PMenuItem("_");
-		mb.add(min);
+		mb.add(min, c);
 		min.addActionListener(this);
+		c.gridx = 2;
 		quit = new PMenuItem("X");
-		mb.add(quit);
+		mb.add(quit, c);
 		quit.addActionListener(this);
 		this.add(mb, BorderLayout.NORTH);
 
@@ -65,7 +76,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		tabs.addTab(ifa.translate("register").toUpperCase(), createRegisterPanel());
 		tabs.addTab(ifa.translate("server").toUpperCase(), createServerPanel());
 		this.add(tabs, BorderLayout.CENTER);
-
+		this.setMinimumSize(this.getSize());
 		this.setVisible(true);
 	}
 	public PPanel createServerPanel() throws SettingsException{
