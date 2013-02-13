@@ -84,7 +84,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		//////
 		c.weighty = 0;
 		c.anchor = GridBagConstraints.PAGE_END;
-		c.gridy = 1;
+		c.gridy = 2;
+		content.add(Box.createVerticalStrut(5));
+		c.gridy = 3;
 		c.insets = new Insets(0,6,6,6);
 		content.add(getMoods(),c);
 	}
@@ -225,7 +227,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}
 		if(e.getSource()==addchum){
 			String chum = JOptionPane.showInputDialog("Enter chums name");
-			ifa.addFriend(chum);
+			if(chum!=null){
+				ifa.addFriend(chum);
+			}
 		}
 	}
 
