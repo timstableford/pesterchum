@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
@@ -24,6 +25,8 @@ public class FriendPane extends JScrollPane implements ActionListener{
 		this.setBorder(new LineBorder(Color.yellow, 2));
 		box = new JPanel(new GridBagLayout());
 		box.setBorder(null);
+		box.setOpaque(true);
+		box.setBackground(Color.black);
 		super.setViewportView(box);
 		this.ifa = ifa;
 		this.redraw();
@@ -40,7 +43,9 @@ public class FriendPane extends JScrollPane implements ActionListener{
 		components = new ArrayList<FriendComponent>();
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0; c.gridy = 0;
+		c.weighty = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.PAGE_START;
 		c.weightx = 1;
 		box.removeAll();
 		for(String f: ifa.getFriends()){
@@ -50,6 +55,8 @@ public class FriendPane extends JScrollPane implements ActionListener{
 			components.add(fr);
 			c.gridy++;
 		}
+		c.weighty = 1;
+		box.add(Box.createVerticalGlue(), c);
 		this.validate();
 		this.repaint();
 	}
