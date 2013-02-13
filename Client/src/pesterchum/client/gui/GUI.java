@@ -93,10 +93,12 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridy = 3;
 		c.insets = new Insets(0,6,6,6);
 		content.add(getMoods(),c);
+		this.setMinimumSize(this.getSize());
 	}
 	private PMenuBar getMenu(){
 		PMenuBar menu = new PMenuBar();
-		menu.add(Box.createHorizontalStrut(5));
+		menu.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		PMenu client = new PMenu(ifa.translate("client"));
 		PMenu profile = new PMenu(ifa.translate("profile")); 
 		PMenu help = new PMenu(ifa.translate("help")); 
@@ -105,10 +107,27 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		PMenuItem min = new PMenuItem("_");
 		quit.addActionListener(this);
 		min.addActionListener(this);
-		menu.add(client); menu.add(profile); menu.add(help);
-		menu.add(Box.createHorizontalGlue());
-		menu.add(min);
-		menu.add(quit);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		menu.add(Box.createHorizontalStrut(5), c);
+		//menu
+		c.gridx = 1;
+		menu.add(client, c); 
+		c.gridx = 2;
+		menu.add(profile, c); 
+		c.gridx = 3;
+		menu.add(help, c);
+		//spacer
+		c.gridx = 4;
+		c.weightx = 1;
+		menu.add(Box.createHorizontalGlue(), c);
+		c.weightx = 0;
+		//exit buttons
+		c.gridx = 5;
+		menu.add(min, c);
+		c.gridx = 6;
+		menu.add(quit, c);
 		//set up the Client menu
 		PMenuItem options, memos, pesterLog, randomEncounter, userList, idle, addGroup;
 		PMenuItem reconnect, exit;
