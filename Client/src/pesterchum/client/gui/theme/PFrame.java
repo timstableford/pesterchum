@@ -1,6 +1,7 @@
 package pesterchum.client.gui.theme;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -53,7 +54,13 @@ public class PFrame extends JFrame implements MouseListener, MouseMotionListener
 		return e.getX()>this.getWidth()-8&&e.getY()>this.getHeight()-8;
 	}
 	@Override
-	public void mouseMoved(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) {
+		int cursor = Cursor.DEFAULT_CURSOR;
+		if(inBottomRight(e)){
+			cursor = Cursor.SE_RESIZE_CURSOR;
+		}
+		this.setCursor(Cursor.getPredefinedCursor(cursor));
+	}
 	@Override
 	public void mouseClicked(MouseEvent e) {}
 	@Override
