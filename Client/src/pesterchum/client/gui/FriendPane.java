@@ -28,6 +28,14 @@ public class FriendPane extends JScrollPane implements ActionListener{
 		this.ifa = ifa;
 		this.redraw();
 	}
+	public String getSelectedUser(){
+		for(FriendComponent f: components){
+			if(f.isSelected()){
+				return f.getUsername();
+			}
+		}
+		return null;
+	}
 	public void redraw(){
 		components = new ArrayList<FriendComponent>();
 		GridBagConstraints c = new GridBagConstraints();

@@ -28,6 +28,9 @@ public class FriendComponent extends JLabel implements MouseListener{
 	public void addActionListener(ActionListener l){
 		this.l = l;
 	}
+	public boolean isSelected(){
+		return this.selected;
+	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(l!=null){
