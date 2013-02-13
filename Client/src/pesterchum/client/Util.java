@@ -20,6 +20,17 @@ public class Util {
 	public static String jsonToString(JsonRootNode node){
 		return JSON_FORMATTER.format(node);
 	}
+	public static String initial(String username){
+		String initials = username.substring(0, 1).toUpperCase();
+		for(int i=1; i<username.length(); i++){
+			char s = username.charAt(i);
+			if(s>='A'&&s<='Z'){
+				initials = initials + s;
+				break;
+			}
+		}
+		return initials;
+	}
 	public static boolean verifyUsername(String username){
 		//check exactly 1 capital
 		int capitalcount = 0;

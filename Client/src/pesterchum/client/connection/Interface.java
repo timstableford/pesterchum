@@ -109,6 +109,9 @@ public class Interface implements IncomingJson{
 		}
 		return false;
 	}
+	public String getUsername(){
+		return conn.getUsername();
+	}
 	public boolean connect(String host, int port){
 		conn.close();
 		try {

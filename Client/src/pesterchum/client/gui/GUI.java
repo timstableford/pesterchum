@@ -231,6 +231,11 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		messWindows.add(m);
 		return m;
 	}
+	public void closeChat(Messaging m){
+		if(messWindows.contains(m)){
+			messWindows.remove(m);
+		}
+	}
 	public void message(String user){
 		getChat(user);
 	}
@@ -242,7 +247,6 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	public void incomingMessage(Message message){
 		getChat(message.getFrom()).incoming(message);
 	}
-	
 	public void loginResponse(boolean success) {
 		login.loginResponse(success);
 		if(success){
