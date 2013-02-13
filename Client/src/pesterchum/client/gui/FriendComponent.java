@@ -1,12 +1,15 @@
 package pesterchum.client.gui;
 
-import pesterchum.client.gui.theme.PButton;
+import java.awt.Color;
 
-public class FriendComponent extends PButton{
+import javax.swing.JLabel;
+
+public class FriendComponent extends JLabel{
 	private static final long serialVersionUID = 1L;
 	private String username;
 	public FriendComponent(String username){
 		super(username);
+		this.setBackground(Color.black);
 		this.username = username;
 	}
 	public String getUsername(){

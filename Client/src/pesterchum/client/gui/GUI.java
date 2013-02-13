@@ -28,7 +28,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies, theme;
 	private PButton addchum;
-	private Box friends;
+	private FriendPane friends;
 	private Login login;
 	private Interface ifa; //this has the methods you will communicate with
 	public GUI(){
@@ -141,18 +141,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		
 		c.weighty = 1;
 		c.gridy = 1;
-		PPanel friendPanel = new PPanel();
-		friendPanel.setLayout(new BoxLayout(friendPanel, BoxLayout.Y_AXIS));
-		friends = Box.createVerticalBox();
-		this.redrawFriends();
-		JScrollPane jscrlpBox = new JScrollPane(friends);
-		friendPanel.add(jscrlpBox);
-		
-		c.weighty = 0.2;
 		c.gridwidth = 3;
-		buddyList.add(friendPanel, c);
+		friends = new FriendPane(ifa);
+		this.redrawFriends();
+		buddyList.add(friends, c);
+		
 		///////////////////
 		c.gridwidth = 1;
+		c.weighty = 0;
 		c.gridy = 2;
 		c.weightx = 0.5;
 		addchum = new PButton(ifa.translate("add chum")); 
@@ -197,10 +193,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		return moods;
 	}
 	private void redrawFriends(){
-		friends.removeAll();
-		for(String f: ifa.getFriends()){
-			friends.add(new JLabel(f));
-		}
+		friends.redraw();
 		this.validate();
 		this.repaint();
 	}
