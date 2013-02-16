@@ -71,7 +71,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		this.add(mb, BorderLayout.NORTH);
 
 		PTabbedPane tabs = new PTabbedPane();
-		
+
 		tabs.addTab(ifa.translate("login").toUpperCase(), createLoginPanel());
 		tabs.addTab(ifa.translate("register").toUpperCase(), createRegisterPanel());
 		tabs.addTab(ifa.translate("server").toUpperCase(), createServerPanel());
@@ -158,9 +158,11 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		if(!clicked&&ifa!=null&&u!=null&&pw!=null&&pwr!=null){
 			if(pw.equals(pwr)==false){
 				error(ifa.translate("passwords do not match"));
+				return;
 			}
 			if(!Util.verifyUsername(u)){
 				error(Util.usernameFailureReason(u));
+				return;
 			}
 			this.u = u;
 			this.p = pw;
@@ -179,7 +181,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	}
 	private void info(String info){
 		JOptionPane.showMessageDialog(this, info,
-		        ifa.translate("information"), JOptionPane.INFORMATION_MESSAGE);
+				ifa.translate("information"), JOptionPane.INFORMATION_MESSAGE);
 	}
 	public void save(){
 		String newServer = server.getText();
@@ -239,7 +241,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		}else if(action==Action.REGISTER){
 			ifa.register(u, p);
 		}
-		
+
 	}
 	public void loginResponse(boolean success){
 		if(!success){
