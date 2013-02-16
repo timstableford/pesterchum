@@ -2,6 +2,7 @@ package pesterchum.server.data;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.List;
 
 import pesterchum.server.Connection;
 import pesterchum.server.Util;
@@ -31,9 +32,15 @@ public class Manager {
 	}
 	public void registerUser(String user, Connection conn){
 		connected.put(user, conn);
+		//load offline messages from db
+		List<Message> messages = database.getMessages(user);
+		while(messages.size()>0){
+			Message m = messages.remove(0);
+			sendMessage(m);
+		}
 	}
 	public void removeUser(String user){
-		if(user!=null&&connected.contains(user)){
+		if(user!=null&&connected.containsKey(user)){
 			connected.remove(user);
 		}
 	}
@@ -45,8 +52,9 @@ public class Manager {
 			Connection o = connected.get(message.getTo());
 			o.getConn().write(Util.jsonToString(message.getJson()));
 		}else{
-			//TODO Add to database
-			System.out.println("Could not send message user offline - "+message.getTo());
+			if(message.allowsOffline()){
+				database.storeMessage(message);
+			}
 		}
 	}
 	public void registerInterface(String name, Interface inter){

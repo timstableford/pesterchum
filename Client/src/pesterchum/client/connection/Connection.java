@@ -45,6 +45,9 @@ public class Connection implements Incoming{
 		}
 		this.username = null;
 	}
+	public void ready(){
+		//we dont need to do anything on connection open
+	}
 	public void registerIncoming(String name, IncomingJson inc){
 		interfaces.put(name, inc);
 	}

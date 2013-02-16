@@ -7,12 +7,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import argo.jdom.JdomParser;
 import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
 import pesterchum.server.Util;
+import pesterchum.server.data.Message;
 import pesterchum.server.data.User;
 import uk.co.tstableford.utilities.Utilities;
 
@@ -27,6 +30,36 @@ public class SQLiteDatabase implements Database{
 		statement = connection.createStatement();
 		statement.setQueryTimeout(30);  // set timeout to 30 sec.
 		setup();
+	}
+	public void storeMessage(Message m){
+		try {
+			statement.executeUpdate("insert into messages values("
+					+"'"+Utilities.encodeHex(m.getFrom().getBytes())+"', "
+					+"'"+Utilities.encodeHex(m.getTo().getBytes())+"', "
+					+"'"+Utilities.encodeHex(m.getContent().getBytes())+"', "
+					+"'"+Long.toString(m.getTime())+"')");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public List<Message> getMessages(String username){
+		List<Message> messages = new ArrayList<Message>();
+		try{
+			ResultSet rs = statement.executeQuery("select * from messages where touser='"+Utilities.encodeHex(username.getBytes())+"'");
+			while(rs.next()){
+				String from = new String(Utilities.decodeHex(rs.getString("fromuser")));
+				String to = new String(Utilities.decodeHex(rs.getString("touser")));
+				String content = new String(Utilities.decodeHex(rs.getString("content")));
+				Long time = Long.parseLong(rs.getString("sent"));
+				Message m = new Message(from, to, content);
+				m.setTime(time);
+				messages.add(m);
+			}
+			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes())+"'");
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return messages;
 	}
 	public boolean userExists(String user){
 		try {
@@ -112,6 +145,9 @@ public class SQLiteDatabase implements Database{
 		//setup user table
 		statement.executeUpdate("drop table if exists users");
 		statement.executeUpdate("create table users (name varchar(20) PRIMARY KEY, password string, friends string)");
+		//setup message storage
+		statement.executeUpdate("drop table if exists messages");
+		statement.executeUpdate("create table messages (fromuser string, touser string, content string, sent string)");
 	}
 	private void update(int oldVersion){
 		

@@ -30,6 +30,9 @@ public class Connection implements Incoming{
 	public void setUser(User user){
 		this.user = user;
 	}
+	public void ready(){
+		
+	}
 	public void close(){
 		if(this.conn!=null){
 			database.removeUser(this.user.getUsername());
