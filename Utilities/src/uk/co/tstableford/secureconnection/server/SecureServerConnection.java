@@ -150,6 +150,9 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 		log.debug("[SC]Incoming data - "+data, 4);
 		new IncomingRunner(data, this.handler, this, log);
 	}
+	public Incoming getHandler(){
+		return handler;
+	}
 	@Override
 	public void run() {
 		lastPong = System.currentTimeMillis();
@@ -211,6 +214,4 @@ public class SecureServerConnection implements Runnable, SecureConnection{
 		log.debug("Ponged", 5);
 		lastPong = System.currentTimeMillis();
 	}
-
-
 }

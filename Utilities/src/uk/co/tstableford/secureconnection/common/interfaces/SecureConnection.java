@@ -12,6 +12,7 @@ public interface SecureConnection {
 	public String getSource();
 	public Encryption getEncryption();
 	public void setHandler(Incoming handler);
+	public Incoming getHandler();
 	public boolean encrypted();
 	public void close();
 	public void ping();

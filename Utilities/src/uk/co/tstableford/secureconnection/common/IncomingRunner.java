@@ -76,6 +76,9 @@ public class IncomingRunner implements Runnable{
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 					//TODO implement logger
 				}
+				if(conn.getHandler()!=null){
+					conn.getHandler().ready();
+				}
 				return true;
 			case "ping":
 				conn.ping();

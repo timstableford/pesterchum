@@ -148,6 +148,9 @@ public class SecureClientConnection implements Runnable, SecureConnection{
 		log.debug("[SC] Incoming data - "+data, 4);
 		new IncomingRunner(data, handler, this, log);
 	}
+	public Incoming getHandler(){
+		return handler;
+	}
 	@Override
 	public void run(){
 		//send the hello
