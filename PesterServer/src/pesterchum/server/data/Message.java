@@ -1,5 +1,9 @@
 package pesterchum.server.data;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
@@ -33,6 +37,17 @@ public class Message {
 				.withField("time", JsonNodeBuilders.aStringBuilder(Long.toString(time)))
 				.withField("offline", JsonNodeBuilders.aStringBuilder(Boolean.toString(offline)));
 		return builder.build();
+	}
+	public String getHash(){
+        try {
+        	MessageDigest cript = MessageDigest.getInstance("SHA-1");
+            cript.reset();
+			cript.update((from+to+content+time).getBytes("utf8"));
+			return Utilities.encodeHex(cript.digest());
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+			System.err.println("Could not get hash");
+		}
+        return null;
 	}
 	public void allowOffline(boolean allow){
 		this.offline = allow;

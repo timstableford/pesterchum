@@ -72,6 +72,7 @@ public class Interface implements IncomingJson{
 			break;
 		case "register":
 			processRegistration(data);
+			break;
 		default:
 			System.err.println("Unknown admin command from "+data.getSource().getConn().getSource());
 			System.err.println(data.getData().toString());

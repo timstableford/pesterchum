@@ -1,5 +1,6 @@
 package pesterchum.server.data.database;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -33,56 +34,60 @@ public class SQLiteDatabase implements Database{
 	}
 	public void storeMessage(Message m){
 		try {
-			statement.executeUpdate("insert into messages values("
-					+"'"+Utilities.encodeHex(m.getFrom().getBytes())+"', "
-					+"'"+Utilities.encodeHex(m.getTo().getBytes())+"', "
-					+"'"+Utilities.encodeHex(m.getContent().getBytes())+"', "
-					+"'"+Long.toString(m.getTime())+"')");
-		} catch (SQLException e) {
+			String save = "insert into messages values("
+					+"'"+m.getHash()+"', "
+					+"'"+Utilities.encodeHex(m.getFrom().getBytes("UTF-8"))+"', "
+					+"'"+Utilities.encodeHex(m.getTo().getBytes("UTF-8"))+"', "
+					+"'"+Utilities.encodeHex(m.getContent().getBytes("UTF-8"))+"', "
+					+"'"+Long.toString(m.getTime())+"')";
+			statement.executeUpdate(save);
+		} catch (SQLException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 	}
 	public List<Message> getMessages(String username){
 		List<Message> messages = new ArrayList<Message>();
 		try{
-			ResultSet rs = statement.executeQuery("select * from messages where touser='"+Utilities.encodeHex(username.getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from messages where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
 			while(rs.next()){
 				String from = new String(Utilities.decodeHex(rs.getString("fromuser")));
-				String to = new String(Utilities.decodeHex(rs.getString("touser")));
 				String content = new String(Utilities.decodeHex(rs.getString("content")));
 				Long time = Long.parseLong(rs.getString("sent"));
-				Message m = new Message(from, to, content);
+				Message m = new Message(from, username, content);
 				m.setTime(time);
-				messages.add(m);
-				System.out.println("offline message from "+from+" to "+to);
+				if(m.getHash().equals(rs.getString("hash"))){
+					messages.add(m);
+				}else{
+					System.err.println("error retrieving message - hash does not match");
+				}
 			}
-			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes())+"'");
-		}catch(SQLException e){
+			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
+		}catch(SQLException | UnsupportedEncodingException e){
 			e.printStackTrace();
 		}
 		return messages;
 	}
 	public boolean userExists(String user){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getBytes("UTF-8"))+"'");
 			if(rs.next()){
 				return true;
 			}else{
 				return false;
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | UnsupportedEncodingException e) {
 			return false;
 		}
 	}
 	public boolean authenticate(User user, String password){
 		try {
-			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
+			ResultSet rs = statement.executeQuery("select * from users where name='"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"'");
 			if(!rs.next()){
 				user.setAuthenticated(false);
 				return false;
 			}else{
 				String pass = rs.getString("password");
-				if(pass.equals(Utilities.encodeHex(getHash(password).getBytes()))){
+				if(pass.equals(Utilities.encodeHex(getHash(password).getBytes("UTF-8")))){
 					user.setAuthenticated(true);
 					JsonRootNode node = JDOM_PARSER.parse(new String(Utilities.decodeHex(rs.getString("friends"))));
 					user.loadFriends(node);
@@ -92,7 +97,7 @@ public class SQLiteDatabase implements Database{
 					return false;
 				}
 			}
-		} catch (SQLException | InvalidSyntaxException e) {
+		} catch (SQLException | InvalidSyntaxException | UnsupportedEncodingException e) {
 			user.setAuthenticated(false);
 			return false;
 		}
@@ -103,10 +108,10 @@ public class SQLiteDatabase implements Database{
 		}
 		try {
 			statement.executeUpdate("insert into users values("
-					+"'"+Utilities.encodeHex(user.getUsername().getBytes())+"', "
-					+"'"+Utilities.encodeHex(getHash(password).getBytes())+"', "
-					+"'"+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())+"')");
-		} catch (SQLException e) {
+					+"'"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"', "
+					+"'"+Utilities.encodeHex(getHash(password).getBytes("UTF-8"))+"', "
+					+"'"+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))+"')");
+		} catch (SQLException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -116,9 +121,9 @@ public class SQLiteDatabase implements Database{
 	public void saveUser(User user){
 		try {
 			statement.executeUpdate("update users set friends='"+
-					Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes())
-					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes())+"'");
-		} catch (SQLException e1) {
+					Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))
+					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"'");
+		} catch (SQLException | UnsupportedEncodingException e1) {
 			System.err.println("Could not save user "+user.getUsername());
 			e1.printStackTrace();
 		}
@@ -145,10 +150,10 @@ public class SQLiteDatabase implements Database{
 		statement.executeUpdate("insert into admin values("+VERSION+")");
 		//setup user table
 		statement.executeUpdate("drop table if exists users");
-		statement.executeUpdate("create table users (name varchar(20) PRIMARY KEY, password string, friends string)");
+		statement.executeUpdate("create table users (name varchar(40) PRIMARY KEY, password string, friends string)");
 		//setup message storage
 		statement.executeUpdate("drop table if exists messages");
-		statement.executeUpdate("create table messages (fromuser string, touser string, content string, sent string)");
+		statement.executeUpdate("create table messages (hash varchar(50) PRIMARY KEY, fromuser varchar(40), touser varchar(40), content string, sent string)");
 	}
 	private void update(int oldVersion){
 		
@@ -174,9 +179,9 @@ public class SQLiteDatabase implements Database{
 	private String getHash(String in){
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-			messageDigest.update(in.getBytes());
+			messageDigest.update(in.getBytes("UTF-8"));
 			return new String(messageDigest.digest());
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			return null;
 		}
 	}
