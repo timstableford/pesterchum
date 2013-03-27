@@ -1,5 +1,7 @@
 package pesterchum.server.data;
 
+import java.io.IOException;
+
 import argo.jdom.JsonArrayNodeBuilder;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
@@ -23,7 +25,11 @@ public class Interface implements IncomingJson{
 		if(authenticated(data)){
 			switch(data.getName()){
 			case "message":
-				manager.sendMessage(new Message(data));
+				try {
+					manager.sendMessage(new Message(data));
+				} catch (IOException e) {
+					System.err.println(e);
+				}
 				break;
 			case "admin":
 				processAdmin(data);

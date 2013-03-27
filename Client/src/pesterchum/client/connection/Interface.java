@@ -74,8 +74,12 @@ public class Interface implements IncomingJson{
 		if(authenticated()){
 			switch(data.getName()){
 			case "message":
-				Message m = new Message(data);
-				gui.incomingMessage(m);
+				try {
+					Message m = new Message(data);
+					gui.incomingMessage(m);
+				} catch (IOException e) {
+					System.err.println(e);
+				}
 				break;
 			case "admin":
 				processAdmin(data);
