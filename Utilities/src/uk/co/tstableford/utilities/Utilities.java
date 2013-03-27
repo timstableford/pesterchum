@@ -34,15 +34,15 @@ public class Utilities {
 	 * @return encoded byte array as hex
 	 */
 	public static String encodeHex(byte[] bytes) {
-	    final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-	    char[] hexChars = new char[bytes.length * 2];
-	    int v;
-	    for ( int j = 0; j < bytes.length; j++ ) {
-	        v = bytes[j] & 0xFF;
-	        hexChars[j * 2] = hexArray[v >>> 4];
-	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-	    }
-	    return new String(hexChars);
+		final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+		char[] hexChars = new char[bytes.length * 2];
+		int v;
+		for ( int j = 0; j < bytes.length; j++ ) {
+			v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
 	}
 	/**
 	 * Decodes ascii hex to a byte array
@@ -51,11 +51,11 @@ public class Utilities {
 	 */
 	public static byte[] decodeHex(String hex){
 		int len = hex.length();
-	    byte[] data = new byte[len / 2];
-	    for (int i = 0; i < len; i += 2) {
-	        data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
-	                             + Character.digit(hex.charAt(i+1), 16));
-	    }
-	    return data;
+		byte[] data = new byte[len / 2];
+		for (int i = 0; i < len-1; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+					+ Character.digit(hex.charAt(i+1), 16));
+		}
+		return data;
 	}
 }

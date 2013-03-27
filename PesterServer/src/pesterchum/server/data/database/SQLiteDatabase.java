@@ -54,6 +54,7 @@ public class SQLiteDatabase implements Database{
 				Message m = new Message(from, to, content);
 				m.setTime(time);
 				messages.add(m);
+				System.out.println("offline message from "+from+" to "+to);
 			}
 			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes())+"'");
 		}catch(SQLException e){
