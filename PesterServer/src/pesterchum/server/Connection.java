@@ -23,6 +23,7 @@ public class Connection implements Incoming{
 	public Connection(Socket socket, Manager database, Server server){
 		this.database = database;
 		this.server = server;
+		Log.getInstance().info("Connection from "+socket.getInetAddress());
 		this.conn = new SecureServerConnection(socket, this);
 	}
 	public User getUser(){
@@ -35,7 +36,7 @@ public class Connection implements Incoming{
 		
 	}
 	public void close(){
-		if(this.conn!=null){
+		if(this.conn!=null&&this.user!=null){
 			database.removeUser(this.user.getUsername());
 			this.user = null;
 			conn.close();

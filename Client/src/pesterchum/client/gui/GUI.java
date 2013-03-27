@@ -258,7 +258,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}
 		this.redrawFriends();
 	}
-	public void reconnect(){
+	public boolean reconnect(){
 		String u = login.getUsername();
 		String p = login.getPassword();
 		boolean suc = false;
@@ -266,11 +266,12 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			suc = ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"));
 		} catch (SettingsException e) {
 			System.err.println("Could not reconnect");
+			return false;
 		}
 		if(suc){
 			ifa.login(u, p);
-			this.redrawFriends();
 		}
+		return true;
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -310,7 +311,24 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	}
 	@Override
 	public void timeout() {
-		System.out.println("Connection timeout");
-	}
-}			
-
+		this.setVisible(false);
+		Object[] options = {"Reconnect",
+		"Quit"};
+		int n = JOptionPane.showOptionDialog(this,
+				ifa.translate("Would you like to reconnect?"),
+				ifa.translate("Connection Lost"),
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				new ImageIcon(ResourceLoader.getIcon()),
+				options,
+				options[0]);
+		if(n==0){
+			if(!reconnect()){
+				//if the connection could not be made, present the options again
+				this.timeout();
+			}
+		}else{
+			System.exit(0);
+		}
+	}			
+}
