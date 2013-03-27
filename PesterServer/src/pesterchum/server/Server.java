@@ -11,20 +11,21 @@ import javax.net.ServerSocketFactory;
 
 import pesterchum.server.data.Manager;
 import pesterchum.server.data.Interface;
+import pesterchum.server.data.database.Database;
 
 public class Server {
 	private boolean run;
 	private ServerSocket server;
 	private List<Connection> clients;
-	private Manager database;
-	public Server(int port){
+	private Manager manager;
+	public Server(int port, Database database){
 		//setup database connection
-		database = new Manager();
-		Interface i = new Interface(database);
-		database.registerInterface("message", i);
-		database.registerInterface("login", i);
-		database.registerInterface("admin", i);
-		database.registerInterface("friendrequest", i);
+		manager = new Manager(database);
+		Interface i = new Interface(manager);
+		manager.registerInterface("message", i);
+		manager.registerInterface("login", i);
+		manager.registerInterface("admin", i);
+		manager.registerInterface("friendrequest", i);
 		//setup socket listener
 		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
 		try {
@@ -47,7 +48,7 @@ public class Server {
 				System.err.println("Could not accept connection");
 			}
 			if(socket!=null){
-				Connection conn = new Connection(socket, database, this);
+				Connection conn = new Connection(socket, manager, this);
 				clients.add(conn);
 			}
 		}
