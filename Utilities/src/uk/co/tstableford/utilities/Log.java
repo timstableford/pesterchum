@@ -11,8 +11,22 @@ import java.io.IOException;
  */
 public class Log {
 	private int debug = -1;
+	private static Log instance;
 	private boolean verbose = false;
 	private BufferedWriter out = null;
+	/**
+	 * @return the statically stored instance of log
+	 */
+	public static Log getInstance(){
+		return instance;
+	}
+	/**
+	 * sets a statically stored instance of log
+	 * @param inst the instance to store
+	 */
+	public static void setInstance(Log inst){
+		instance = inst;
+	}
 	/**
 	 * @param output The file to write to
 	 * @param debug the debug level 0 is off and lowest
