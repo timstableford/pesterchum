@@ -136,7 +136,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		userList = new PMenuItem(ifa.translate("user list")); idle = new PMenuItem(ifa.translate("idle")); 
 		addGroup = new PMenuItem(ifa.translate("add group")); 
 		reconnect = new PMenuItem(ifa.translate("reconnect")); exit = new PMenuItem(ifa.translate("exit"));
-		
+		exit.setActionCommand("X");
+		exit.addActionListener(this);
 		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
 		client.add(userList); client.add(idle); client.add(addGroup);
 		client.add(reconnect); client.add(exit);
