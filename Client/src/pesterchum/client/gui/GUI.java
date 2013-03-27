@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.*;
 
 import pesterchum.client.PesterchumGUI;
+import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.connection.SettingsException;
 import pesterchum.client.data.Message;
@@ -50,14 +51,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			System.err.println("Could not load settings");
 			System.exit(-1);
 		}
-		
+
 		// menu at top
 		// logo
 		//list of chums
 		//buttons add chum/block[red]/pester!
 		//mychumhandle: mood/ nick/color
 		//mood table 2x6 + abscond
-		
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		smilies = new ResourceLoader();
 		smilies.load("/smilies/smilies.xml");
@@ -65,7 +66,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		theme.load("/theme/images.xml");
 		this.setSize(new Dimension(230, 380));
 		//create menu bar + menus
-		
+
 		PPanel content = new PPanel();
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
@@ -102,12 +103,12 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		PMenu client = new PMenu(ifa.translate("client"));
 		PMenu profile = new PMenu(ifa.translate("profile")); 
 		PMenu help = new PMenu(ifa.translate("help")); 
-		
+
 		PMenuItem quit = new PMenuItem("X");
 		PMenuItem min = new PMenuItem("_");
 		quit.addActionListener(this);
 		min.addActionListener(this);
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		menu.add(Box.createHorizontalStrut(5), c);
@@ -141,21 +142,21 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
 		client.add(userList); client.add(idle); client.add(addGroup);
 		client.add(reconnect); client.add(exit);
-		
+
 		//set up the Profile menu
 		PMenuItem quirks, trollSlum, color, switchChum;
 		quirks = new PMenuItem(ifa.translate("quirks")); trollSlum = new PMenuItem(ifa.translate("trollslum")); 
 		color = new PMenuItem(ifa.translate("color")); 
 		switchChum = new PMenuItem(ifa.translate("switch"));
 		profile.add(quirks); profile.add(trollSlum); profile.add(color); profile.add(switchChum);
-		
+
 		//set up the Help menu
 		PMenuItem helpMe, about, reportBug;
 		helpMe = new PMenuItem(ifa.translate("help")); about = new PMenuItem(ifa.translate("about")); 
 		reportBug = new PMenuItem(ifa.translate("report a bug"));
-		
+
 		help.add(helpMe); help.add(about); help.add(reportBug);
-		
+
 		return menu;
 	}
 	private PPanel getBuddyList(){
@@ -167,14 +168,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridy = 0;
 		POpaqueLabel chumroll = new POpaqueLabel(ifa.translate("chumroll").toUpperCase()+":");
 		buddyList.add(chumroll, c);
-		
+
 		c.weighty = 1;
 		c.gridy = 1;
 		c.gridwidth = 3;
 		friends = new FriendPane(this, ifa);
 		this.redrawFriends();
 		buddyList.add(friends, c);
-		
+
 		///////////////////
 		c.gridwidth = 1;
 		c.weighty = 0;
@@ -205,15 +206,15 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridx = 0;
 		c.gridy = 0;
 		moods.add(chummy,c);
-		
+
 		PButton bully = new PButton(ifa.translate("bully"));
 		c.weightx = 0.7;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
-		
+
 		moods.add(bully, c);
-		
+
 		PButton abscond = new PButton(ifa.translate("abscond"));
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = 2;
@@ -257,6 +258,20 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}
 		this.redrawFriends();
 	}
+	public void reconnect(){
+		String u = login.getUsername();
+		String p = login.getPassword();
+		boolean suc = false;
+		try {
+			suc = ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"));
+		} catch (SettingsException e) {
+			System.err.println("Could not reconnect");
+		}
+		if(suc){
+			ifa.login(u, p);
+			this.redrawFriends();
+		}
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch(e.getActionCommand()){
@@ -268,9 +283,16 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			break;
 		}
 		if(e.getSource()==addchum){
-			String chum = JOptionPane.showInputDialog("Enter chums name");
+			String chum = JOptionPane.showInputDialog(ifa.translate("Enter chums name"));
 			if(chum!=null){
-				ifa.addFriend(chum);
+				if(!Util.verifyUsername(chum)){
+					JOptionPane.showMessageDialog(this,
+							Util.usernameFailureReason(chum),
+							ifa.translate("error"),
+							JOptionPane.ERROR_MESSAGE);
+				}else{
+					ifa.addFriend(chum);
+				}
 			}
 		}else if(e.getSource()==pester&&friends.getSelectedUser()!=null){
 			this.getChat(friends.getSelectedUser());
@@ -282,7 +304,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}else{
 			JOptionPane.showMessageDialog(this,
 					ifa.translate("user not found"),
-					ifa.translate("Pesterchum"),
+					"Pesterchum",
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}

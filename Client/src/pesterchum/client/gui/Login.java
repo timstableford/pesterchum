@@ -138,6 +138,12 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		loginPanel.add(login);
 		return loginPanel;
 	}
+	public String getUsername(){
+		return un.getText();
+	}
+	public String getPassword(){
+		return new String(pw.getPassword());
+	}
 	public void login(){
 		u = un.getText();
 		p = new String(pw.getPassword());
