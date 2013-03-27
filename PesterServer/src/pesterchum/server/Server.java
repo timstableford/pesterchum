@@ -12,6 +12,7 @@ import javax.net.ServerSocketFactory;
 import pesterchum.server.data.Manager;
 import pesterchum.server.data.Interface;
 import pesterchum.server.data.database.Database;
+import uk.co.tstableford.utilities.Log;
 
 public class Server {
 	private boolean run;
@@ -31,7 +32,7 @@ public class Server {
 		try {
 			server = sslserversocketfactory.createServerSocket(port);
 		} catch (IOException e) {
-			System.err.println("Could not bind to socket at "+port);
+			Log.getInstance().error("Could not bind to socket at "+port);
 			System.exit(-1);
 		}
 		clients = Collections.synchronizedList(new ArrayList<Connection>());
@@ -39,13 +40,13 @@ public class Server {
 		run();
 	}
 	public void run(){
-		System.out.println("Server started on port "+server.getLocalPort());
+		Log.getInstance().info("Server started on port "+server.getLocalPort());
 		while(run){
 			Socket socket = null;
 			try {
 				socket = server.accept();
 			}catch(IOException e){
-				System.err.println("Could not accept connection");
+				Log.getInstance().error("Could not accept connection");
 			}
 			if(socket!=null){
 				Connection conn = new Connection(socket, manager, this);

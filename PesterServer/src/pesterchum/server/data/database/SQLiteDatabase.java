@@ -18,6 +18,7 @@ import argo.saj.InvalidSyntaxException;
 import pesterchum.server.Util;
 import pesterchum.server.data.Message;
 import pesterchum.server.data.User;
+import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
 public class SQLiteDatabase implements Database{
@@ -58,7 +59,7 @@ public class SQLiteDatabase implements Database{
 				if(m.getHash().equals(rs.getString("hash"))){
 					messages.add(m);
 				}else{
-					System.err.println("error retrieving message - hash does not match");
+					Log.getInstance().error("error retrieving message - hash does not match");
 				}
 			}
 			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
@@ -124,7 +125,7 @@ public class SQLiteDatabase implements Database{
 					Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))
 					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"'");
 		} catch (SQLException | UnsupportedEncodingException e1) {
-			System.err.println("Could not save user "+user.getUsername());
+			Log.getInstance().error("Could not save user "+user.getUsername());
 			e1.printStackTrace();
 		}
 	}

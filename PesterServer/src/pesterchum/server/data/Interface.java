@@ -7,6 +7,7 @@ import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
 import pesterchum.server.Util;
+import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
 public class Interface implements IncomingJson{
@@ -35,7 +36,7 @@ public class Interface implements IncomingJson{
 				processAdmin(data);
 				break;
 			default:
-				System.err.println("Unknown data from "+data.getSource().getConn().getSource()+" - "+data.getData());
+				Log.getInstance().error("Unknown data from "+data.getSource().getConn().getSource()+" - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
@@ -43,7 +44,7 @@ public class Interface implements IncomingJson{
 				processAdmin(data);
 				break;
 			default:
-				System.err.println("Unknown data from "+data.getSource().getConn().getSource()+" - "+data.getData());
+				Log.getInstance().error("Unknown data from "+data.getSource().getConn().getSource()+" - "+data.getData());
 			}
 		}
 	}
@@ -80,8 +81,8 @@ public class Interface implements IncomingJson{
 			processRegistration(data);
 			break;
 		default:
-			System.err.println("Unknown admin command from "+data.getSource().getConn().getSource());
-			System.err.println(data.getData().toString());
+			Log.getInstance().error("Unknown admin command from "+data.getSource().getConn().getSource());
+			Log.getInstance().debug(data.getData().toString(), 3);
 		}
 	}
 	private void processRegistration(ICData data){

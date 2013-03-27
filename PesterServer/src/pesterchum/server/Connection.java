@@ -12,6 +12,7 @@ import pesterchum.server.data.User;
 import uk.co.tstableford.secureconnection.common.interfaces.Incoming;
 import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;
 import uk.co.tstableford.secureconnection.server.SecureServerConnection;
+import uk.co.tstableford.utilities.Log;
 
 public class Connection implements Incoming{
 	private SecureConnection conn;
@@ -52,11 +53,13 @@ public class Connection implements Incoming{
 			String name = node.getStringValue("class");
 			database.getInterface(name).processIncoming(new ICData(name, node, this));
 		} catch (InvalidSyntaxException e) {
-			System.err.println("Error parsing incoming");
+			Log.getInstance().error("Error parsing incoming json");
+			Log.getInstance().debug(new String(arg0), 3);
 		}
 	}
 	@Override
 	public void timeout() {
+		Log.getInstance().error("Connection timeout from "+this.getConn().getSource());
 		System.err.println("Connection timeout from "+this.getConn().getSource());
 		close();
 	}
