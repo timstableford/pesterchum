@@ -76,7 +76,8 @@ public class Connection implements Incoming{
 	}
 	@Override
 	public void timeout() {
-		this.close();
 		ifa.timeout();
+		System.err.println("timeout error");
+		this.close();
 	}
 }

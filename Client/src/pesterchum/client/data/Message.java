@@ -22,7 +22,7 @@ public class Message {
 		offline = true;
 	}
 	public Message(ICData data) throws IOException{
-		if(data.getData().getStringValue("class").equals("message")){
+		if(!data.getData().getStringValue("class").equals("message")){
 			throw new IOException("Data not message");
 		}
 		this.from = new String((Utilities.decodeHex(data.getData().getStringValue("from"))));

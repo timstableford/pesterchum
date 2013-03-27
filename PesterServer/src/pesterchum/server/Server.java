@@ -28,9 +28,9 @@ public class Server {
 		manager.registerInterface("admin", i);
 		manager.registerInterface("friendrequest", i);
 		//setup socket listener
-		ServerSocketFactory sslserversocketfactory = createServerSocketFactory();
+		ServerSocketFactory socketfactory = createServerSocketFactory();
 		try {
-			server = sslserversocketfactory.createServerSocket(port);
+			server = socketfactory.createServerSocket(port);
 		} catch (IOException e) {
 			Log.getInstance().error("Could not bind to socket at "+port);
 			System.exit(-1);
