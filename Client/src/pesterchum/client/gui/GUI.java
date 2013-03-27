@@ -29,7 +29,7 @@ import pesterchum.client.resource.ResourceLoader;
 public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private static final long serialVersionUID = 1L;
 	private ResourceLoader smilies, theme;
-	private PButton addchum;
+	private PButton addchum, pester;
 	private FriendPane friends;
 	private Login login;
 	private List<Messaging> messWindows;
@@ -189,7 +189,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		buddyList.add(block, c);
 		/////////////////////
 		c.gridx = 2;
-		PButton pester = new PButton(ifa.translate("pester")+"!"); 
+		pester = new PButton(ifa.translate("pester")+"!"); 
+		pester.addActionListener(this);
 		buddyList.add(pester, c);
 		return buddyList;
 	}
@@ -272,6 +273,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			if(chum!=null){
 				ifa.addFriend(chum);
 			}
+		}else if(e.getSource()==pester&&friends.getSelectedUser()!=null){
+			this.getChat(friends.getSelectedUser());
 		}
 	}
 
