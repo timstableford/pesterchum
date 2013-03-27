@@ -31,7 +31,7 @@ public class Utilities {
 	/**
 	 * Encodes a byte array to ascii hex
 	 * @param bytes byte array to encode to hex
-	 * @return encoded byte array as hex
+	 * @return encoded byte array as hex string object
 	 */
 	public static String encodeHex(byte[] bytes) {
 		final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
