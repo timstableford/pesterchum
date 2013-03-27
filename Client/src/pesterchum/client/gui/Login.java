@@ -230,24 +230,31 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 		try {
 			if(ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"))){
 				System.out.println("Connected to server");
+				if(action==Action.LOGIN){
+					ifa.login(u,p);
+				}else if(action==Action.REGISTER){
+					ifa.register(u, p);
+				}
 			}else{
 				System.err.println("Connection to server failed");
+				error(ifa.translate("could not connect to server"));
+				login.setEnabled(true);
+				register.setEnabled(true);
+				register.setText(ifa.translate("register"));
+				login.setText(ifa.translate("login"));
+				clicked = false;
 			}
 		} catch (SettingsException e) {
 			System.err.println("Error retrieving host/port configuration");
 		}
-		if(action==Action.LOGIN){
-			ifa.login(u,p);
-		}else if(action==Action.REGISTER){
-			ifa.register(u, p);
-		}
-
 	}
 	public void loginResponse(boolean success){
 		if(!success){
-			login.setText("LOGIN - FAILED");
+			error(ifa.translate("login failed"));
 			login.setEnabled(true);
 			register.setEnabled(true);
+			register.setText(ifa.translate("register"));
+			login.setText(ifa.translate("login"));
 			clicked = false;
 		}
 	}

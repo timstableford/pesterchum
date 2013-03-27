@@ -30,12 +30,13 @@ public class Connection implements Incoming{
 	}
 	public boolean connect(String host, int port){
 		log.info("Connecting to "+host+" on port "+port);
+		Socket s;
 		try {
-			Socket s = new Socket(host, port);
-			conn = new SecureClientConnection(s, this, this.log);
+			s = new Socket(host, port);
 		} catch (IOException e) {
 			return false;
 		}
+		conn = new SecureClientConnection(s, this, this.log);
 		return true;
 	}
 	public void close(){
