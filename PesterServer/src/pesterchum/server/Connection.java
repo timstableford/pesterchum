@@ -60,7 +60,6 @@ public class Connection implements Incoming{
 	@Override
 	public void timeout() {
 		Log.getInstance().error("Connection timeout from "+this.getConn().getSource());
-		System.err.println("Connection timeout from "+this.getConn().getSource());
 		close();
 	}
 
