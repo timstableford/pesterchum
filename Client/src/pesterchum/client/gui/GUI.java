@@ -256,7 +256,6 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			this.setVisible(true);
 		}
 		this.redrawFriends();
-		//TODO implment failure notification
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -277,13 +276,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			this.getChat(friends.getSelectedUser());
 		}
 	}
-
-
 	public void friendRequestResponse(String username, boolean found){
 		if(found){
 			redrawFriends();
 		}else{
-			//TODO
+			JOptionPane.showMessageDialog(this,
+					ifa.translate("user not found"),
+					ifa.translate("Pesterchum"),
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	@Override
