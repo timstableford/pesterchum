@@ -74,6 +74,7 @@ public class Interface implements IncomingJson{
 			processRegistration(data);
 		default:
 			System.err.println("Unknown admin command from "+data.getSource().getConn().getSource());
+			System.err.println(data.getData().toString());
 		}
 	}
 	private void processRegistration(ICData data){
