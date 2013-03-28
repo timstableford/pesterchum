@@ -6,7 +6,8 @@ import java.io.IOException;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Settings;
-import pesterchum.client.gui.GUI;
+import pesterchum.client.gui.PesterchumGUI;
+import pesterchum.client.gui.main.GUI;
 import uk.co.tstableford.utilities.Log;
 
 public class Launch {

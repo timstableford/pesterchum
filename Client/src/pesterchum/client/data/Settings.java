@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import pesterchum.client.connection.SettingsException;
 
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;

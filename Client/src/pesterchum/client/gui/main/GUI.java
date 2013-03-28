@@ -1,4 +1,4 @@
-package pesterchum.client.gui;
+package pesterchum.client.gui.main;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -13,18 +13,18 @@ import java.util.List;
 
 import javax.swing.*;
 
-import pesterchum.client.PesterchumGUI;
 import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
-import pesterchum.client.connection.SettingsException;
 import pesterchum.client.data.Message;
-import pesterchum.client.gui.theme.PButton;
-import pesterchum.client.gui.theme.PFrame;
-import pesterchum.client.gui.theme.PMenu;
-import pesterchum.client.gui.theme.PMenuBar;
-import pesterchum.client.gui.theme.PMenuItem;
-import pesterchum.client.gui.theme.POpaqueLabel;
-import pesterchum.client.gui.theme.PPanel;
+import pesterchum.client.data.SettingsException;
+import pesterchum.client.gui.PesterchumGUI;
+import pesterchum.client.gui.main.theme.PButton;
+import pesterchum.client.gui.main.theme.PFrame;
+import pesterchum.client.gui.main.theme.PMenu;
+import pesterchum.client.gui.main.theme.PMenuBar;
+import pesterchum.client.gui.main.theme.PMenuItem;
+import pesterchum.client.gui.main.theme.POpaqueLabel;
+import pesterchum.client.gui.main.theme.PPanel;
 import pesterchum.client.resource.ResourceLoader;
 
 public class GUI extends PFrame implements ActionListener, PesterchumGUI{

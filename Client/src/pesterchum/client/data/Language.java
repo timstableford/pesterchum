@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 
-import pesterchum.client.connection.SettingsException;
 import argo.jdom.JdomParser;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;

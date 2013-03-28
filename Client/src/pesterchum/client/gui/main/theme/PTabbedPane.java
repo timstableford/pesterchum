@@ -1,4 +1,4 @@
-package pesterchum.client.gui.theme;
+package pesterchum.client.gui.main.theme;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

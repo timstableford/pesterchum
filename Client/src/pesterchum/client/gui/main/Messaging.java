@@ -1,4 +1,4 @@
-package pesterchum.client.gui;
+package pesterchum.client.gui.main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,13 +21,13 @@ import javax.swing.border.LineBorder;
 import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;
-import pesterchum.client.gui.theme.PButton;
-import pesterchum.client.gui.theme.PFrame;
-import pesterchum.client.gui.theme.PMenuBar;
-import pesterchum.client.gui.theme.PMenuItem;
-import pesterchum.client.gui.theme.POpaqueLabel;
-import pesterchum.client.gui.theme.PPanel;
-import pesterchum.client.gui.theme.PTextField;
+import pesterchum.client.gui.main.theme.PButton;
+import pesterchum.client.gui.main.theme.PFrame;
+import pesterchum.client.gui.main.theme.PMenuBar;
+import pesterchum.client.gui.main.theme.PMenuItem;
+import pesterchum.client.gui.main.theme.POpaqueLabel;
+import pesterchum.client.gui.main.theme.PPanel;
+import pesterchum.client.gui.main.theme.PTextField;
 
 public class Messaging extends PFrame implements ActionListener, KeyListener{
 	private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-package pesterchum.client.gui.theme;
+package pesterchum.client.gui.main.theme;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

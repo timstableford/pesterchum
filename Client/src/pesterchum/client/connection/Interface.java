@@ -9,13 +9,12 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
-import pesterchum.client.PesterchumGUI;
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
-import pesterchum.client.data.IncomingJson;
 import pesterchum.client.data.Language;
 import pesterchum.client.data.Message;
 import pesterchum.client.data.Settings;
+import pesterchum.client.gui.PesterchumGUI;
 import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 

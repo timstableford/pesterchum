@@ -1,4 +1,4 @@
-package pesterchum.client;
+package pesterchum.client.gui;
 
 import pesterchum.client.connection.Interface;
 import pesterchum.client.data.Message;

@@ -9,7 +9,6 @@ import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
 import pesterchum.client.data.ICData;
-import pesterchum.client.data.IncomingJson;
 import uk.co.tstableford.secureconnection.client.SecureClientConnection;
 import uk.co.tstableford.secureconnection.common.interfaces.Incoming;
 import uk.co.tstableford.secureconnection.common.interfaces.SecureConnection;

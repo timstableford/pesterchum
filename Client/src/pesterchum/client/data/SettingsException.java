@@ -1,4 +1,4 @@
-package pesterchum.client.connection;
+package pesterchum.client.data;
 
 import java.io.IOException;
 
