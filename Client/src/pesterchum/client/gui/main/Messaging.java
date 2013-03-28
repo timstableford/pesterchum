@@ -12,9 +12,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.Box;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
@@ -35,9 +35,10 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 	private PMenuItem min,quit;
 	private GUI gui;
 	private Interface ifa;
-	private JTextArea text;
+	private JEditorPane text;
 	private PTextField input;
 	private PButton send;
+	private String currentText = "";
 	public Messaging(Interface ifa, String user, GUI parent){
 		this.setLocationRelativeTo(parent);
 		this.setUndecorated(true);
@@ -58,7 +59,7 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		//draw menu
 		c.weightx = 0;
 		mb.add(new JLabel(this.user), c);
-		
+
 		//spacer
 		c.gridx = 5;
 		c.weightx = 1;
@@ -90,12 +91,12 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		c.gridwidth = 4;
 		c.weightx = 1;
 		c.weighty = 1;
-		text = new JTextArea();
+		text = new JEditorPane();
+		text.setEditable(false);
+		text.setContentType("text/html");
 		JScrollPane scrollPane = new JScrollPane(text); 
 		scrollPane.setBorder(new LineBorder(new Color(255,140,0), 2));
-		text.setEditable(false);
-		text.setLineWrap(true);
-		text.setWrapStyleWord(true);
+
 		p.add(scrollPane, c);
 		//input box & send
 		c.gridwidth = 1;
@@ -120,16 +121,12 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		return user;
 	}
 	public void incoming(Message message){
-		text.append("["+Util.initial(message.getFrom())+"] "+message.getContent()+"\n");
+		currentText = currentText + "["+Util.initial(message.getFrom())+"] "+message.getContent()+"<br>";
+		text.setText("<html>"+currentText+"</html>");	
 	}
 	private String parseMessage(String message){
-		//make sure it fits, if not it won't sit
-		StringBuffer mb = new StringBuffer(message);
-		mb.insert(0, "<html>");
-		//TODO smilies and special formatting here
-		
-		mb.append("</html>");
-		return mb.toString();
+		//this is for parsing outgoing messages
+		return message;
 	}
 	private void send(){
 		String message = parseMessage(input.getText());
@@ -156,7 +153,7 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 			this.send();
 		}
 	}
-	
+
 	@Override
 	public void keyReleased(KeyEvent e) {}
 	@Override
