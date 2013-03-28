@@ -3,6 +3,8 @@ package pesterchum.server;
 import java.net.Socket;
 
 import argo.jdom.JdomParser;
+import argo.jdom.JsonNodeBuilders;
+import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
@@ -33,7 +35,12 @@ public class Connection implements Incoming{
 		this.user = user;
 	}
 	public void ready(){
-		
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("hello"))
+				.withField("version", JsonNodeBuilders.aStringBuilder("1"));
+		JsonRootNode n = builder.build();
+		conn.write(Util.jsonToString(n));
 	}
 	public void close(){
 		if(this.conn!=null&&this.user!=null){
@@ -54,7 +61,7 @@ public class Connection implements Incoming{
 			String name = node.getStringValue("class");
 			database.getInterface(name).processIncoming(new ICData(name, node, this));
 		} catch (InvalidSyntaxException e) {
-			Log.getInstance().error("Error parsing incoming json");
+			Log.getInstance().error("Error parsing incoming json from "+this.getConn().getSource());
 			Log.getInstance().debug(new String(arg0), 3);
 		}
 	}
