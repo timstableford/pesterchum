@@ -120,7 +120,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		c.gridx = 2;
 		menu.add(profile, c); 
 		c.gridx = 3;
-		menu.add(help, c);
+		//menu.add(help, c);
 		//spacer
 		c.gridx = 4;
 		c.weightx = 1;
@@ -155,7 +155,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		color.addActionListener(this);
 		color.setActionCommand("color");
 		switchChum = new PMenuItem(ifa.translate("switch"));
-		profile.add(quirks); profile.add(trollSlum); profile.add(color); profile.add(switchChum);
+		//profile.add(quirks); profile.add(trollSlum); profile.add(switchChum);
+		profile.add(color);
 
 		//set up the Help menu
 		PMenuItem helpMe, about, reportBug;
@@ -163,7 +164,6 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		reportBug = new PMenuItem(ifa.translate("report a bug"));
 
 		help.add(helpMe); help.add(about); help.add(reportBug);
-
 		return menu;
 	}
 	private PPanel getBuddyList(){
@@ -335,7 +335,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	public void timeout() {
 		this.setVisible(false);
 		Object[] options = {ifa.translate("Reconnect"),
-		ifa.translate("Quit")};
+				ifa.translate("Quit")};
 		int n = JOptionPane.showOptionDialog(this,
 				ifa.translate("Would you like to reconnect?"),
 				ifa.translate("Connection Lost"),
