@@ -50,6 +50,7 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		this.add(createMenuBar(), BorderLayout.NORTH);
 		this.add(createMessagingPanel(), BorderLayout.CENTER);
 		this.setVisible(true);
+		input.requestFocus();
 	}
 	public PMenuBar createMenuBar(){
 		PMenuBar mb = new PMenuBar();
