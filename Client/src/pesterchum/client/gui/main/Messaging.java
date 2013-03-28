@@ -101,7 +101,6 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		text.setContentType("text/html");
 		JScrollPane scrollPane = new JScrollPane(text); 
 		scrollPane.setBorder(new LineBorder(new Color(255,140,0), 2));
-
 		p.add(scrollPane, c);
 		//input box & send
 		c.gridwidth = 1;
@@ -132,9 +131,10 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		try {
 			editor.read(reader, text.getDocument(), text.getDocument().getLength());
 		}catch(BadLocationException | IOException ex) {
-			Log.getInstance().error("Could not append to message - "+m);
+			Log.getInstance().error("Could not append to pesterlog - "+m);
 		}
-
+		int x = text.getSelectionEnd();
+		text.select(x, x);
 	}
 	private String parseMessage(String message){
 		//this is for parsing outgoing messages
