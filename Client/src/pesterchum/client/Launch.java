@@ -43,12 +43,12 @@ public class Launch {
 		} catch (IOException e1) {
 			System.err.println("Error loading settings");
 		}
-		Log log = new Log(new File(U_H+F_S+PC_DIR+F_S+LOG_FILE), debug, verbose);
+		Log.setInstance(new Log(new File(U_H+F_S+PC_DIR+F_S+LOG_FILE), debug, verbose));
 		
 		//TODO implement ability to load gui from other packages
 		PesterchumGUI gui = new GUI();
 		try {
-			Interface ifa = new Interface(gui, settings, log);
+			Interface ifa = new Interface(gui, settings);
 			gui.init(ifa);
 		} catch (IOException e) {
 			e.printStackTrace();

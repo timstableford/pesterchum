@@ -19,23 +19,21 @@ public class Connection implements Incoming{
 	private String username;
 	private Hashtable<String, IncomingJson> interfaces;
 	private final JdomParser parser = new JdomParser();
-	private Log log;
 	private Interface ifa;
-	public Connection(Interface ifa, Log log){
+	public Connection(Interface ifa){
 		this.username = null;
-		this.log = log;
 		this.ifa = ifa;
 		this.interfaces = new Hashtable<String, IncomingJson>();
 	}
 	public boolean connect(String host, int port){
-		log.info("Connecting to "+host+" on port "+port);
+		Log.getInstance().info("Connecting to "+host+" on port "+port);
 		Socket s;
 		try {
 			s = new Socket(host, port);
 		} catch (IOException e) {
 			return false;
 		}
-		conn = new SecureClientConnection(s, this, this.log);
+		conn = new SecureClientConnection(s, this);
 		return true;
 	}
 	public void close(){
@@ -66,8 +64,8 @@ public class Connection implements Incoming{
 			JsonRootNode rn = parser.parse(new String(arg0));
 			getIncoming(rn.getStringValue("class")).processIncoming(new ICData(rn.getStringValue("class"), rn));
 		} catch (InvalidSyntaxException e) {
-			e.printStackTrace();
-			log.error("Could not parse incoming data");
+			Log.getInstance().error(e.getMessage());
+			Log.getInstance().error("Could not parse incoming data");
 		}
 	}
 	private IncomingJson getIncoming(String name){
@@ -76,7 +74,7 @@ public class Connection implements Incoming{
 	@Override
 	public void timeout() {
 		ifa.timeout();
-		System.err.println("timeout error");
+		Log.getInstance().info("Timeout");
 		this.close();
 	}
 }

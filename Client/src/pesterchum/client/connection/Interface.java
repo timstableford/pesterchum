@@ -23,12 +23,10 @@ public class Interface implements IncomingJson{
 	private Connection conn;
 	private Settings settings;
 	private LinkedList<String> friends;
-	private Log log;
 	private Language lang;
-	public Interface(PesterchumGUI gui, Settings settings, Log log) throws IOException{
+	public Interface(PesterchumGUI gui, Settings settings) throws IOException{
 		this.gui = gui;
-		this.conn = new Connection(this, log);
-		this.log = log;
+		this.conn = new Connection(this);
 		this.settings = settings;
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
@@ -84,7 +82,7 @@ public class Interface implements IncomingJson{
 				processAdmin(data);
 				break;
 			default:
-				log.error("Unknown data from - "+data.getData());
+				Log.getInstance().error("Unknown data from - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
@@ -92,7 +90,7 @@ public class Interface implements IncomingJson{
 				processAdmin(data);
 				break;
 			default:
-				log.error("Unknown data from - "+data.getData());
+				Log.getInstance().error("Unknown data - "+data.getData());
 			}
 		}
 	}
@@ -153,11 +151,11 @@ public class Interface implements IncomingJson{
 			processLogin(data);
 			break;
 		default:
-			log.error("Unknown admin command");
+			Log.getInstance().error("Unknown admin command");
 		}
 	}
 	private boolean processLogin(ICData data){
-		log.info("Login response received");
+		Log.getInstance().info("Login response received");
 		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
 		if(suc){
