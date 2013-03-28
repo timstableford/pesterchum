@@ -23,7 +23,7 @@ public class Server {
 		//setup database connection
 		manager = new Manager(database);
 		Interface i = new Interface(manager);
-		manager.registerInterface("message", i);
+		manager.registerInterface("packet", i);
 		manager.registerInterface("login", i);
 		manager.registerInterface("admin", i);
 		manager.registerInterface("friendrequest", i);

@@ -9,7 +9,7 @@ import pesterchum.server.data.database.SQLiteDatabase;
 import uk.co.tstableford.utilities.Log;
 
 public class Run {
-	public static int VERSION = 2;
+	public static int VERSION = 3;
 	/**
 	 * @param args
 	 */

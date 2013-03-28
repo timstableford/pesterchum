@@ -28,7 +28,7 @@ public class Interface implements IncomingJson{
 		this.gui = gui;
 		this.conn = new Connection(this);
 		this.settings = settings;
-		conn.registerIncoming("message", this);
+		conn.registerIncoming("packet", this);
 		conn.registerIncoming("admin", this);
 		//load the language
 		if(this.getClass().getResource("/"+settings.getString("language")+".json")!=null){
@@ -75,13 +75,8 @@ public class Interface implements IncomingJson{
 	public void processIncoming(ICData data) {
 		if(authenticated()){
 			switch(data.getName()){
-			case "message":
-				try {
-					Message m = new Message(data);
-					gui.incomingMessage(m);
-				} catch (IOException e) {
-					System.err.println(e);
-				}
+			case "packet":
+				processPacket(data);
 				break;
 			case "admin":
 				processAdmin(data);
@@ -97,6 +92,18 @@ public class Interface implements IncomingJson{
 			default:
 				Log.getInstance().error("Unknown data - "+data.getData());
 			}
+		}
+	}
+	private void processPacket(ICData data){
+		switch(data.getData().getStringValue("type")){
+		case "message":
+			try {
+				Message m = new Message(data);
+				gui.incomingMessage(m);
+			} catch (IOException e) {
+				System.err.println(e);
+			}
+			break;
 		}
 	}
 	public void login(String username, String password){
@@ -124,7 +131,7 @@ public class Interface implements IncomingJson{
 		return conn.connect(host, port);
 	}
 	public void sendMessage(Message message){
-		conn.getConnection().write(Util.jsonToString(message.getJson()));
+		conn.getConnection().write(Util.jsonToString(message.getJson().build()));
 	}
 	public void addFriend(String username){
 		if(!user.hasFriend(username)){

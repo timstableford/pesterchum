@@ -26,11 +26,12 @@ public class Interface implements IncomingJson{
 	public void processIncoming(ICData data) {
 		if(authenticated(data)){
 			switch(data.getName()){
-			case "message":
+			case "packet":
 				try {
-					manager.sendMessage(new Message(data));
-				} catch (IOException e) {
-					Log.getInstance().error(e.getMessage());
+					Packet p = Manager.parsePacket(data);
+					manager.sendPacket(p);
+				} catch (IOException e1) {
+					Log.getInstance().error("Could not parse data packet");
 				}
 				break;
 			case "admin":
@@ -72,14 +73,14 @@ public class Interface implements IncomingJson{
 		}
 	}
 	private void setColor(ICData data){
-			JsonNode n = data.getData().getNode("color");
-			Color c = new Color(
-					Integer.parseInt(n.getStringValue("red")),
-					Integer.parseInt(n.getStringValue("green")),
-					Integer.parseInt(n.getStringValue("blue"))
-					);
-			data.getSource().getUser().setColor(c);
-			manager.getDatabase().saveUser(data.getSource().getUser());
+		JsonNode n = data.getData().getNode("color");
+		Color c = new Color(
+				Integer.parseInt(n.getStringValue("red")),
+				Integer.parseInt(n.getStringValue("green")),
+				Integer.parseInt(n.getStringValue("blue"))
+				);
+		data.getSource().getUser().setColor(c);
+		manager.getDatabase().saveUser(data.getSource().getUser());
 	}
 	private void processFriendRequest(ICData data){
 		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));

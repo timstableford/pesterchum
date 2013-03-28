@@ -1,6 +1,7 @@
 package pesterchum.server.data.database;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +18,9 @@ import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
 import pesterchum.server.Util;
-import pesterchum.server.data.Message;
+import pesterchum.server.data.ICData;
+import pesterchum.server.data.Manager;
+import pesterchum.server.data.Packet;
 import pesterchum.server.data.User;
 import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
@@ -34,40 +37,38 @@ public class SQLiteDatabase implements Database{
 		statement.setQueryTimeout(30);  // set timeout to 30 sec.
 		setup();
 	}
-	public void storeMessage(Message m){
+	public void storePacket(Packet m){
 		try {
-			String save = "insert into messages values("
+			String save = "insert into packets values("
 					+"'"+m.getHash()+"', "
 					+"'"+Utilities.encodeHex(m.getFrom().getBytes("UTF-8"))+"', "
 					+"'"+Utilities.encodeHex(m.getTo().getBytes("UTF-8"))+"', "
-					+"'"+Utilities.encodeHex(m.getContent().getBytes("UTF-8"))+"', "
+					+"'"+Utilities.encodeHex(Util.jsonToString(m.getJson().build()).getBytes("UTF-8"))+"', "
 					+"'"+Long.toString(m.getTime())+"')";
 			statement.executeUpdate(save);
 		} catch (SQLException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 	}
-	public List<Message> getMessages(String username){
-		List<Message> messages = new ArrayList<Message>();
+	public List<Packet> getPackets(String username){
+		List<Packet> packets = new ArrayList<Packet>();
 		try{
-			ResultSet rs = statement.executeQuery("select * from messages where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
+			ResultSet rs = statement.executeQuery("select * from packets where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
 			while(rs.next()){
-				String from = new String(Utilities.decodeHex(rs.getString("fromuser")));
 				String content = new String(Utilities.decodeHex(rs.getString("content")));
-				Long time = Long.parseLong(rs.getString("sent"));
-				Message m = new Message(from, username, content);
-				m.setTime(time);
-				if(m.getHash().equals(rs.getString("hash"))){
-					messages.add(m);
+				JsonRootNode n = JDOM_PARSER.parse(content);
+				Packet p = Manager.parsePacket(new ICData("packet", n, null));
+				if(p.getHash().equals(rs.getString("hash"))){
+					packets.add(p);
 				}else{
-					Log.getInstance().error("error retrieving message - hash does not match");
+					Log.getInstance().error("error retrieving packet - hash does not match");
 				}
 			}
-			statement.executeUpdate("delete from messages where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
-		}catch(SQLException | UnsupportedEncodingException e){
-			e.printStackTrace();
+			statement.executeUpdate("delete from packets where touser='"+Utilities.encodeHex(username.getBytes("UTF-8"))+"'");
+		}catch(SQLException | InvalidSyntaxException | IOException e){
+			Log.getInstance().error("Error parsing packet from database");
 		}
-		return messages;
+		return packets;
 	}
 	public boolean userExists(String user){
 		try {

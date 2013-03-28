@@ -11,7 +11,7 @@ import pesterchum.client.gui.main.GUI;
 import uk.co.tstableford.utilities.Log;
 
 public class Launch {
-	public static final int VERSION = 2;
+	public static final int VERSION = 3;
 	private static final String PC_DIR = ".pesterchum";
 	private static final String LOG_FILE = "pesterchum.log";
 	private static final String SETTINGS_FILE = "settings.json";
