@@ -140,6 +140,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		reconnect = new PMenuItem(ifa.translate("reconnect")); exit = new PMenuItem(ifa.translate("exit"));
 		exit.setActionCommand("X");
 		exit.addActionListener(this);
+		reconnect.addActionListener(this);
+		reconnect.setActionCommand("reconnect");
 		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
 		client.add(userList); client.add(idle); client.add(addGroup);
 		client.add(reconnect); client.add(exit);
@@ -282,6 +284,14 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			break;
 		case "_":
 			this.setState(Frame.ICONIFIED);
+			break;
+		case "reconnect":
+			ifa.close();
+			this.setVisible(false);
+			if(!reconnect()){
+				//if the connection could not be made, present an option to try again
+				this.timeout();
+			}
 			break;
 		}
 		if(e.getSource()==addchum){

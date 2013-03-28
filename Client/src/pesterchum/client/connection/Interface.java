@@ -111,11 +111,16 @@ public class Interface implements IncomingJson{
 		}
 		return false;
 	}
+	public void close(){
+		conn.close();
+		friends = new LinkedList<String>();
+	}
 	public String getUsername(){
 		return conn.getUsername();
 	}
 	public boolean connect(String host, int port){
 		conn.close();
+		friends = new LinkedList<String>();
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
