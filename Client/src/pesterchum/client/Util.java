@@ -1,11 +1,26 @@
 package pesterchum.client;
 
+import java.awt.Font;
+import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+
 import argo.format.CompactJsonFormatter;
 import argo.format.JsonFormatter;
 import argo.jdom.JsonRootNode;
 
 public class Util {
 	private static final JsonFormatter JSON_FORMATTER = new CompactJsonFormatter();
+	/**
+	 * Converts a string and font and a rectangle2d bounds
+	 */
+	public static Rectangle2D stringSize(String s, Font f){
+		Rectangle2D r = f.getStringBounds(s, 
+				new FontRenderContext(null, 
+						RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT, 
+						RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT));
+		return r;
+	}
 	/**
 	 * Merges 2 byte arrays into 1
 	 */

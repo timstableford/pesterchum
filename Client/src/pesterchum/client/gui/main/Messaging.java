@@ -94,6 +94,8 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		JScrollPane scrollPane = new JScrollPane(text); 
 		scrollPane.setBorder(new LineBorder(new Color(255,140,0), 2));
 		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setWrapStyleWord(true);
 		p.add(scrollPane, c);
 		//input box & send
 		c.gridwidth = 1;
@@ -121,8 +123,13 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		text.append("["+Util.initial(message.getFrom())+"] "+message.getContent()+"\n");
 	}
 	private String parseMessage(String message){
-		//TODO smilies etc
-		return message;
+		//make sure it fits, if not it won't sit
+		StringBuffer mb = new StringBuffer(message);
+		mb.insert(0, "<html>");
+		//TODO smilies and special formatting here
+		
+		mb.append("</html>");
+		return mb.toString();
 	}
 	private void send(){
 		String message = parseMessage(input.getText());
