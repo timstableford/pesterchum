@@ -31,6 +31,7 @@ import pesterchum.client.gui.main.theme.PPanel;
 import pesterchum.client.gui.main.theme.PPasswordField;
 import pesterchum.client.gui.main.theme.PTabbedPane;
 import pesterchum.client.gui.main.theme.PTextField;
+import uk.co.tstableford.utilities.Log;
 
 public class Login extends PFrame implements ActionListener, Runnable, KeyListener{
 	private static final long serialVersionUID = 5329488003668890739L;
@@ -235,14 +236,14 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 	public void run() {
 		try {
 			if(ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"))){
-				System.out.println("Connected to server");
+				Log.getInstance().info("Connected to server");
 				if(action==Action.LOGIN){
 					ifa.login(u,p);
 				}else if(action==Action.REGISTER){
 					ifa.register(u, p);
 				}
 			}else{
-				System.err.println("Connection to server failed");
+				Log.getInstance().error("Connection to server failed");
 				error(ifa.translate("could not connect to server"));
 				login.setEnabled(true);
 				register.setEnabled(true);
@@ -251,7 +252,7 @@ public class Login extends PFrame implements ActionListener, Runnable, KeyListen
 				clicked = false;
 			}
 		} catch (SettingsException e) {
-			System.err.println("Error retrieving host/port configuration");
+			Log.getInstance().error("Error retrieving host/port configuration");
 		}
 	}
 	public void loginResponse(boolean success){

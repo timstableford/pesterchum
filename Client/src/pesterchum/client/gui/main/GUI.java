@@ -49,7 +49,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		try {
 			login = new Login(ifa);
 		} catch (SettingsException e) {
-			System.err.println("Could not load settings");
+			Log.getInstance().error("Could not load settings");
 			System.exit(-1);
 		}
 
@@ -266,7 +266,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		try {
 			suc = ifa.connect(ifa.getSettings().getString("host"), ifa.getSettings().getInt("port"));
 		} catch (SettingsException e) {
-			System.err.println("Could not reconnect");
+			Log.getInstance().error("Could not reconnect to server");
 			return false;
 		}
 		if(suc){
@@ -313,8 +313,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	@Override
 	public void timeout() {
 		this.setVisible(false);
-		Object[] options = {"Reconnect",
-		"Quit"};
+		Object[] options = {ifa.translate("Reconnect"),
+		ifa.translate("Quit")};
 		int n = JOptionPane.showOptionDialog(this,
 				ifa.translate("Would you like to reconnect?"),
 				ifa.translate("Connection Lost"),

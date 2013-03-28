@@ -8,6 +8,7 @@ import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 import argo.jdom.JsonRootNode;
 
+import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
 
 public class Message {
@@ -52,7 +53,7 @@ public class Message {
 			cript.update((from+to+content+time).getBytes("utf8"));
 			return Utilities.encodeHex(cript.digest());
 		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-			System.err.println("Could not get hash");
+			Log.getInstance().error("Could not convert message to hash");
 		}
         return null;
 	}
