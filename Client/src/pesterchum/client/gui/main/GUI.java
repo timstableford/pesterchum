@@ -301,7 +301,8 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			}
 			break;
 		case "color":
-			new ColorChooser(this);
+			ColorChooser cc = new ColorChooser(this);
+			cc.setLocationRelativeTo(this);
 			break;
 		}
 		if(e.getSource()==addchum){
