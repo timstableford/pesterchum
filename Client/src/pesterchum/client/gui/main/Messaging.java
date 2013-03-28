@@ -127,7 +127,12 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 	}
 	private String parseMessage(String message){
 		//this is for parsing outgoing messages
-		return message;
+		StringBuffer mb = new StringBuffer(message);
+		//set the color
+		Color c = ifa.getUser().getColor();
+		mb.insert(0, "<font color=\"rgb("+c.getRed()+","+c.getGreen()+","+c.getBlue()+")\">");
+		mb.append("</font>");
+		return mb.toString();
 	}
 	private void send(){
 		String message = parseMessage(input.getText());

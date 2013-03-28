@@ -1,5 +1,6 @@
 package pesterchum.client.connection;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -57,6 +58,18 @@ public class Interface implements IncomingJson{
 	}
 	public void timeout(){
 		gui.timeout();
+	}
+	public void setColor(Color c){
+		this.user.setColor(c);
+		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
+				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
+				.withField("command", JsonNodeBuilders.aStringBuilder("setcolor"));
+		JsonObjectNodeBuilder n = JsonNodeBuilders.anObjectBuilder();
+		n.withField("red", JsonNodeBuilders.aStringBuilder(Integer.toString(c.getRed())));
+		n.withField("green", JsonNodeBuilders.aStringBuilder(Integer.toString(c.getGreen())));
+		n.withField("blue", JsonNodeBuilders.aStringBuilder(Integer.toString(c.getBlue())));
+		builder.withField("color", n);
+		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
 	@Override
 	public void processIncoming(ICData data) {

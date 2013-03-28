@@ -1,5 +1,6 @@
 package pesterchum.server.data.database;
 
+import java.awt.Color;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -92,6 +93,12 @@ public class SQLiteDatabase implements Database{
 					user.setAuthenticated(true);
 					JsonRootNode node = JDOM_PARSER.parse(new String(Utilities.decodeHex(rs.getString("friends"))));
 					user.loadFriends(node);
+					String[] c = rs.getString("color").split(",");
+					user.setColor(new Color(
+							Integer.parseInt(c[0]),
+							Integer.parseInt(c[1]),
+							Integer.parseInt(c[2])
+							));
 					return true;
 				}else{
 					user.setAuthenticated(false);
@@ -111,7 +118,9 @@ public class SQLiteDatabase implements Database{
 			statement.executeUpdate("insert into users values("
 					+"'"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"', "
 					+"'"+Utilities.encodeHex(getHash(password).getBytes("UTF-8"))+"', "
-					+"'"+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))+"')");
+					+"'"+Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))+"', "
+					+"'"+user.getColor().getRed()+","+user.getColor().getGreen()+","+user.getColor().getBlue()+"'"
+					+")");
 		} catch (SQLException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return false;
@@ -123,6 +132,9 @@ public class SQLiteDatabase implements Database{
 		try {
 			statement.executeUpdate("update users set friends='"+
 					Utilities.encodeHex(Util.jsonToString(user.getFriendsJson().build()).getBytes("UTF-8"))
+					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"'");
+			statement.executeUpdate("update users set color='"+
+					user.getColor().getRed()+","+user.getColor().getGreen()+","+user.getColor().getBlue()
 					+"' where name='"+Utilities.encodeHex(user.getUsername().getBytes("UTF-8"))+"'");
 		} catch (SQLException | UnsupportedEncodingException e1) {
 			Log.getInstance().error("Could not save user "+user.getUsername());
@@ -151,7 +163,7 @@ public class SQLiteDatabase implements Database{
 		statement.executeUpdate("insert into admin values("+VERSION+")");
 		//setup user table
 		statement.executeUpdate("drop table if exists users");
-		statement.executeUpdate("create table users (name varchar(40) PRIMARY KEY, password string, friends string)");
+		statement.executeUpdate("create table users (name varchar(40) PRIMARY KEY, password string, friends string, color string)");
 		//setup message storage
 		statement.executeUpdate("drop table if exists messages");
 		statement.executeUpdate("create table messages (hash varchar(50) PRIMARY KEY, fromuser varchar(40), touser varchar(40), content string, sent string)");

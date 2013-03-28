@@ -247,7 +247,7 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}
 	}
 	public void setColor(Color c){
-		
+		ifa.setColor(c);
 	}
 	public void message(String user){
 		getChat(user);

@@ -38,6 +38,12 @@ public class User {
 	public void addFriend(String username){
 		friends.add(username);
 	}
+	public Color getColor(){
+		return color;
+	}
+	public void setColor(Color c){
+		this.color = c;
+	}
 	public JsonObjectNodeBuilder getFriendsJson(){
 		JsonArrayNodeBuilder friends = JsonNodeBuilders.anArrayBuilder();
 		for(String f: this.friends){

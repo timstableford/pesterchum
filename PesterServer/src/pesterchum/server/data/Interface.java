@@ -1,8 +1,9 @@
 package pesterchum.server.data;
 
+import java.awt.Color;
 import java.io.IOException;
 
-import argo.jdom.JsonArrayNodeBuilder;
+import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
@@ -29,7 +30,7 @@ public class Interface implements IncomingJson{
 				try {
 					manager.sendMessage(new Message(data));
 				} catch (IOException e) {
-					System.err.println(e);
+					Log.getInstance().error(e.getMessage());
 				}
 				break;
 			case "admin":
@@ -47,6 +48,38 @@ public class Interface implements IncomingJson{
 				Log.getInstance().error("Unknown data from "+data.getSource().getConn().getSource()+" - "+data.getData());
 			}
 		}
+	}
+	private void processAdmin(ICData data){
+		switch(data.getData().getStringValue("command")){
+		case "disconnect":
+			data.getSource().close();
+			break;
+		case "friendrequest":
+			processFriendRequest(data);
+			break;
+		case "setcolor":
+			setColor(data);
+			break;
+		case "login":
+			processLogin(data);
+			break;
+		case "register":
+			processRegistration(data);
+			break;
+		default:
+			Log.getInstance().error("Unknown admin command from "+data.getSource().getConn().getSource());
+			Log.getInstance().debug(data.getData().toString(), 3);
+		}
+	}
+	private void setColor(ICData data){
+			JsonNode n = data.getData().getNode("color");
+			Color c = new Color(
+					Integer.parseInt(n.getStringValue("red")),
+					Integer.parseInt(n.getStringValue("green")),
+					Integer.parseInt(n.getStringValue("blue"))
+					);
+			data.getSource().getUser().setColor(c);
+			manager.getDatabase().saveUser(data.getSource().getUser());
 	}
 	private void processFriendRequest(ICData data){
 		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
@@ -66,25 +99,6 @@ public class Interface implements IncomingJson{
 		builder.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(exists)));
 		data.getSource().getConn().write(Util.jsonToString(builder.build()));
 	}
-	private void processAdmin(ICData data){
-		switch(data.getData().getStringValue("command")){
-		case "disconnect":
-			data.getSource().close();
-			break;
-		case "friendrequest":
-			processFriendRequest(data);
-			break;
-		case "login":
-			processLogin(data);
-			break;
-		case "register":
-			processRegistration(data);
-			break;
-		default:
-			Log.getInstance().error("Unknown admin command from "+data.getSource().getConn().getSource());
-			Log.getInstance().debug(data.getData().toString(), 3);
-		}
-	}
 	private void processRegistration(ICData data){
 		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		String pw = new String(Utilities.decodeHex(data.getData().getStringValue("password")));
@@ -94,15 +108,9 @@ public class Interface implements IncomingJson{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(un.getBytes())))
 				.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(u.authenticated())));
 		if(u.authenticated()){
-			JsonArrayNodeBuilder arr = JsonNodeBuilders.anArrayBuilder();
-			for(String f: u.getFriends()){
-				arr.withElement(JsonNodeBuilders.anObjectBuilder()
-						.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(f.getBytes()))));
-			}
-			builder.withField("friends", arr);
+			builder.withField("user", u.getJson());
 		}
 		data.getSource().getConn().write(Util.jsonToString(builder.build()));
 		if(u.authenticated()){
