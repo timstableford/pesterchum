@@ -9,4 +9,5 @@ public interface PesterchumGUI {
 	public void loginResponse(boolean success);
 	public void friendRequestResponse(String username, boolean found);
 	public void timeout();
+	public void updateRequired(int serverVersion);
 }

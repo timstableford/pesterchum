@@ -26,6 +26,7 @@ import pesterchum.client.gui.main.theme.PMenuItem;
 import pesterchum.client.gui.main.theme.POpaqueLabel;
 import pesterchum.client.gui.main.theme.PPanel;
 import pesterchum.client.resource.ResourceLoader;
+import uk.co.tstableford.utilities.Log;
 
 public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 	private static final long serialVersionUID = 1L;
@@ -330,5 +331,10 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		}else{
 			System.exit(0);
 		}
+	}
+	@Override
+	public void updateRequired(int serverVersion) {
+		Log.getInstance().info("Client outdated, update necessary");
+		//TODO link to gui
 	}			
 }

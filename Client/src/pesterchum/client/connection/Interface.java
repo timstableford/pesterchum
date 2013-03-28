@@ -9,6 +9,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
+import pesterchum.client.Launch;
 import pesterchum.client.Util;
 import pesterchum.client.data.ICData;
 import pesterchum.client.data.Language;
@@ -150,8 +151,25 @@ public class Interface implements IncomingJson{
 		case "login":
 			processLogin(data);
 			break;
+		case "hello":
+			processHello(data);
+			break;
 		default:
-			Log.getInstance().error("Unknown admin command");
+			Log.getInstance().error("Unknown admin command - "+data.getData().getStringValue("command"));
+		}
+	}
+	private void processHello(ICData data){
+		Log.getInstance().info("Received hello, server version "+data.getData().getStringValue("version"));
+		int v = -1;
+		try{
+			v = Integer.parseInt(data.getData().getStringValue("versionn"));
+		}catch(NumberFormatException e){
+			Log.getInstance().error("Version received from server not a number");
+		}
+		if(v>0){
+			if(v>Launch.VERSION){
+				gui.updateRequired(v);
+			}
 		}
 	}
 	private boolean processLogin(ICData data){
