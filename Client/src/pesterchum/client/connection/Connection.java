@@ -33,7 +33,7 @@ public class Connection implements Incoming{
 		} catch (IOException e) {
 			return false;
 		}
-		conn = new SecureClientConnection(s, this);
+		conn = new SecureClientConnection(s, this, Log.getInstance());
 		return true;
 	}
 	public void close(){
