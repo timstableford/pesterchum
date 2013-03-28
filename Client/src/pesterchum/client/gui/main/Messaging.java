@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.io.StringReader;
 
 import javax.swing.Box;
 import javax.swing.JEditorPane;
@@ -17,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLEditorKit;
 
 import pesterchum.client.Util;
 import pesterchum.client.connection.Interface;
@@ -28,6 +32,7 @@ import pesterchum.client.gui.main.theme.PMenuItem;
 import pesterchum.client.gui.main.theme.POpaqueLabel;
 import pesterchum.client.gui.main.theme.PPanel;
 import pesterchum.client.gui.main.theme.PTextField;
+import uk.co.tstableford.utilities.Log;
 
 public class Messaging extends PFrame implements ActionListener, KeyListener{
 	private static final long serialVersionUID = 1L;
@@ -38,7 +43,6 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 	private JEditorPane text;
 	private PTextField input;
 	private PButton send;
-	private String currentText = "";
 	public Messaging(Interface ifa, String user, GUI parent){
 		this.setLocationRelativeTo(parent);
 		this.setUndecorated(true);
@@ -122,8 +126,15 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 		return user;
 	}
 	public void incoming(Message message){
-		currentText = currentText + "["+Util.initial(message.getFrom())+"] "+message.getContent()+"<br>";
-		text.setText("<html>"+currentText+"</html>");	
+		String m =  "["+Util.initial(message.getFrom())+"] "+message.getContent();
+		HTMLEditorKit editor = (HTMLEditorKit) text.getEditorKit();
+		StringReader reader = new StringReader(m);
+		try {
+			editor.read(reader, text.getDocument(), text.getDocument().getLength());
+		}catch(BadLocationException | IOException ex) {
+			Log.getInstance().error("Could not append to message - "+m);
+		}
+
 	}
 	private String parseMessage(String message){
 		//this is for parsing outgoing messages

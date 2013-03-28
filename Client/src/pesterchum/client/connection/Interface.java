@@ -162,7 +162,7 @@ public class Interface implements IncomingJson{
 		Log.getInstance().info("Received hello, server version "+data.getData().getStringValue("version"));
 		int v = -1;
 		try{
-			v = Integer.parseInt(data.getData().getStringValue("versionn"));
+			v = Integer.parseInt(data.getData().getStringValue("version"));
 		}catch(NumberFormatException e){
 			Log.getInstance().error("Version received from server not a number");
 		}
