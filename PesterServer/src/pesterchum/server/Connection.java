@@ -38,7 +38,7 @@ public class Connection implements Incoming{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("hello"))
-				.withField("version", JsonNodeBuilders.aStringBuilder("1"));
+				.withField("version", JsonNodeBuilders.aStringBuilder(Integer.toString(Run.VERSION)));
 		JsonRootNode n = builder.build();
 		conn.write(Util.jsonToString(n));
 	}

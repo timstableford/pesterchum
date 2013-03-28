@@ -1,4 +1,4 @@
-package pesterchum.server.data;
+package pesterchum.client.data;
 
 import java.awt.Color;
 import java.util.Collections;

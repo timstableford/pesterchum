@@ -131,7 +131,7 @@ public class Messaging extends PFrame implements ActionListener, KeyListener{
 	}
 	private void send(){
 		String message = parseMessage(input.getText());
-		Message m = new Message(ifa.getUsername(), this.user, message);
+		Message m = new Message(ifa.getUser().getUsername(), this.user, message);
 		incoming(m);
 		ifa.sendMessage(m);
 		input.setText("");

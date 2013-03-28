@@ -50,12 +50,14 @@ public class FriendPane extends JScrollPane implements ActionListener{
 		c.anchor = GridBagConstraints.PAGE_START;
 		c.weightx = 1;
 		box.removeAll();
-		for(String f: ifa.getFriends()){
-			FriendComponent fr = new FriendComponent(f);
-			box.add(fr, c);
-			fr.addActionListener(this);
-			components.add(fr);
-			c.gridy++;
+		if(ifa.authenticated()){
+			for(String f: ifa.getUser().getFriends()){
+				FriendComponent fr = new FriendComponent(f);
+				box.add(fr, c);
+				fr.addActionListener(this);
+				components.add(fr);
+				c.gridy++;
+			}
 		}
 		c.weighty = 1;
 		box.add(Box.createVerticalGlue(), c);

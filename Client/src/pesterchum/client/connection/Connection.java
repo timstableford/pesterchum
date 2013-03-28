@@ -16,12 +16,10 @@ import uk.co.tstableford.utilities.Log;
 
 public class Connection implements Incoming{
 	private SecureConnection conn;
-	private String username;
 	private Hashtable<String, IncomingJson> interfaces;
 	private final JdomParser parser = new JdomParser();
 	private Interface ifa;
 	public Connection(Interface ifa){
-		this.username = null;
 		this.ifa = ifa;
 		this.interfaces = new Hashtable<String, IncomingJson>();
 	}
@@ -41,7 +39,6 @@ public class Connection implements Incoming{
 			conn.close();
 			conn = null;
 		}
-		this.username = null;
 	}
 	public void ready(){
 		//we dont need to do anything on connection open
@@ -51,12 +48,6 @@ public class Connection implements Incoming{
 	}
 	public SecureConnection getConnection(){
 		return conn;
-	}
-	public void setUsername(String username){
-		this.username = username;
-	}
-	public String getUsername(){
-		return this.username;
 	}
 	@Override
 	public void processIncoming(byte[] arg0) {

@@ -119,19 +119,13 @@ public class Interface implements IncomingJson{
 		JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 				.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 				.withField("command", JsonNodeBuilders.aStringBuilder("login"))
-				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(un.getBytes())))
 				.withField("success", JsonNodeBuilders.aStringBuilder(Boolean.toString(u.authenticated())));
 		if(u.authenticated()){
-			JsonArrayNodeBuilder arr = JsonNodeBuilders.anArrayBuilder();
-			for(String f: u.getFriends()){
-				arr.withElement(JsonNodeBuilders.anObjectBuilder()
-						.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(f.getBytes()))));
-			}
-			builder.withField("friends", arr);
+			builder.withField("user", u.getJson());
+			data.getSource().setUser(u);
 		}
 		data.getSource().getConn().write(Util.jsonToString(builder.build()));
 		if(u.authenticated()){
-			data.getSource().setUser(u);
 			manager.registerUser(un, data.getSource());
 		}
 	}

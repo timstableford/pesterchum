@@ -2,10 +2,7 @@ package pesterchum.client.connection;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
-import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeBuilders;
 import argo.jdom.JsonObjectNodeBuilder;
 
@@ -15,6 +12,7 @@ import pesterchum.client.data.ICData;
 import pesterchum.client.data.Language;
 import pesterchum.client.data.Message;
 import pesterchum.client.data.Settings;
+import pesterchum.client.data.User;
 import pesterchum.client.gui.PesterchumGUI;
 import uk.co.tstableford.utilities.Log;
 import uk.co.tstableford.utilities.Utilities;
@@ -23,7 +21,7 @@ public class Interface implements IncomingJson{
 	private PesterchumGUI gui;
 	private Connection conn;
 	private Settings settings;
-	private LinkedList<String> friends;
+	private User user;
 	private Language lang;
 	public Interface(PesterchumGUI gui, Settings settings) throws IOException{
 		this.gui = gui;
@@ -31,7 +29,6 @@ public class Interface implements IncomingJson{
 		this.settings = settings;
 		conn.registerIncoming("message", this);
 		conn.registerIncoming("admin", this);
-		friends = new LinkedList<String>();
 		//load the language
 		if(this.getClass().getResource("/"+settings.getString("language")+".json")!=null){
 			lang = new Language("/"+settings.getString("language")+".json");
@@ -55,14 +52,8 @@ public class Interface implements IncomingJson{
 				.withField("password", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(password.getBytes())));
 		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
-	public List<String> getFriends(){
-		return friends;
-	}
 	public boolean authenticated(){
-		if(conn.getUsername()!=null){
-			return true;
-		}
-		return false;
+		return this.user!=null;
 	}
 	public void timeout(){
 		gui.timeout();
@@ -83,7 +74,7 @@ public class Interface implements IncomingJson{
 				processAdmin(data);
 				break;
 			default:
-				Log.getInstance().error("Unknown data from - "+data.getData());
+				Log.getInstance().error("Unknown data - "+data.getData());
 			}
 		}else{
 			switch(data.getName()){
@@ -103,24 +94,15 @@ public class Interface implements IncomingJson{
 				.withField("password", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(password.getBytes())));
 		conn.getConnection().write(Util.jsonToString(builder.build()));
 	}
-	public boolean hasFriend(String username){
-		for(String s: friends){
-			if(s.equalsIgnoreCase(username)){
-				return true;
-			}
-		}
-		return false;
-	}
 	public void close(){
 		conn.close();
-		friends = new LinkedList<String>();
+		user = null;
 	}
-	public String getUsername(){
-		return conn.getUsername();
+	public User getUser(){
+		return user;
 	}
 	public boolean connect(String host, int port){
 		conn.close();
-		friends = new LinkedList<String>();
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
@@ -132,7 +114,7 @@ public class Interface implements IncomingJson{
 		conn.getConnection().write(Util.jsonToString(message.getJson()));
 	}
 	public void addFriend(String username){
-		if(!hasFriend(username)){
+		if(!user.hasFriend(username)){
 			JsonObjectNodeBuilder builder = JsonNodeBuilders.anObjectBuilder()
 					.withField("class", JsonNodeBuilders.aStringBuilder("admin"))
 					.withField("command", JsonNodeBuilders.aStringBuilder("friendrequest"))
@@ -144,7 +126,7 @@ public class Interface implements IncomingJson{
 		String username = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
 		if(suc){
-			friends.add(username);
+			user.addFriend(username);
 		}
 		gui.friendRequestResponse(username, suc);
 	}
@@ -179,14 +161,9 @@ public class Interface implements IncomingJson{
 	}
 	private boolean processLogin(ICData data){
 		Log.getInstance().info("Login response received");
-		String un = new String(Utilities.decodeHex(data.getData().getStringValue("username")));
 		boolean suc = Boolean.parseBoolean(data.getData().getStringValue("success"));
 		if(suc){
-			conn.setUsername(un);
-			List<JsonNode> friends = data.getData().getArrayNode("friends");
-			for(JsonNode f: friends){
-				this.friends.add(new String(Utilities.decodeHex(f.getStringValue("username"))));
-			}
+			this.user = new User(data.getData().getNode("user"));
 		}
 		gui.loginResponse(suc);
 		return suc;

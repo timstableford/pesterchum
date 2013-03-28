@@ -1,6 +1,7 @@
 package pesterchum.client.gui.main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -142,14 +143,17 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 		exit.addActionListener(this);
 		reconnect.addActionListener(this);
 		reconnect.setActionCommand("reconnect");
-		client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
-		client.add(userList); client.add(idle); client.add(addGroup);
+		//TODO implmenent these
+		//client.add(options); client.add(memos); client.add(pesterLog); client.add(randomEncounter);
+		//client.add(userList); client.add(idle); client.add(addGroup);
 		client.add(reconnect); client.add(exit);
 
 		//set up the Profile menu
 		PMenuItem quirks, trollSlum, color, switchChum;
 		quirks = new PMenuItem(ifa.translate("quirks")); trollSlum = new PMenuItem(ifa.translate("trollslum")); 
 		color = new PMenuItem(ifa.translate("color")); 
+		color.addActionListener(this);
+		color.setActionCommand("color");
 		switchChum = new PMenuItem(ifa.translate("switch"));
 		profile.add(quirks); profile.add(trollSlum); profile.add(color); profile.add(switchChum);
 
@@ -242,6 +246,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 			messWindows.remove(m);
 		}
 	}
+	public void setColor(Color c){
+		
+	}
 	public void message(String user){
 		getChat(user);
 	}
@@ -292,6 +299,9 @@ public class GUI extends PFrame implements ActionListener, PesterchumGUI{
 				//if the connection could not be made, present an option to try again
 				this.timeout();
 			}
+			break;
+		case "color":
+			new ColorChooser(this);
 			break;
 		}
 		if(e.getSource()==addchum){
