@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 /**
  * A simple logging software
  * @author Tim Stableford
@@ -93,8 +96,16 @@ public class Log {
 			System.err.println("[ERROR] Log could not close file");
 		}
 	}
+	private String getTime(){
+		Date date = new Date(); 
+		DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");  
+		return df.format(date); 
+	}
 	private synchronized void write(String data){
 		try{
+			out.write("[");
+			out.write(getTime());
+			out.write("]");
 			out.write(data);
 			out.newLine();
 			out.flush();
