@@ -90,7 +90,8 @@ public class Interface implements IncomingJson{
 				.withField("username", JsonNodeBuilders.aStringBuilder(Utilities.encodeHex(username.getBytes())));
 		boolean exists = manager.getDatabase().userExists(username);
 		if(exists){
-			if(data.getSource().getUser().hasFriend(username)){
+			if(data.getSource().getUser().hasFriend(username)
+					||data.getSource().getUser().getUsername().equals(username)){
 				exists = false;
 			}else{
 				data.getSource().getUser().addFriend(username);
